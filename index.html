@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل الحضور</title>
 <style>
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; margin:0; padding:0; direction:rtl; }
-.centered { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; }
+body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; margin:0; padding:0; direction:rtl;}
+.centered { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh;}
 .container { max-width:900px; margin:20px auto; background:#fff; padding:25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
 h1,h2,h3{text-align:center;margin-bottom:10px;}
 input,select,button{padding:8px 12px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
@@ -20,6 +20,7 @@ button:hover{background-color:#45a049;}
 .absentBtn:hover{background-color:#e53935;}
 ul{list-style:none;padding:0;}
 ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
+.chart-container{width:100%; max-width:500px; margin:20px auto;}
 </style>
 </head>
 <body>
@@ -35,6 +36,7 @@ ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
     <header>
         <h1>تسجيل الحضور/الغياب</h1>
     </header>
+
     <section>
         <label>اختر المتربص:</label>
         <select id="traineeSelect"></select>
@@ -43,6 +45,7 @@ ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
             <button id="addTraineeBtn">إضافة</button>
         </div>
     </section>
+
     <section>
         <label>تاريخ تسجيل الحضور/الغياب:</label>
         <input type="date" id="attendanceDate">
@@ -51,9 +54,16 @@ ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
             <button class="absentBtn" id="absentBtn">✖ غياب</button>
         </div>
     </section>
+
+    <section class="chart-container">
+        <h3>📊 إحصائيات الحضور اليوم</h3>
+        <canvas id="attendanceChart"></canvas>
+    </section>
+
     <section>
         <h3>سجل الحضور/الغياب</h3>
         <ul id="attendanceList"></ul>
+        <button id="exportCSVBtn">تصدير CSV</button>
     </section>
 </div>
 
@@ -71,9 +81,11 @@ document.addEventListener("DOMContentLoaded", function(){
     const presentBtn = document.getElementById("presentBtn");
     const absentBtn = document.getElementById("absentBtn");
     const attendanceList = document.getElementById("attendanceList");
+    const exportCSVBtn = document.getElementById("exportCSVBtn");
 
     let trainees = [];
-    let attendanceRecords = {};
+    let attendanceRecords = {}; 
+    let chart;
 
     loginBtn.addEventListener("click", function(){
         const username = document.getElementById("username").value;
@@ -116,22 +128,61 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     }
 
-    presentBtn.addEventListener("click", function(){
+    function renderChart(){
+        const date = attendanceDate.value;
+        let present = 0, absent = 0;
+        if(attendanceRecords[date]){
+            Object.values(attendanceRecords[date]).forEach(s => {
+                if(s==="حاضر") present++;
+                else absent++;
+            });
+        }
+
+        const ctx = document.getElementById("attendanceChart").getContext("2d");
+        if(chart) chart.destroy();
+        chart = new Chart(ctx, {
+            type:"doughnut",
+            data:{
+                labels:["حاضر","غائب"],
+                datasets:[{
+                    data:[present, absent],
+                    backgroundColor:["#4CAF50","#F44336"]
+                }]
+            }
+        });
+    }
+
+    function markAttendance(status){
         const date = attendanceDate.value;
         const trainee = traineeSelect.value;
         if(!date || !trainee) return alert("اختر التاريخ والمتربص أولاً");
         if(!attendanceRecords[date]) attendanceRecords[date] = {};
-        attendanceRecords[date][trainee] = "حاضر";
+        attendanceRecords[date][trainee] = status;
         renderAttendanceList();
+        renderChart();
+    }
+
+    presentBtn.addEventListener("click", ()=>markAttendance("حاضر"));
+    absentBtn.addEventListener("click", ()=>markAttendance("غائب"));
+
+    exportCSVBtn.addEventListener("click", function(){
+        let csv = "التاريخ,المتربص,الحالة\n";
+        for(const [date, records] of Object.entries(attendanceRecords)){
+            for(const [trainee, status] of Object.entries(records)){
+                csv += `${date},${trainee},${status}\n`;
+            }
+        }
+        const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "attendance.csv";
+        link.click();
     });
 
-    absentBtn.addEventListener("click", function(){
-        const date = attendanceDate.value;
-        const trainee = traineeSelect.value;
-        if(!date || !trainee) return alert("اختر التاريخ والمتربص أولاً");
-        if(!attendanceRecords[date]) attendanceRecords[date] = {};
-        attendanceRecords[date][trainee] = "غائب";
+    // تحديث الرسم البياني عند تغيير التاريخ
+    attendanceDate.addEventListener("change", function(){
         renderAttendanceList();
+        renderChart();
     });
 });
 </script>
