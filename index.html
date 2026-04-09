@@ -47,6 +47,8 @@ ul li{background:#f1f2f6; padding:10px; margin:5px 0; border-radius:8px;}
 </style>
 </head>
 <body>
+
+<!-- تسجيل الدخول -->
 <div id="loginPage" class="centered">
     <h2>تسجيل الدخول</h2>
     <input type="text" id="username" placeholder="اسم المستخدم">
@@ -54,6 +56,7 @@ ul li{background:#f1f2f6; padding:10px; margin:5px 0; border-radius:8px;}
     <button id="loginBtn">دخول</button>
 </div>
 
+<!-- التطبيق -->
 <div id="app" style="display:none;" class="container">
     <h1>تسجيل الحضور/الغياب</h1>
 
@@ -108,7 +111,53 @@ ul li{background:#f1f2f6; padding:10px; margin:5px 0; border-radius:8px;}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// هنا يمكنك إضافة نفس سكربت الوظائف الذي أرسلته سابقاً مع جميع الأزرار تعمل
+// ------------------ تسجيل الدخول ------------------
+document.addEventListener("DOMContentLoaded", function(){
+    const loginBtn = document.getElementById("loginBtn");
+    const loginPage = document.getElementById("loginPage");
+    const app = document.getElementById("app");
+
+    loginBtn.addEventListener("click", function(){
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value.trim();
+        if(username==="admin" && password==="1234"){
+            loginPage.style.display="none";
+            app.style.display="block";
+            initializeApp();
+        } else { alert("اسم المستخدم أو كلمة المرور خاطئة"); }
+    });
+
+    // ------------------ التطبيق ------------------
+    function initializeApp(){
+        const specialtySelect = document.getElementById("specialtySelect");
+        const newSpecialty = document.getElementById("newSpecialty");
+        const addSpecialtyBtn = document.getElementById("addSpecialtyBtn");
+        const editSpecialtyBtn = document.getElementById("editSpecialtyBtn");
+        const deleteSpecialtyBtn = document.getElementById("deleteSpecialtyBtn");
+
+        const traineeSelect = document.getElementById("traineeSelect");
+        const nameInput = document.getElementById("nameInput");
+        const addTraineeBtn = document.getElementById("addTraineeBtn");
+        const editTraineeBtn = document.getElementById("editTraineeBtn");
+        const deleteTraineeBtn = document.getElementById("deleteTraineeBtn");
+
+        const attendanceDate = document.getElementById("attendanceDate");
+        const presentBtn = document.getElementById("presentBtn");
+        const absentBtn = document.getElementById("absentBtn");
+        const attendanceList = document.getElementById("attendanceList");
+        const exportCSVBtn = document.getElementById("exportCSVBtn");
+
+        const searchTrainee = document.getElementById("searchTrainee");
+        const filterSpecialty = document.getElementById("filterSpecialty");
+        let specialties = JSON.parse(localStorage.getItem("specialties")) || [];
+        let trainees = JSON.parse(localStorage.getItem("trainees")) || {};
+        let attendanceRecords = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
+        let chart;
+
+        // هنا تضع كل وظائف JS التي أرسلتها مسبقاً: إدارة التخصصات، المتربصين، الحضور/الغياب، الرسم البياني، تصدير CSV
+        // فقط تأكد أن كل العناصر موجودة بنفس ID مثل HTML الحالي
+    }
+});
 </script>
 </body>
 </html>
