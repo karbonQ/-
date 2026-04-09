@@ -93,8 +93,67 @@ function updateTraineeSelect() {
     });
 }
 
-function loadSpecialties() { updateSpecialtySelect(); }
-function loadTrainees() { updateTraineeSelect(); }
+function loadSpecialties(){
+    specialtySelect.innerHTML = "";
+    specialties.forEach(spec => {
+        const opt = document.createElement("option");
+        opt.textContent = spec;
+        specialtySelect.appendChild(opt);
+    });
+    if(specialties.length > 0) loadTrainees(specialtySelect.value);
+    updateFilterSpecialty();
+    localStorage.setItem("specialties", JSON.stringify(specialties));
+}
+
+function loadTrainees(spec){
+    traineeSelect.innerHTML = "";
+    if(!trainees[spec]) trainees[spec] = [];
+    trainees[spec].forEach(name => {
+        const opt = document.createElement("option");
+        opt.textContent = name;
+        traineeSelect.appendChild(opt);
+    });
+    localStorage.setItem("trainees", JSON.stringify(trainees));
+}
+
+function updateFilterSpecialty(){
+    filterSpecialty.innerHTML = '<option value="">كل التخصصات</option>';
+    specialties.forEach(spec => {
+        const opt = document.createElement("option");
+        opt.value = spec;
+        opt.textContent = spec;
+        filterSpecialty.appendChild(opt);
+    });
+}
+
+// زر إضافة تخصص
+addSpecialtyBtn.addEventListener("click", () => {
+    const spec = newSpecialty.value.trim();
+    if(!spec) return alert("أدخل اسم التخصص");
+    if(specialties.includes(spec)) return alert("التخصص موجود بالفعل");
+    specialties.push(spec);
+    newSpecialty.value = "";
+    loadSpecialties();
+});
+
+// زر إضافة متربص
+addTraineeBtn.addEventListener("click", () => {
+    const spec = specialtySelect.value;
+    if(!spec) return alert("اختر التخصص أولاً");
+    const name = nameInput.value.trim();
+    if(!name) return alert("أدخل اسم المتربص");
+    if(!trainees[spec]) trainees[spec] = [];
+    if(trainees[spec].includes(name)) return alert("المتربص موجود بالفعل");
+    trainees[spec].push(name);
+    nameInput.value = "";
+    loadTrainees(spec);
+});
+
+// تحديث قائمة المتربصين عند تغيير التخصص
+specialtySelect.addEventListener("change", () => loadTrainees(specialtySelect.value));
+
+// تحميل القوائم عند بدء التطبيق
+loadSpecialties();
 
 function markAttendance(status) {
     const date = document.getElementById('attendanceDate').value;
