@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق حضور وغياب كامل</title>
+<title>تطبيق حضور وغياب مصحح</title>
 <style>
 body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; margin:0; padding:0; direction:rtl;}
 .centered { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh;}
@@ -38,7 +38,6 @@ section{margin-bottom:20px;}
         <h1>تسجيل الحضور/الغياب</h1>
     </header>
 
-    <!-- إدارة التخصصات -->
     <section>
         <label>اختر التخصص:</label>
         <select id="specialtySelect"></select>
@@ -50,7 +49,6 @@ section{margin-bottom:20px;}
         </div>
     </section>
 
-    <!-- إدارة المتربصين -->
     <section>
         <label>اختر المتربص:</label>
         <select id="traineeSelect"></select>
@@ -62,7 +60,6 @@ section{margin-bottom:20px;}
         </div>
     </section>
 
-    <!-- تسجيل الحضور/الغياب -->
     <section>
         <label>تاريخ تسجيل الحضور/الغياب:</label>
         <input type="date" id="attendanceDate">
@@ -72,20 +69,17 @@ section{margin-bottom:20px;}
         </div>
     </section>
 
-    <!-- بحث وتصفية -->
     <section>
         <h3>بحث وتصفية السجلات</h3>
         <input type="text" id="searchTrainee" placeholder="بحث عن متربص">
         <select id="filterSpecialty"><option value="">كل التخصصات</option></select>
     </section>
 
-    <!-- رسم بياني -->
     <section class="chart-container">
         <h3>📊 إحصائيات الحضور اليوم</h3>
         <canvas id="attendanceChart"></canvas>
     </section>
 
-    <!-- سجل الحضور/الغياب -->
     <section>
         <h3>سجل الحضور/الغياب</h3>
         <ul id="attendanceList"></ul>
@@ -126,7 +120,6 @@ document.addEventListener("DOMContentLoaded", function(){
     let attendanceRecords = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
     let chart;
 
-    // تسجيل الدخول
     loginBtn.addEventListener("click", function(){
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
@@ -138,7 +131,6 @@ document.addEventListener("DOMContentLoaded", function(){
         } else { alert("اسم المستخدم أو كلمة المرور خاطئة"); }
     });
 
-    // --- إدارة التخصصات ---
     function loadSpecialties(){
         specialtySelect.innerHTML="";
         specialties.forEach(spec=>{
@@ -154,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function(){
         const spec = newSpecialty.value.trim();
         if(spec && !specialties.includes(spec)){
             specialties.push(spec);
-            newSpecialty.value="";
+            newSpecialty.value = "";
             loadSpecialties();
             updateFilterSpecialty();
         }
@@ -167,7 +159,6 @@ document.addEventListener("DOMContentLoaded", function(){
             if(name){
                 const old = specialties[index];
                 specialties[index]=name;
-                // نقل المتربصين
                 if(trainees[old]){
                     trainees[name]=trainees[old];
                     delete trainees[old];
@@ -191,7 +182,6 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    // --- إدارة المتربصين ---
     function loadTrainees(spec){
         traineeSelect.innerHTML="";
         if(!trainees[spec]) trainees[spec]=[];
@@ -206,13 +196,16 @@ document.addEventListener("DOMContentLoaded", function(){
     specialtySelect.addEventListener("change", ()=>loadTrainees(specialtySelect.value));
 
     addTraineeBtn.addEventListener("click", ()=>{
-        const name = nameInput.value.trim();
         const spec = specialtySelect.value;
-        if(name && !trainees[spec].includes(name)){
+        if(!spec) return alert("اختر التخصص أولاً");
+        const name = nameInput.value.trim();
+        if(!name) return alert("أدخل اسم المتربص");
+        if(!trainees[spec]) trainees[spec]=[];
+        if(!trainees[spec].includes(name)){
             trainees[spec].push(name);
             nameInput.value="";
             loadTrainees(spec);
-        }
+        } else { alert("المتربص موجود بالفعل"); }
     });
 
     editTraineeBtn.addEventListener("click", ()=>{
@@ -236,7 +229,6 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    // --- الحضور/الغياب ---
     function renderAttendanceList(){
         const date = attendanceDate.value;
         const search = searchTrainee.value.trim().toLowerCase();
@@ -277,7 +269,6 @@ document.addEventListener("DOMContentLoaded", function(){
     searchTrainee.addEventListener("input", renderAttendanceList);
     filterSpecialty.addEventListener("change", renderAttendanceList);
 
-    // --- الرسم البياني ---
     function renderChart(){
         const date = attendanceDate.value;
         let present=0, absent=0;
@@ -295,7 +286,6 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }
 
-    // --- تصدير CSV ---
     exportCSVBtn.addEventListener("click", function(){
         let csv="التاريخ,المتربص,الحالة\n";
         for(const [date,records] of Object.entries(attendanceRecords)){
@@ -310,7 +300,6 @@ document.addEventListener("DOMContentLoaded", function(){
         link.click();
     });
 
-    // --- تحديث خيارات التصفية ---
     function updateFilterSpecialty(){
         filterSpecialty.innerHTML='<option value="">كل التخصصات</option>';
         specialties.forEach(spec=>{
