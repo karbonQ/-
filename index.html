@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الحضور</title>
+<title>تطبيق حضور وغياب</title>
 <style>
 body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; margin:0; padding:0; direction:rtl;}
 .centered { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh;}
@@ -12,8 +12,8 @@ h1,h2,h3{text-align:center;margin-bottom:10px;}
 input,select,button{padding:8px 12px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
 button{cursor:pointer;border:none;background-color:#4CAF50;color:white;transition:0.3s;}
 button:hover{background-color:#45a049;}
-.button-group{display:flex;gap:10px;margin-top:5px;}
-.actions{display:flex;gap:10px;margin-top:10px;}
+.button-group{display:flex;gap:10px;margin-top:5px; flex-wrap:wrap;}
+.actions{display:flex;gap:10px;margin-top:10px; flex-wrap:wrap;}
 .presentBtn{background-color:#4CAF50;}
 .absentBtn{background-color:#F44336;}
 .presentBtn:hover{background-color:#45a049;}
@@ -21,6 +21,7 @@ button:hover{background-color:#45a049;}
 ul{list-style:none;padding:0;}
 ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
 .chart-container{width:100%; max-width:500px; margin:20px auto;}
+section{margin-bottom:20px;}
 </style>
 </head>
 <body>
@@ -37,15 +38,31 @@ ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
         <h1>تسجيل الحضور/الغياب</h1>
     </header>
 
+    <!-- إدارة التخصصات -->
+    <section>
+        <label>اختر التخصص:</label>
+        <select id="specialtySelect"></select>
+        <input type="text" id="newSpecialty" placeholder="إضافة تخصص جديد">
+        <div class="button-group">
+            <button id="addSpecialtyBtn">إضافة</button>
+            <button id="editSpecialtyBtn">✏ تعديل</button>
+            <button id="deleteSpecialtyBtn">🗑 حذف</button>
+        </div>
+    </section>
+
+    <!-- إدارة المتربصين -->
     <section>
         <label>اختر المتربص:</label>
         <select id="traineeSelect"></select>
         <input type="text" id="nameInput" placeholder="اسم المتربص">
         <div class="button-group">
             <button id="addTraineeBtn">إضافة</button>
+            <button id="editTraineeBtn">✏ تعديل</button>
+            <button id="deleteTraineeBtn">🗑 حذف</button>
         </div>
     </section>
 
+    <!-- تسجيل الحضور/الغياب -->
     <section>
         <label>تاريخ تسجيل الحضور/الغياب:</label>
         <input type="date" id="attendanceDate">
@@ -55,11 +72,13 @@ ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
         </div>
     </section>
 
+    <!-- رسم بياني -->
     <section class="chart-container">
         <h3>📊 إحصائيات الحضور اليوم</h3>
         <canvas id="attendanceChart"></canvas>
     </section>
 
+    <!-- سجل الحضور/الغياب -->
     <section>
         <h3>سجل الحضور/الغياب</h3>
         <ul id="attendanceList"></ul>
@@ -70,120 +89,207 @@ ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function(){
+    // عناصر الصفحة
     const loginBtn = document.getElementById("loginBtn");
     const loginPage = document.getElementById("loginPage");
     const app = document.getElementById("app");
 
+    const specialtySelect = document.getElementById("specialtySelect");
+    const newSpecialty = document.getElementById("newSpecialty");
+    const addSpecialtyBtn = document.getElementById("addSpecialtyBtn");
+    const editSpecialtyBtn = document.getElementById("editSpecialtyBtn");
+    const deleteSpecialtyBtn = document.getElementById("deleteSpecialtyBtn");
+
     const traineeSelect = document.getElementById("traineeSelect");
     const nameInput = document.getElementById("nameInput");
     const addTraineeBtn = document.getElementById("addTraineeBtn");
+    const editTraineeBtn = document.getElementById("editTraineeBtn");
+    const deleteTraineeBtn = document.getElementById("deleteTraineeBtn");
+
     const attendanceDate = document.getElementById("attendanceDate");
     const presentBtn = document.getElementById("presentBtn");
     const absentBtn = document.getElementById("absentBtn");
     const attendanceList = document.getElementById("attendanceList");
     const exportCSVBtn = document.getElementById("exportCSVBtn");
 
-    let trainees = [];
-    let attendanceRecords = {}; 
+    let specialties = JSON.parse(localStorage.getItem("specialties")) || [];
+    let trainees = JSON.parse(localStorage.getItem("trainees")) || {};
+    let attendanceRecords = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
     let chart;
 
+    // تسجيل الدخول
     loginBtn.addEventListener("click", function(){
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        if(username === "admin" && password === "1234"){
-            loginPage.style.display = "none";
-            app.style.display = "block";
-        } else {
-            alert("اسم المستخدم أو كلمة المرور خاطئة");
+        if(username==="admin" && password==="1234"){
+            loginPage.style.display="none";
+            app.style.display="block";
+            loadSpecialties();
+        } else { alert("اسم المستخدم أو كلمة المرور خاطئة"); }
+    });
+
+    // --- إدارة التخصصات ---
+    function loadSpecialties(){
+        specialtySelect.innerHTML="";
+        specialties.forEach(spec=>{
+            const opt = document.createElement("option");
+            opt.textContent = spec;
+            specialtySelect.appendChild(opt);
+        });
+        if(specialties.length>0) loadTrainees(specialtySelect.value);
+    }
+
+    addSpecialtyBtn.addEventListener("click", function(){
+        const spec = newSpecialty.value.trim();
+        if(spec && !specialties.includes(spec)){
+            specialties.push(spec);
+            localStorage.setItem("specialties", JSON.stringify(specialties));
+            newSpecialty.value="";
+            loadSpecialties();
         }
     });
 
-    function updateTraineeSelect(){
-        traineeSelect.innerHTML = "";
-        trainees.forEach(name => {
-            const option = document.createElement("option");
-            option.textContent = name;
-            traineeSelect.appendChild(option);
+    editSpecialtyBtn.addEventListener("click", function(){
+        const index = specialtySelect.selectedIndex;
+        if(index>=0){
+            const name = prompt("أدخل الاسم الجديد للتخصص", specialties[index]);
+            if(name){
+                const old = specialties[index];
+                specialties[index]=name;
+                localStorage.setItem("specialties", JSON.stringify(specialties));
+                // نقل المتربصين للتخصص الجديد
+                if(trainees[old]){
+                    trainees[name]=trainees[old];
+                    delete trainees[old];
+                    localStorage.setItem("trainees", JSON.stringify(trainees));
+                }
+                loadSpecialties();
+            }
+        }
+    });
+
+    deleteSpecialtyBtn.addEventListener("click", function(){
+        const index = specialtySelect.selectedIndex;
+        if(index>=0){
+            const spec = specialties[index];
+            specialties.splice(index,1);
+            localStorage.setItem("specialties", JSON.stringify(specialties));
+            delete trainees[spec];
+            localStorage.setItem("trainees", JSON.stringify(trainees));
+            loadSpecialties();
+        }
+    });
+
+    // --- إدارة المتربصين ---
+    function loadTrainees(spec){
+        traineeSelect.innerHTML="";
+        if(!trainees[spec]) trainees[spec]=[];
+        trainees[spec].forEach(name=>{
+            const opt=document.createElement("option");
+            opt.textContent=name;
+            traineeSelect.appendChild(opt);
         });
+        localStorage.setItem("trainees", JSON.stringify(trainees));
     }
+
+    specialtySelect.addEventListener("change", ()=>loadTrainees(specialtySelect.value));
 
     addTraineeBtn.addEventListener("click", function(){
         const name = nameInput.value.trim();
-        if(name && !trainees.includes(name)){
-            trainees.push(name);
-            updateTraineeSelect();
-            nameInput.value = "";
+        const spec = specialtySelect.value;
+        if(name && !trainees[spec].includes(name)){
+            trainees[spec].push(name);
+            nameInput.value="";
+            loadTrainees(spec);
         }
     });
 
+    editTraineeBtn.addEventListener("click", function(){
+        const spec = specialtySelect.value;
+        const index = traineeSelect.selectedIndex;
+        if(index>=0){
+            const name = prompt("أدخل الاسم الجديد", trainees[spec][index]);
+            if(name){
+                trainees[spec][index]=name;
+                loadTrainees(spec);
+            }
+        }
+    });
+
+    deleteTraineeBtn.addEventListener("click", function(){
+        const spec = specialtySelect.value;
+        const index = traineeSelect.selectedIndex;
+        if(index>=0){
+            trainees[spec].splice(index,1);
+            loadTrainees(spec);
+        }
+    });
+
+    // --- الحضور/الغياب ---
     function renderAttendanceList(){
         const date = attendanceDate.value;
-        attendanceList.innerHTML = "";
+        attendanceList.innerHTML="";
         if(attendanceRecords[date]){
-            for(const [trainee, status] of Object.entries(attendanceRecords[date])){
+            for(const [trainee,status] of Object.entries(attendanceRecords[date])){
                 const li = document.createElement("li");
-                li.textContent = `${trainee}: ${status}`;
+                li.textContent=`${trainee}: ${status}`;
                 attendanceList.appendChild(li);
             }
         }
-    }
-
-    function renderChart(){
-        const date = attendanceDate.value;
-        let present = 0, absent = 0;
-        if(attendanceRecords[date]){
-            Object.values(attendanceRecords[date]).forEach(s => {
-                if(s==="حاضر") present++;
-                else absent++;
-            });
-        }
-
-        const ctx = document.getElementById("attendanceChart").getContext("2d");
-        if(chart) chart.destroy();
-        chart = new Chart(ctx, {
-            type:"doughnut",
-            data:{
-                labels:["حاضر","غائب"],
-                datasets:[{
-                    data:[present, absent],
-                    backgroundColor:["#4CAF50","#F44336"]
-                }]
-            }
-        });
+        renderChart();
+        localStorage.setItem("attendanceRecords", JSON.stringify(attendanceRecords));
     }
 
     function markAttendance(status){
         const date = attendanceDate.value;
         const trainee = traineeSelect.value;
         if(!date || !trainee) return alert("اختر التاريخ والمتربص أولاً");
-        if(!attendanceRecords[date]) attendanceRecords[date] = {};
-        attendanceRecords[date][trainee] = status;
+        if(!attendanceRecords[date]) attendanceRecords[date]={};
+        attendanceRecords[date][trainee]=status;
         renderAttendanceList();
-        renderChart();
     }
 
     presentBtn.addEventListener("click", ()=>markAttendance("حاضر"));
     absentBtn.addEventListener("click", ()=>markAttendance("غائب"));
 
+    attendanceDate.addEventListener("change", renderAttendanceList);
+
+    // --- الرسم البياني ---
+    function renderChart(){
+        const date = attendanceDate.value;
+        let present=0, absent=0;
+        if(attendanceRecords[date]){
+            Object.values(attendanceRecords[date]).forEach(s=>{
+                if(s==="حاضر") present++;
+                else absent++;
+            });
+        }
+        const ctx = document.getElementById("attendanceChart").getContext("2d");
+        if(chart) chart.destroy();
+        chart=new Chart(ctx,{
+            type:"doughnut",
+            data:{
+                labels:["حاضر","غائب"],
+                datasets:[{data:[present, absent], backgroundColor:["#4CAF50","#F44336"]}]
+            }
+        });
+    }
+
+    // --- تصدير CSV ---
     exportCSVBtn.addEventListener("click", function(){
-        let csv = "التاريخ,المتربص,الحالة\n";
-        for(const [date, records] of Object.entries(attendanceRecords)){
-            for(const [trainee, status] of Object.entries(records)){
-                csv += `${date},${trainee},${status}\n`;
+        let csv="التاريخ,المتربص,الحالة\n";
+        for(const [date,records] of Object.entries(attendanceRecords)){
+            for(const [trainee,status] of Object.entries(records)){
+                csv+=`${date},${trainee},${status}\n`;
             }
         }
-        const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "attendance.csv";
+        const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+        const link=document.createElement("a");
+        link.href=URL.createObjectURL(blob);
+        link.download="attendance.csv";
         link.click();
     });
 
-    // تحديث الرسم البياني عند تغيير التاريخ
-    attendanceDate.addEventListener("change", function(){
-        renderAttendanceList();
-        renderChart();
-    });
 });
 </script>
 
