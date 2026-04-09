@@ -1,1 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الحضور</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- صفحة تسجيل الدخول -->
+<div id="loginPage" class="centered">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="username" placeholder="اسم المستخدم">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <button onclick="login()">دخول</button>
+</div>
 
+<!-- التطبيق الرئيسي -->
+<div id="app" style="display:none;" class="container">
+    <header>
+        <h1>تسجيل الحضور/الغياب</h1>
+        <p>مركز التكوين المهني و التمهين الشهيد أحمد زبانة</p>
+    </header>
+
+    <section>
+        <label>اختر التخصص:</label>
+        <select id="specialtySelect"></select>
+        <input type="text" id="newSpecialty" placeholder="إضافة تخصص جديد">
+        <div class="button-group">
+            <button onclick="addSpecialty()">إضافة</button>
+            <button onclick="editSpecialty()">✏ تعديل</button>
+            <button onclick="deleteSpecialty()">🗑 حذف</button>
+        </div>
+    </section>
+
+    <section>
+        <label>اختر المتربص:</label>
+        <select id="traineeSelect"></select>
+        <input type="text" id="nameInput" placeholder="اسم المتربص">
+        <div class="button-group">
+            <button onclick="addTrainee()">إضافة</button>
+            <button onclick="editTrainee()">✏ تعديل</button>
+            <button onclick="deleteTrainee()">🗑 حذف</button>
+        </div>
+    </section>
+
+    <section>
+        <label>تاريخ تسجيل الحضور/الغياب:</label>
+        <input type="date" id="attendanceDate">
+        <div class="actions">
+            <button class="presentBtn" onclick="markAttendance('حاضر')">✔ حضور</button>
+            <button class="absentBtn" onclick="markAttendance('غائب')">✖ غياب</button>
+            <button onclick="clearDayRecords()">🗑 مسح سجلات اليوم</button>
+        </div>
+    </section>
+
+    <section>
+        <h3>📊 إحصائيات الحضور</h3>
+        <canvas id="attendanceChart"></canvas>
+    </section>
+
+    <section>
+        <h3>سجل الحضور/الغياب</h3>
+        <ul id="attendanceList"></ul>
+        <button onclick="exportCSV()">تصدير CSV</button>
+    </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
