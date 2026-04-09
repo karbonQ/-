@@ -4,69 +4,137 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل الحضور</title>
-<link rel="stylesheet" href="style.css">
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; margin:0; padding:0; direction:rtl; }
+.centered { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; }
+.container { max-width:900px; margin:20px auto; background:#fff; padding:25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+h1,h2,h3{text-align:center;margin-bottom:10px;}
+input,select,button{padding:8px 12px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
+button{cursor:pointer;border:none;background-color:#4CAF50;color:white;transition:0.3s;}
+button:hover{background-color:#45a049;}
+.button-group{display:flex;gap:10px;margin-top:5px;}
+.actions{display:flex;gap:10px;margin-top:10px;}
+.presentBtn{background-color:#4CAF50;}
+.absentBtn{background-color:#F44336;}
+.presentBtn:hover{background-color:#45a049;}
+.absentBtn:hover{background-color:#e53935;}
+ul{list-style:none;padding:0;}
+ul li{background:#f9f9f9;margin:5px 0;padding:8px 10px;border-radius:5px;}
+</style>
 </head>
 <body>
-<!-- صفحة تسجيل الدخول -->
+
 <div id="loginPage" class="centered">
     <h2>تسجيل الدخول</h2>
     <input type="text" id="username" placeholder="اسم المستخدم">
     <input type="password" id="password" placeholder="كلمة المرور">
-    <button onclick="login()">دخول</button>
+    <button id="loginBtn">دخول</button>
 </div>
 
-<!-- التطبيق الرئيسي -->
 <div id="app" style="display:none;" class="container">
     <header>
         <h1>تسجيل الحضور/الغياب</h1>
-        <p>مركز التكوين المهني و التمهين الشهيد أحمد زبانة</p>
     </header>
-
-    <section>
-        <label>اختر التخصص:</label>
-        <select id="specialtySelect"></select>
-        <input type="text" id="newSpecialty" placeholder="إضافة تخصص جديد">
-        <div class="button-group">
-            <button onclick="addSpecialty()">إضافة</button>
-            <button onclick="editSpecialty()">✏ تعديل</button>
-            <button onclick="deleteSpecialty()">🗑 حذف</button>
-        </div>
-    </section>
-
     <section>
         <label>اختر المتربص:</label>
         <select id="traineeSelect"></select>
         <input type="text" id="nameInput" placeholder="اسم المتربص">
         <div class="button-group">
-            <button onclick="addTrainee()">إضافة</button>
-            <button onclick="editTrainee()">✏ تعديل</button>
-            <button onclick="deleteTrainee()">🗑 حذف</button>
+            <button id="addTraineeBtn">إضافة</button>
         </div>
     </section>
-
     <section>
         <label>تاريخ تسجيل الحضور/الغياب:</label>
         <input type="date" id="attendanceDate">
         <div class="actions">
-            <button class="presentBtn" onclick="markAttendance('حاضر')">✔ حضور</button>
-            <button class="absentBtn" onclick="markAttendance('غائب')">✖ غياب</button>
-            <button onclick="clearDayRecords()">🗑 مسح سجلات اليوم</button>
+            <button class="presentBtn" id="presentBtn">✔ حضور</button>
+            <button class="absentBtn" id="absentBtn">✖ غياب</button>
         </div>
     </section>
-
-    <section>
-        <h3>📊 إحصائيات الحضور</h3>
-        <canvas id="attendanceChart"></canvas>
-    </section>
-
     <section>
         <h3>سجل الحضور/الغياب</h3>
         <ul id="attendanceList"></ul>
-        <button onclick="exportCSV()">تصدير CSV</button>
     </section>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+    const loginBtn = document.getElementById("loginBtn");
+    const loginPage = document.getElementById("loginPage");
+    const app = document.getElementById("app");
+
+    const traineeSelect = document.getElementById("traineeSelect");
+    const nameInput = document.getElementById("nameInput");
+    const addTraineeBtn = document.getElementById("addTraineeBtn");
+    const attendanceDate = document.getElementById("attendanceDate");
+    const presentBtn = document.getElementById("presentBtn");
+    const absentBtn = document.getElementById("absentBtn");
+    const attendanceList = document.getElementById("attendanceList");
+
+    let trainees = [];
+    let attendanceRecords = {};
+
+    loginBtn.addEventListener("click", function(){
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        if(username === "admin" && password === "1234"){
+            loginPage.style.display = "none";
+            app.style.display = "block";
+        } else {
+            alert("اسم المستخدم أو كلمة المرور خاطئة");
+        }
+    });
+
+    function updateTraineeSelect(){
+        traineeSelect.innerHTML = "";
+        trainees.forEach(name => {
+            const option = document.createElement("option");
+            option.textContent = name;
+            traineeSelect.appendChild(option);
+        });
+    }
+
+    addTraineeBtn.addEventListener("click", function(){
+        const name = nameInput.value.trim();
+        if(name && !trainees.includes(name)){
+            trainees.push(name);
+            updateTraineeSelect();
+            nameInput.value = "";
+        }
+    });
+
+    function renderAttendanceList(){
+        const date = attendanceDate.value;
+        attendanceList.innerHTML = "";
+        if(attendanceRecords[date]){
+            for(const [trainee, status] of Object.entries(attendanceRecords[date])){
+                const li = document.createElement("li");
+                li.textContent = `${trainee}: ${status}`;
+                attendanceList.appendChild(li);
+            }
+        }
+    }
+
+    presentBtn.addEventListener("click", function(){
+        const date = attendanceDate.value;
+        const trainee = traineeSelect.value;
+        if(!date || !trainee) return alert("اختر التاريخ والمتربص أولاً");
+        if(!attendanceRecords[date]) attendanceRecords[date] = {};
+        attendanceRecords[date][trainee] = "حاضر";
+        renderAttendanceList();
+    });
+
+    absentBtn.addEventListener("click", function(){
+        const date = attendanceDate.value;
+        const trainee = traineeSelect.value;
+        if(!date || !trainee) return alert("اختر التاريخ والمتربص أولاً");
+        if(!attendanceRecords[date]) attendanceRecords[date] = {};
+        attendanceRecords[date][trainee] = "غائب";
+        renderAttendanceList();
+    });
+});
+</script>
+
 </body>
 </html>
