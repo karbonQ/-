@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق حضور وغياب</title>
+<title>تطبيق حضور وغياب كامل</title>
 <style>
 body { font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; color:#333; margin:0; padding:0; direction:rtl;}
 .centered { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh;}
-.container { max-width:900px; margin:20px auto; background:#fff; padding:25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
+.container { max-width:950px; margin:20px auto; background:#fff; padding:25px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.1);}
 h1,h2,h3{text-align:center;margin-bottom:10px;}
 input,select,button{padding:8px 12px;margin:5px 0;border-radius:5px;border:1px solid #ccc;}
 button{cursor:pointer;border:none;background-color:#4CAF50;color:white;transition:0.3s;}
@@ -72,6 +72,13 @@ section{margin-bottom:20px;}
         </div>
     </section>
 
+    <!-- بحث وتصفية -->
+    <section>
+        <h3>بحث وتصفية السجلات</h3>
+        <input type="text" id="searchTrainee" placeholder="بحث عن متربص">
+        <select id="filterSpecialty"><option value="">كل التخصصات</option></select>
+    </section>
+
     <!-- رسم بياني -->
     <section class="chart-container">
         <h3>📊 إحصائيات الحضور اليوم</h3>
@@ -89,7 +96,6 @@ section{margin-bottom:20px;}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function(){
-    // عناصر الصفحة
     const loginBtn = document.getElementById("loginBtn");
     const loginPage = document.getElementById("loginPage");
     const app = document.getElementById("app");
@@ -112,6 +118,9 @@ document.addEventListener("DOMContentLoaded", function(){
     const attendanceList = document.getElementById("attendanceList");
     const exportCSVBtn = document.getElementById("exportCSVBtn");
 
+    const searchTrainee = document.getElementById("searchTrainee");
+    const filterSpecialty = document.getElementById("filterSpecialty");
+
     let specialties = JSON.parse(localStorage.getItem("specialties")) || [];
     let trainees = JSON.parse(localStorage.getItem("trainees")) || {};
     let attendanceRecords = JSON.parse(localStorage.getItem("attendanceRecords")) || {};
@@ -125,6 +134,7 @@ document.addEventListener("DOMContentLoaded", function(){
             loginPage.style.display="none";
             app.style.display="block";
             loadSpecialties();
+            updateFilterSpecialty();
         } else { alert("اسم المستخدم أو كلمة المرور خاطئة"); }
     });
 
@@ -137,46 +147,47 @@ document.addEventListener("DOMContentLoaded", function(){
             specialtySelect.appendChild(opt);
         });
         if(specialties.length>0) loadTrainees(specialtySelect.value);
+        localStorage.setItem("specialties", JSON.stringify(specialties));
     }
 
-    addSpecialtyBtn.addEventListener("click", function(){
+    addSpecialtyBtn.addEventListener("click", ()=>{
         const spec = newSpecialty.value.trim();
         if(spec && !specialties.includes(spec)){
             specialties.push(spec);
-            localStorage.setItem("specialties", JSON.stringify(specialties));
             newSpecialty.value="";
             loadSpecialties();
+            updateFilterSpecialty();
         }
     });
 
-    editSpecialtyBtn.addEventListener("click", function(){
+    editSpecialtyBtn.addEventListener("click", ()=>{
         const index = specialtySelect.selectedIndex;
         if(index>=0){
             const name = prompt("أدخل الاسم الجديد للتخصص", specialties[index]);
             if(name){
                 const old = specialties[index];
                 specialties[index]=name;
-                localStorage.setItem("specialties", JSON.stringify(specialties));
-                // نقل المتربصين للتخصص الجديد
+                // نقل المتربصين
                 if(trainees[old]){
                     trainees[name]=trainees[old];
                     delete trainees[old];
                     localStorage.setItem("trainees", JSON.stringify(trainees));
                 }
                 loadSpecialties();
+                updateFilterSpecialty();
             }
         }
     });
 
-    deleteSpecialtyBtn.addEventListener("click", function(){
+    deleteSpecialtyBtn.addEventListener("click", ()=>{
         const index = specialtySelect.selectedIndex;
         if(index>=0){
             const spec = specialties[index];
             specialties.splice(index,1);
-            localStorage.setItem("specialties", JSON.stringify(specialties));
             delete trainees[spec];
             localStorage.setItem("trainees", JSON.stringify(trainees));
             loadSpecialties();
+            updateFilterSpecialty();
         }
     });
 
@@ -185,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function(){
         traineeSelect.innerHTML="";
         if(!trainees[spec]) trainees[spec]=[];
         trainees[spec].forEach(name=>{
-            const opt=document.createElement("option");
+            const opt = document.createElement("option");
             opt.textContent=name;
             traineeSelect.appendChild(opt);
         });
@@ -194,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     specialtySelect.addEventListener("change", ()=>loadTrainees(specialtySelect.value));
 
-    addTraineeBtn.addEventListener("click", function(){
+    addTraineeBtn.addEventListener("click", ()=>{
         const name = nameInput.value.trim();
         const spec = specialtySelect.value;
         if(name && !trainees[spec].includes(name)){
@@ -204,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    editTraineeBtn.addEventListener("click", function(){
+    editTraineeBtn.addEventListener("click", ()=>{
         const spec = specialtySelect.value;
         const index = traineeSelect.selectedIndex;
         if(index>=0){
@@ -216,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    deleteTraineeBtn.addEventListener("click", function(){
+    deleteTraineeBtn.addEventListener("click", ()=>{
         const spec = specialtySelect.value;
         const index = traineeSelect.selectedIndex;
         if(index>=0){
@@ -228,12 +239,23 @@ document.addEventListener("DOMContentLoaded", function(){
     // --- الحضور/الغياب ---
     function renderAttendanceList(){
         const date = attendanceDate.value;
+        const search = searchTrainee.value.trim().toLowerCase();
+        const filterSpec = filterSpecialty.value;
         attendanceList.innerHTML="";
+
         if(attendanceRecords[date]){
             for(const [trainee,status] of Object.entries(attendanceRecords[date])){
-                const li = document.createElement("li");
-                li.textContent=`${trainee}: ${status}`;
-                attendanceList.appendChild(li);
+                let include = true;
+                if(filterSpec){
+                    const found = trainees[filterSpec] && trainees[filterSpec].includes(trainee);
+                    if(!found) include=false;
+                }
+                if(search && !trainee.toLowerCase().includes(search)) include=false;
+                if(include){
+                    const li = document.createElement("li");
+                    li.textContent=`${trainee}: ${status}`;
+                    attendanceList.appendChild(li);
+                }
             }
         }
         renderChart();
@@ -251,8 +273,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
     presentBtn.addEventListener("click", ()=>markAttendance("حاضر"));
     absentBtn.addEventListener("click", ()=>markAttendance("غائب"));
-
     attendanceDate.addEventListener("change", renderAttendanceList);
+    searchTrainee.addEventListener("input", renderAttendanceList);
+    filterSpecialty.addEventListener("change", renderAttendanceList);
 
     // --- الرسم البياني ---
     function renderChart(){
@@ -268,10 +291,7 @@ document.addEventListener("DOMContentLoaded", function(){
         if(chart) chart.destroy();
         chart=new Chart(ctx,{
             type:"doughnut",
-            data:{
-                labels:["حاضر","غائب"],
-                datasets:[{data:[present, absent], backgroundColor:["#4CAF50","#F44336"]}]
-            }
+            data:{labels:["حاضر","غائب"], datasets:[{data:[present, absent], backgroundColor:["#4CAF50","#F44336"]}]}
         });
     }
 
@@ -290,8 +310,17 @@ document.addEventListener("DOMContentLoaded", function(){
         link.click();
     });
 
+    // --- تحديث خيارات التصفية ---
+    function updateFilterSpecialty(){
+        filterSpecialty.innerHTML='<option value="">كل التخصصات</option>';
+        specialties.forEach(spec=>{
+            const opt = document.createElement("option");
+            opt.value = spec;
+            opt.textContent = spec;
+            filterSpecialty.appendChild(opt);
+        });
+    }
 });
 </script>
-
 </body>
 </html>
