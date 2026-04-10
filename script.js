@@ -183,23 +183,28 @@ function clearDayRecords() {
     const date = document.getElementById('attendanceDate').value;
     if(attendanceRecords[date]) {
         delete attendanceRecords[date];
-
-        exportCSVBtn.addEventListener("click", ()=>{
-    // جمع كل السجلات
+exportCSVBtn.addEventListener("click", ()=>{
     let allRecords = [];
     Object.entries(attendanceRecords).forEach(([date, records])=>{
-        Object.entries(records).forEach(([trainee, status])=>{
-            allRecords.push({date, trainee, status});
+        Object.entries(records).forEach(([trainee,status])=>{
+            allRecords.push({التاريخ: date, المتربص: trainee, الحالة: status});
         });
     });
 
     // ترتيب حسب التاريخ ثم اسم المتربص
     allRecords.sort((a,b)=>{
-        if(a.date < b.date) return -1;
-        if(a.date > b.date) return 1;
-        return a.trainee.localeCompare(b.trainee);
+        if(a.التاريخ < b.التاريخ) return -1;
+        if(a.التاريخ > b.التاريخ) return 1;
+        return a.المتربص.localeCompare(b.المتربص);
     });
 
+    // تحويل البيانات إلى ورقة Excel
+    const ws = XLSX.utils.json_to_sheet(allRecords);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "الحضور");
+    XLSX.writeFile(wb, "attendance.xlsx"); // الآن Excel يفتح الملف مباشرة
+});
+       
     // إنشاء CSV
     let csv = "التاريخ,المتربص,الحالة\n";
     allRecords.forEach(r=>{
