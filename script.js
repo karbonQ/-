@@ -36,13 +36,14 @@ function editSpecialty() {
     }
 }
 
-function deleteSpecialty() {
-    const select = document.getElementById('specialtySelect');
-    const index = select.selectedIndex;
-    if(index >= 0) {
-        specialties.splice(index, 1);
-        updateSpecialtySelect();
-    }
+function deleteSpecialtyBtn.addEventListener("click", ()=>{
+    const spec = specialtySelect.value;
+    if(!spec){ alert("اختر التخصص للحذف"); return; }
+    if(!confirm(`هل تريد حذف التخصص "${spec}" وكل المتربصين فيه؟`)) return;
+    specialties = specialties.filter(s=>s!==spec);
+    delete trainees[spec];
+    loadSpecialties();
+});
 }
 
 function updateSpecialtySelect() {
@@ -64,23 +65,30 @@ function addTrainee() {
     }
 }
 
-function editTrainee() {
-    const select = document.getElementById('traineeSelect');
-    const index = select.selectedIndex;
-    if(index >= 0){
-        const newName = prompt("أدخل الاسم الجديد:", trainees[index]);
-        if(newName) trainees[index] = newName;
-        updateTraineeSelect();
-    }
+function editTraineeBtn.addEventListener("click", ()=>{
+    const spec = specialtySelect.value;
+    if(!spec){ alert("اختر التخصص أولاً"); return; }
+    const oldName = traineeSelect.value;
+    if(!oldName){ alert("اختر المتربص للتعديل"); return; }
+    const newName = nameInput.value.trim();
+    if(!newName){ alert("أدخل الاسم الجديد"); return; }
+    if(trainees[spec].includes(newName)){ alert("المتربص موجود بالفعل"); return; }
+    const index = trainees[spec].indexOf(oldName);
+    trainees[spec][index] = newName;
+    nameInput.value = "";
+    loadTrainees(spec);
+});
 }
 
-function deleteTrainee() {
-    const select = document.getElementById('traineeSelect');
-    const index = select.selectedIndex;
-    if(index >= 0) {
-        trainees.splice(index, 1);
-        updateTraineeSelect();
-    }
+function deleteTraineeBtn.addEventListener("click", ()=>{
+    const spec = specialtySelect.value;
+    if(!spec){ alert("اختر التخصص أولاً"); return; }
+    const name = traineeSelect.value;
+    if(!name){ alert("اختر المتربص للحذف"); return; }
+    if(!confirm(`هل تريد حذف المتربص "${name}"؟`)) return;
+    trainees[spec] = trainees[spec].filter(n=>n!==name);
+    loadTrainees(spec);
+});
 }
 
 function updateTraineeSelect() {
