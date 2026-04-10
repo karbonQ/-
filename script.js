@@ -183,3 +183,33 @@ function clearDayRecords() {
     const date = document.getElementById('attendanceDate').value;
     if(attendanceRecords[date]) {
         delete attendanceRecords[date];
+
+        exportCSVBtn.addEventListener("click", ()=>{
+    // جمع كل السجلات
+    let allRecords = [];
+    Object.entries(attendanceRecords).forEach(([date, records])=>{
+        Object.entries(records).forEach(([trainee, status])=>{
+            allRecords.push({date, trainee, status});
+        });
+    });
+
+    // ترتيب حسب التاريخ ثم اسم المتربص
+    allRecords.sort((a,b)=>{
+        if(a.date < b.date) return -1;
+        if(a.date > b.date) return 1;
+        return a.trainee.localeCompare(b.trainee);
+    });
+
+    // إنشاء CSV
+    let csv = "التاريخ,المتربص,الحالة\n";
+    allRecords.forEach(r=>{
+        csv += `${r.date},${r.trainee},${r.status}\n`;
+    });
+
+    // إنشاء الرابط وتحميل الملف
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "attendance.xlsx"; // يمكن Excel فتح CSV بهذا الاسم
+    link.click();
+});
