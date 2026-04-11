@@ -2,6 +2,7 @@ let specialties = [];
 let trainees = [];
 let attendanceRecords = {}; 
 let chart;
+document.getElementById('attendanceDate').valueAsDate = new Date();
 function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
