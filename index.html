@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور والغياب المؤسسي</title>
+    <title>نظام إدارة الحضور والغياب </title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -113,8 +113,8 @@
 <body>
 
 <div id="loginPage" class="card">
-    <h1>نظام الحضور والغياب</h1>
-    <p>يرجى تسجيل الدخول للمتابعة</p>
+    <h1> تسجيل الحضور/الغياب اليومي للمتربصيين</h1>
+    <p>يرجى تسجيل الدخول </p>
     <input type="text" id="user" placeholder="اسم المستخدم (admin)">
     <input type="password" id="pass" placeholder="كلمة المرور (1234)">
     <button class="btn-add" style="width:100%; padding: 15px;" onclick="login()">دخول النظام</button>
@@ -124,8 +124,7 @@
     <h1>لوحة إدارة المركز</h1>
 
     <div class="card">
-        <h2><i class="icon">📁</i> إدارة التخصصات والمتربصين</h2>
-        
+             
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -194,7 +193,7 @@
     function login() {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        if(u === 'admin' && p === '1234') {
+        if(u === '1' && p === '1') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             init();
@@ -366,10 +365,11 @@
             let t = data.trainees.find(tr => tr.id == a.tId);
             let s = data.specs.find(sp => sp.id == (t ? t.specId : null));
             return {
-                "التاريخ": a.date,
+                 "حالة الحضور": a.status
                 "اسم المتربص": t ? t.name : "محذوف",
                 "التخصص": s ? s.name : "غير محدد",
-                "حالة الحضور": a.status
+                "التاريخ": a.date,
+               
             };
         });
 
