@@ -271,23 +271,34 @@ document.addEventListener("DOMContentLoaded", function(){
     filterSpecialty.addEventListener("change", renderAttendanceList);
 
     function renderChart(){
-        const date = attendanceDate.value;
-        let present=0, absent=0;
-        if(attendanceRecords[date]){
-            Object.values(attendanceRecords[date]).forEach(s=>{
-                if(s==="حاضر") present++; else absent++;
-            });
-        }
-        const ctx=document.getElementById("attendanceChart").getContext("2d");
-        if(chart) chart.destroy();
-        chart=new Chart(ctx,{
-            type:"doughnut",
-            data:{
-                labels:["حاضر","غائب"],
-                datasets:[{data:[present,absent], backgroundColor:["#27ae60","#c0392b"]}]
+    const date = attendanceDate.value;
+    const filter = filterSpecialty.value; // التخصص المختار في الفلترة
+    let present = 0, absent = 0;
+
+    if(attendanceRecords[date]){
+        Object.entries(attendanceRecords[date]).forEach(([trainee, status])=>{
+            // إذا تم اختيار تخصص، نتحقق أن المتربص ضمن هذا التخصص
+            if(!filter || (trainees[filter] && trainees[filter].includes(trainee))){
+                if(status === "حاضر") present++;
+                else absent++;
             }
         });
     }
+
+    const ctx = document.getElementById("attendanceChart").getContext("2d");
+    if(chart) chart.destroy(); // إزالة الرسم السابق قبل الرسم الجديد
+
+    chart = new Chart(ctx,{
+        type: "doughnut",
+        data: {
+            labels: ["حاضر","غائب"],
+            datasets: [{
+                data: [present, absent],
+                backgroundColor: ["#27ae60","#c0392b"]
+            }]
+        }
+    });
+}
 
     // تصدير Excel حقيقي
     exportCSVBtn.addEventListener("click", ()=>{
