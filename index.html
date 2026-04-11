@@ -115,8 +115,8 @@
 <div id="loginPage" class="card">
     <h1> تسجيل الحضور/الغياب اليومي للمتربصيين</h1>
     <p>يرجى تسجيل الدخول </p>
-    <input type="text" id="user" placeholder="اسم المستخدم (1)">
-    <input type="password" id="pass" placeholder="كلمة المرور (1)">
+    <input type="text" id="user" placeholder="اسم المستخدم (admin)">
+    <input type="password" id="pass" placeholder="كلمة المرور (1234)">
     <button class="btn-add" style="width:100%; padding: 15px;" onclick="login()">دخول </button>
 </div>
 
@@ -193,7 +193,7 @@
     function login() {
         const u = document.getElementById('user').value;
         const p = document.getElementById('pass').value;
-        if(u === '1' && p === '1') {
+        if(u === 'admin' && p === '1234') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             init();
