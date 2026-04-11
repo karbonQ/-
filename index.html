@@ -190,7 +190,7 @@
         <div class="chart-box"><canvas id="myChart"></canvas></div>
 
         <div id="alertSection">
-            <h3 style="color: var(--danger); font-size: 1.1rem;">⚠️ تجاوزوا 3 غيابات (هذا الشهر)</h3>
+            <h3 style="color: var(--danger); font-size: 1.1rem;">⚠️ المتربصون الذين تجاوزوا 3 غيابات (هذا الشهر)</h3>
             <div id="absenceAlerts"></div>
         </div>
 
@@ -344,7 +344,7 @@
                 found = true;
                 let t = data.trainees.find(tr => tr.id == tId);
                 if (t) {
-                    let msg = `السيد ولي أمر المتربص ${t.name}، نبلغكم بأن المتربص قد غاب ${map[tId]} أيام خلال هذا الشهر. يرجى الاتصال بالإدارة.`;
+                    let msg = `السيد ولي أمر المتربص ${t.name}، نبلغ سيادتكم بأن إبنكم قد غاب ${map[tId]} أيام خلال هذا الشهر. يرجى الاتصال بإدارة المركز في أقرب الأجال ، تحياتنا.`;
                     let url = `https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`;
                     
                     container.innerHTML += `
