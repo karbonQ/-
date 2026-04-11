@@ -52,12 +52,22 @@ function updateSpecialtySelect() {
     });
 }
 function addTrainee() {
-    const name = document.getElementById('nameInput').value.trim();
-    if(name && !trainees.includes(name)) {
-        trainees.push(name);
-        updateTraineeSelect();
-        document.getElementById('nameInput').value = '';
-    }
+    let name = document.getElementById('traineeInput').value.trim();
+    let phone = document.getElementById('traineePhone').value.trim(); // حقل الهاتف
+    let specId = document.getElementById('specList').value;
+    
+    if(!name || !specId || !phone) return alert("يرجى إدخال الاسم ورقم الهاتف");
+    
+    data.trainees.push({ 
+        id: Date.now(), 
+        name: name, 
+        phone: phone, // حفظ الهاتف
+        specId: specId 
+    });
+    
+    document.getElementById('traineeInput').value = '';
+    document.getElementById('traineePhone').value = '';
+    save(); updateTraineeList();
 }
 function editTraineeBtn.addEventListener("click", ()=>{
     const spec = specialtySelect.value;
@@ -221,3 +231,38 @@ exportCSVBtn.addEventListener("click", ()=>{
 });
     attendanceDate.addEventListener("change", renderChart);
 filterSpecialty.addEventListener("change", renderChart);
+    function checkAbsenceAlerts() {
+    const container = document.getElementById('absenceAlerts');
+    container.innerHTML = '';
+    const month = new Date().getMonth();
+    const year = new Date().getFullYear();
+    let map = {};
+
+    data.attendance.forEach(log => {
+        let d = new Date(log.date);
+        if (log.status === 'غائب' && d.getMonth() === month && d.getFullYear() === year) {
+            map[log.tId] = (map[log.tId] || 0) + 1;
+        }
+    });
+
+    let found = false;
+    for (let tId in map) {
+        if (map[tId] >= 3) {
+            found = true;
+            let t = data.trainees.find(tr => tr.id == tId);
+            
+            // تحضير رسالة الواتساب
+            let message = `تحية طيبة، نود إعلامكم أن المتربص ${t.name} قد تغيب ${map[tId]} أيام خلال هذا الشهر. يرجى مراجعة الإدارة.`;
+            let whatsappUrl = `https://wa.me/${t.phone}?text=${encodeURIComponent(message)}`;
+
+            container.innerHTML += `
+                <div class="alert-item">
+                    <span><strong>${t.name}</strong> (${map[tId]} غيابات)</span>
+                    <a href="${whatsappUrl}" target="_blank" style="background:#25D366; color:white; padding:5px 10px; border-radius:8px; text-decoration:none; font-size:0.8rem;">
+                        💬 إرسال واتساب
+                    </a>
+                </div>`;
+        }
+    }
+    if (!found) container.innerHTML = '<p style="text-align:center; color:var(--success);">✅ الحضور منتظم</p>';
+}
