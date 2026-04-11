@@ -133,10 +133,16 @@
         </div>
         <hr>
         <label>المتربص:</label>
-        <div style="display:flex; gap:10px;">
-            <select id="traineeList"></select>
-            <input type="text" id="traineeInput" placeholder="أضف اسم المتربص..." style="margin:0">
-        </div>
+<div style="display:flex; flex-direction:column; gap:5px;">
+    <select id="traineeList"></select>
+    <input type="text" id="traineeInput" placeholder="اسم المتربص...">
+    <input type="text" id="traineePhone" placeholder="رقم الهاتف (مثل 213661000000)">
+</div>
+<div class="btn-group">
+    <button class="btn-add" onclick="addTrainee()">إضافة</button>
+    <button class="btn-edit" onclick="editTrainee()">تعديل</button>
+    <button class="btn-delete" onclick="deleteTrainee()">حذف</button>
+</div>
         <div class="btn-group">
             <button class="btn-add" onclick="addTrainee()">إضافة</button>
             <button class="btn-edit" onclick="editTrainee()">تعديل</button>
