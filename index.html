@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور والغياب المؤسسي</title>
+    <title> إدارة الحضور/الغياب اليومي للمتربصيين </title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -124,8 +124,7 @@
     <h1>لوحة إدارة المركز</h1>
 
     <div class="card">
-        <h2><i class="icon">📁</i> إدارة التخصصات والمتربصين</h2>
-        
+            
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -366,10 +365,10 @@
             let t = data.trainees.find(tr => tr.id == a.tId);
             let s = data.specs.find(sp => sp.id == (t ? t.specId : null));
             return {
-                "التاريخ": a.date,
                 "اسم المتربص": t ? t.name : "محذوف",
                 "التخصص": s ? s.name : "غير محدد",
                 "حالة الحضور": a.status
+                  "التاريخ": a.date,
             };
         });
 
