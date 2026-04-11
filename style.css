@@ -92,3 +92,8 @@ ul li {
     padding: 8px 10px;
     border-radius: 5px;
 }
+.chart-container {
+    width: 300px; /* حجم أصغر */
+    max-width: 100%; /* يبقى متجاوب */
+    margin: 20px auto;
+}
