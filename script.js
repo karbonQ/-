@@ -218,3 +218,5 @@ exportCSVBtn.addEventListener("click", ()=>{
     link.download = "attendance.xlsx"; // يمكن Excel فتح CSV بهذا الاسم
     link.click();
 });
+    attendanceDate.addEventListener("change", renderChart);
+filterSpecialty.addEventListener("change", renderChart);
