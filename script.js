@@ -2,7 +2,6 @@ let specialties = [];
 let trainees = [];
 let attendanceRecords = {}; 
 let chart;
-
 function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
@@ -16,7 +15,6 @@ function login() {
         alert("اسم المستخدم أو كلمة المرور خاطئة");
     }
 }
-
 function addSpecialty() {
     const newSpecialty = document.getElementById('newSpecialty').value.trim();
     if(newSpecialty && !specialties.includes(newSpecialty)) {
@@ -25,7 +23,6 @@ function addSpecialty() {
         document.getElementById('newSpecialty').value = '';
     }
 }
-
 function editSpecialty() {
     const select = document.getElementById('specialtySelect');
     const index = select.selectedIndex;
@@ -35,7 +32,6 @@ function editSpecialty() {
         updateSpecialtySelect();
     }
 }
-
 function deleteSpecialtyBtn.addEventListener("click", ()=>{
     const spec = specialtySelect.value;
     if(!spec){ alert("اختر التخصص للحذف"); return; }
@@ -45,7 +41,6 @@ function deleteSpecialtyBtn.addEventListener("click", ()=>{
     loadSpecialties();
 });
 }
-
 function updateSpecialtySelect() {
     const select = document.getElementById('specialtySelect');
     select.innerHTML = '';
@@ -55,7 +50,6 @@ function updateSpecialtySelect() {
         select.appendChild(option);
     });
 }
-
 function addTrainee() {
     const name = document.getElementById('nameInput').value.trim();
     if(name && !trainees.includes(name)) {
@@ -64,7 +58,6 @@ function addTrainee() {
         document.getElementById('nameInput').value = '';
     }
 }
-
 function editTraineeBtn.addEventListener("click", ()=>{
     const spec = specialtySelect.value;
     if(!spec){ alert("اختر التخصص أولاً"); return; }
@@ -79,7 +72,6 @@ function editTraineeBtn.addEventListener("click", ()=>{
     loadTrainees(spec);
 });
 }
-
 function deleteTraineeBtn.addEventListener("click", ()=>{
     const spec = specialtySelect.value;
     if(!spec){ alert("اختر التخصص أولاً"); return; }
@@ -90,7 +82,6 @@ function deleteTraineeBtn.addEventListener("click", ()=>{
     loadTrainees(spec);
 });
 }
-
 function updateTraineeSelect() {
     const select = document.getElementById('traineeSelect');
     select.innerHTML = '';
@@ -100,7 +91,6 @@ function updateTraineeSelect() {
         select.appendChild(option);
     });
 }
-
 function loadSpecialties(){
     specialtySelect.innerHTML = "";
     specialties.forEach(spec => {
@@ -112,7 +102,6 @@ function loadSpecialties(){
     updateFilterSpecialty();
     localStorage.setItem("specialties", JSON.stringify(specialties));
 }
-
 function loadTrainees(spec){
     traineeSelect.innerHTML = "";
     if(!trainees[spec]) trainees[spec] = [];
@@ -123,7 +112,6 @@ function loadTrainees(spec){
     });
     localStorage.setItem("trainees", JSON.stringify(trainees));
 }
-
 function updateFilterSpecialty(){
     filterSpecialty.innerHTML = '<option value="">كل التخصصات</option>';
     specialties.forEach(spec => {
@@ -133,7 +121,6 @@ function updateFilterSpecialty(){
         filterSpecialty.appendChild(opt);
     });
 }
-
 // زر إضافة تخصص
 addSpecialtyBtn.addEventListener("click", () => {
     const spec = newSpecialty.value.trim();
@@ -143,7 +130,6 @@ addSpecialtyBtn.addEventListener("click", () => {
     newSpecialty.value = "";
     loadSpecialties();
 });
-
 // زر إضافة متربص
 addTraineeBtn.addEventListener("click", () => {
     const spec = specialtySelect.value;
@@ -156,31 +142,24 @@ addTraineeBtn.addEventListener("click", () => {
     nameInput.value = "";
     loadTrainees(spec);
 });
-
 // تحديث قائمة المتربصين عند تغيير التخصص
 specialtySelect.addEventListener("change", () => loadTrainees(specialtySelect.value));
-
 // تحميل القوائم عند بدء التطبيق
 loadSpecialties();
-
 function markAttendance(status) {
     const date = document.getElementById('attendanceDate').value;
     const trainee = document.getElementById('traineeSelect').value;
-
     if(!date || !trainee) {
         alert("اختر التاريخ والمتربص أولاً");
-        return;
+       return;
     }
-
     if(!attendanceRecords[date]) attendanceRecords[date] = {};
     attendanceRecords[date][trainee] = status;
-
   function renderAttendanceList(){
     const date = attendanceDate.value;
     const search = searchTrainee.value.trim().toLowerCase();
     const filter = filterSpecialty.value;
     attendanceList.innerHTML="";
-
     if(attendanceRecords[date]){
         Object.entries(attendanceRecords[date]).forEach(([name,status])=>{
             if((!filter || (trainees[filter] && trainees[filter].includes(name))) &&
@@ -204,7 +183,6 @@ function markAttendance(status) {
 }
     renderChart();
 }
-
 function clearDayRecords() {
     const date = document.getElementById('attendanceDate').value;
     if(attendanceRecords[date]) {
@@ -216,27 +194,23 @@ exportCSVBtn.addEventListener("click", ()=>{
             allRecords.push({التاريخ: date, المتربص: trainee, الحالة: status});
         });
     });
-
     // ترتيب حسب التاريخ ثم اسم المتربص
     allRecords.sort((a,b)=>{
         if(a.التاريخ < b.التاريخ) return -1;
         if(a.التاريخ > b.التاريخ) return 1;
         return a.المتربص.localeCompare(b.المتربص);
     });
-
     // تحويل البيانات إلى ورقة Excel
     const ws = XLSX.utils.json_to_sheet(allRecords);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "الحضور");
     XLSX.writeFile(wb, "attendance.xlsx"); // الآن Excel يفتح الملف مباشرة
-});
-       
+});   
     // إنشاء CSV
     let csv = "التاريخ,المتربص,الحالة\n";
     allRecords.forEach(r=>{
         csv += `${r.date},${r.trainee},${r.status}\n`;
     });
-
     // إنشاء الرابط وتحميل الملف
     const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
     const link = document.createElement("a");
