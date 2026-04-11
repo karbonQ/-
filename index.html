@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور والغياب </title>
+    <title>نظام إدارة الحضور والغياب المؤسسي</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -113,18 +113,19 @@
 <body>
 
 <div id="loginPage" class="card">
-    <h1> تسجيل الحضور/الغياب اليومي للمتربصيين</h1>
-    <p>يرجى تسجيل الدخول </p>
+    <h1>نظام الحضور والغياب</h1>
+    <p>يرجى تسجيل الدخول للمتابعة</p>
     <input type="text" id="user" placeholder="اسم المستخدم (admin)">
     <input type="password" id="pass" placeholder="كلمة المرور (1234)">
-    <button class="btn-add" style="width:100%; padding: 15px;" onclick="login()">دخول </button>
+    <button class="btn-add" style="width:100%; padding: 15px;" onclick="login()">دخول النظام</button>
 </div>
 
 <div id="mainApp" style="display:none;" class="container">
     <h1>لوحة إدارة المركز</h1>
 
     <div class="card">
-             
+        <h2><i class="icon">📁</i> إدارة التخصصات والمتربصين</h2>
+        
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -365,11 +366,10 @@
             let t = data.trainees.find(tr => tr.id == a.tId);
             let s = data.specs.find(sp => sp.id == (t ? t.specId : null));
             return {
-                 "حالة الحضور": a.status
+                "التاريخ": a.date,
                 "اسم المتربص": t ? t.name : "محذوف",
                 "التخصص": s ? s.name : "غير محدد",
-                "التاريخ": a.date,
-               
+                "حالة الحضور": a.status
             };
         });
 
