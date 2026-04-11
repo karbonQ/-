@@ -24,7 +24,7 @@ button:hover{opacity:0.85;}
 .button-group button:hover{opacity:0.85;}
 #exportCSVBtn{background:#8e44ad;}
 ul{list-style:none; padding:0; max-height:250px; overflow-y:auto;}
-.chart-container{width:100%; max-width:500px; margin:20px auto;}
+.chart-container{width:300px; height:300px; max-width:90%; margin:20px auto;}
 #searchTrainee, #filterSpecialty{width:100%;}
 @media(max-width:768px){
     .button-group, .actions{flex-direction:column;}
@@ -83,7 +83,7 @@ ul{list-style:none; padding:0; max-height:250px; overflow-y:auto;}
 
     <section class="chart-container">
         <h3>📊 إحصائيات الحضور اليوم</h3>
-            <canvas id="attendanceChart" width="300" height="300"></canvas>
+        <canvas id="attendanceChart" width="300" height="300"></canvas>
     </section>
 
     <section>
@@ -176,7 +176,6 @@ document.addEventListener("DOMContentLoaded", function(){
         nameInput.value="";
         loadTrainees(spec);
     });
-
     editTraineeBtn.addEventListener("click", ()=>{
         const spec = specialtySelect.value;
         if(!spec) return alert("اختر التخصص أولاً");
@@ -188,7 +187,6 @@ document.addEventListener("DOMContentLoaded", function(){
         trainees[spec][trainees[spec].indexOf(oldName)] = newName;
         loadTrainees(spec);
     });
-
     deleteTraineeBtn.addEventListener("click", ()=>{
         const spec = specialtySelect.value;
         if(!spec) return alert("اختر التخصص أولاً");
@@ -203,16 +201,12 @@ document.addEventListener("DOMContentLoaded", function(){
 
     function loadSpecialties(){
         specialtySelect.innerHTML="";
-        specialties.forEach(s=>{
-            const opt=document.createElement("option");
-            opt.value=s; opt.textContent=s;
-            specialtySelect.appendChild(opt);
-        });
         filterSpecialty.innerHTML='<option value="">كل التخصصات</option>';
         specialties.forEach(s=>{
-            const opt=document.createElement("option");
-            opt.value=s; opt.textContent=s;
-            filterSpecialty.appendChild(opt);
+            const opt = document.createElement("option"); opt.value=s; opt.textContent=s;
+            specialtySelect.appendChild(opt);
+            const opt2 = document.createElement("option"); opt2.value=s; opt2.textContent=s;
+            filterSpecialty.appendChild(opt2);
         });
         localStorage.setItem("specialties", JSON.stringify(specialties));
         if(specialties.length>0) loadTrainees(specialtySelect.value);
@@ -222,8 +216,7 @@ document.addEventListener("DOMContentLoaded", function(){
         traineeSelect.innerHTML="";
         if(!trainees[spec]) trainees[spec]=[];
         trainees[spec].forEach(n=>{
-            const opt=document.createElement("option");
-            opt.value=n; opt.textContent=n;
+            const opt = document.createElement("option"); opt.value=n; opt.textContent=n;
             traineeSelect.appendChild(opt);
         });
         localStorage.setItem("trainees", JSON.stringify(trainees));
@@ -254,16 +247,9 @@ document.addEventListener("DOMContentLoaded", function(){
                    (!search || name.toLowerCase().includes(search))){
                        const li = document.createElement("li");
                        li.textContent = `${name}: ${status}`;
-                       if(status === "غائب"){
-                           li.style.backgroundColor = "#ff0000"; 
-                           li.style.color = "#ffffff";
-                       } else {
-                           li.style.backgroundColor = "#d4edda";
-                           li.style.color = "#155724";
-                       }
-                       li.style.padding = "10px";
-                       li.style.margin = "5px 0";
-                       li.style.borderRadius = "8px";
+                       if(status === "غائب"){ li.style.backgroundColor="#f8d7da"; li.style.color="#721c24"; }
+                       else{ li.style.backgroundColor="#d4edda"; li.style.color="#155724"; }
+                       li.style.padding="10px"; li.style.margin="5px 0"; li.style.borderRadius="8px";
                        attendanceList.appendChild(li);
                 }
             });
@@ -277,9 +263,9 @@ document.addEventListener("DOMContentLoaded", function(){
     function renderChart(){
         const date = attendanceDate.value;
         const filter = filterSpecialty.value;
-        let present = 0, absent = 0;
+        let present=0, absent=0;
         if(attendanceRecords[date]){
-            Object.entries(attendanceRecords[date]).forEach(([trainee, status])=>{
+            Object.entries(attendanceRecords[date]).forEach(([trainee,status])=>{
                 if(!filter || (trainees[filter] && trainees[filter].includes(trainee))){
                     if(status==="حاضر") present++; else absent++;
                 }
@@ -289,10 +275,8 @@ document.addEventListener("DOMContentLoaded", function(){
         if(chart) chart.destroy();
         chart = new Chart(ctx,{
             type:"doughnut",
-            data:{
-                labels:["حاضر","غائب"],
-                datasets:[{data:[present,absent], backgroundColor:["#27ae60","#c0392b"]}]
-            }
+            data:{ labels:["حاضر","غائب"], datasets:[{data:[present,absent], backgroundColor:["#27ae60","#c0392b"]}] },
+            options:{ responsive:true, maintainAspectRatio:false }
         });
     }
 
