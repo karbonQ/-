@@ -93,7 +93,9 @@ ul li {
     border-radius: 5px;
 }
 .chart-container {
-    width: 300px; /* حجم أصغر */
-    max-width: 100%; /* يبقى متجاوب */
+    width: 300px;        /* حجم أصغر للعرض */
+    height: 300px;       /* ارتفاع مطابق */
+    max-width: 90%;      /* يبقى متجاوب على الشاشات الصغيرة */
     margin: 20px auto;
 }
+
