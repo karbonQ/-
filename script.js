@@ -175,7 +175,33 @@ function markAttendance(status) {
     if(!attendanceRecords[date]) attendanceRecords[date] = {};
     attendanceRecords[date][trainee] = status;
 
-    renderAttendanceList();
+  function renderAttendanceList(){
+    const date = attendanceDate.value;
+    const search = searchTrainee.value.trim().toLowerCase();
+    const filter = filterSpecialty.value;
+    attendanceList.innerHTML="";
+
+    if(attendanceRecords[date]){
+        Object.entries(attendanceRecords[date]).forEach(([name,status])=>{
+            if((!filter || (trainees[filter] && trainees[filter].includes(name))) &&
+               (!search || name.toLowerCase().includes(search))){
+                   const li = document.createElement("li");
+                   li.textContent = `${name}: ${status}`;
+                   if(status === "غائب"){
+                       li.style.backgroundColor = "#f8d7da"; // أحمر فاتح
+                       li.style.color = "#721c24"; // نص غامق للأحمر
+                   } else {
+                       li.style.backgroundColor = "#d4edda"; // أخضر فاتح للحضور
+                       li.style.color = "#155724";
+                   }
+                   li.style.padding = "10px";
+                   li.style.margin = "5px 0";
+                   li.style.borderRadius = "8px";
+                   attendanceList.appendChild(li);
+            }
+        });
+    }
+}
     renderChart();
 }
 
