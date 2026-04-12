@@ -282,82 +282,52 @@ container.innerHTML += `
         window.scrollTo(0, 0);
     }
 }
-        async function generateWordCall(tId) {
+        async function generateFromTemplate(tId) {
     const t = data.trainees.find(tr => tr.id == tId);
     const s = data.specs.find(sp => sp.id == t.specId);
-    const month = new Date().getMonth();
-    const year = new Date().getFullYear();
+    const m = new Date().getMonth(), y = new Date().getFullYear();
+    const absences = data.attendance.filter(a => a.tId == tId && a.status === 'غائب' && new Date(a.date).getMonth() === m).map(a => a.date);
+
+    // إنشاء نافذة اختيار ملف
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.docx';
     
-    // جلب تواريخ الغياب لهذا الشهر
-    const absences = data.attendance.filter(a => 
-        a.tId == tId && 
-        a.status === 'غائب' && 
-        new Date(a.date).getMonth() === month && 
-        new Date(a.date).getFullYear() === year
-    ).map(a => a.date);
+    input.onchange = async (e) => {
+        const reader = new FileReader();
+        reader.onload = async (f) => {
+            try {
+                const zip = new PizZip(f.target.result);
+                const doc = new window.docxtemplater(zip, { 
+                    paragraphLoop: true, 
+                    linebreaks: true 
+                });
 
-    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, HeadingLevel } = docx;
+                // إرسال البيانات (تأكد من مطابقة هذه الأسماء لما تكتبه في الوورد)
+                doc.setData({
+                    name: t.name,
+                    specialty: s ? s.name : "غير محدد",
+                    count: absences.length,
+                    dates: absences.join(" / "),
+                    today: new Date().toLocaleDateString('ar-DZ')
+                });
 
-    const doc = new Document({
-        sections: [{
-            properties: {},
-            children: [
-                new Paragraph({
-                    text: "الجمهورية الجزائرية الديمقراطية الشعبية",
-                    alignment: AlignmentType.CENTER,
-                }),
-                new Paragraph({
-                    text: "وزارة التكوين والتعليم المهنيين",
-                    alignment: AlignmentType.CENTER,
-                }),
-                new Paragraph({ text: "\n", spacing: { before: 200 } }),
-                new Paragraph({
-                    children: [
-                        new TextRun({ text: "إشعار استدعاء بسبب الغياب", bold: true, size: 32, underline: {} }),
-                    ],
-                    alignment: AlignmentType.CENTER,
-                }),
-                new Paragraph({ text: "\n", spacing: { before: 400 } }),
-                new Paragraph({
-                    children: [
-                        new TextRun({ text: `إلى ولي أمر المتربص: `, bold: true }),
-                        new TextRun(t.name),
-                    ],
-                    alignment: AlignmentType.RIGHT,
-                }),
-                new Paragraph({
-                    children: [
-                        new TextRun({ text: `التخصص: `, bold: true }),
-                        new TextRun(s ? s.name : "غير محدد"),
-                    ],
-                    alignment: AlignmentType.RIGHT,
-                }),
-                new Paragraph({ text: "\n" }),
-                new Paragraph({
-                    text: `نحيطكم علماً أن المتربص المذكور أعلاه قد تغيب عن الدروس دون مبرر في التواريخ التالية:`,
-                    alignment: AlignmentType.RIGHT,
-                }),
-                new Paragraph({ text: absences.join(" | "), alignment: AlignmentType.RIGHT }),
-                new Paragraph({ text: "\n" }),
-                new Paragraph({
-                    text: "وعليه، يرجى التقدم إلى مصلحة التوجيه في أقرب وقت لتسوية الوضعية، وإلا سيتم اتخاذ الإجراءات القانونية اللازمة.",
-                    alignment: AlignmentType.RIGHT,
-                }),
-                new Paragraph({ text: "\n\n" }),
-                new Paragraph({
-                    text: `حرر بـ .................... في: ${new Date().toLocaleDateString()}`,
-                    alignment: AlignmentType.LEFT,
-                }),
-                new Paragraph({
-                    text: "ختم وتوقيع الإدارة",
-                    alignment: AlignmentType.LEFT,
-                }),
-            ],
-        }],
-    });
+                doc.render(); // هنا تتم عملية الاستبدال
 
-    Packer.toBlob(doc).then(blob => {
-        saveAs(blob, `استدعاء_${t.name}.docx`);
-    });
+                const out = doc.getZip().generate({
+                    type: "blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                });
+
+                saveAs(out, `استدعاء_${t.name}.docx`);
+                alert("تم توليد الملف بنجاح!");
+            } catch (error) {
+                console.error(error);
+                alert("حدث خطأ: تأكد أن القالب لا يحتوي على أخطاء في الأقواس {{ }}");
+            }
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+    };
+    input.click();
 }
 }
