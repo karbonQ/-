@@ -3,51 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور - الإصدار الإداري الشامل</title>
+    <title>نظام الإدارة الشامل - نسخة الاستدعاءات الرسمية</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #2980b9;
-            --success: #27ae60;
-            --danger: #c0392b;
-            --warning: #f39c12;
-            --whatsapp: #25D366;
-            --word: #2b579a;
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --text: #2f3640;
+            --primary: #2980b9; --success: #27ae60; --danger: #c0392b;
+            --warning: #f39c12; --whatsapp: #25D366; --word: #2b579a;
+            --bg: #f0f2f5; --card: #ffffff; --text: #2f3640;
         }
 
         body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; direction: rtl; }
         .container { max-width: 900px; margin: 0 auto; }
         .card { background: var(--card); padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        h1, h2, h3 { color: var(--primary); font-weight: 700; margin-top: 0; }
-        h1 { text-align: center; font-size: 1.8rem; }
+        h1, h2 { color: var(--primary); font-weight: 700; text-align: center; }
         label { font-weight: 600; display: block; margin-top: 10px; }
 
         input, select { font-family: 'Cairo', sans-serif; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e1e4e8; border-radius: 10px; box-sizing: border-box; }
         
         .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        button { font-family: 'Cairo', sans-serif; padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.3s; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        button { font-family: 'Cairo', sans-serif; padding: 10px 15px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         button:hover { opacity: 0.9; transform: translateY(-1px); }
 
         .btn-add { background: var(--primary); }
-        .btn-present { background: var(--success); flex: 1; padding: 15px; font-size: 1.1rem; }
-        .btn-absent { background: var(--danger); flex: 1; padding: 15px; font-size: 1.1rem; }
+        .btn-present { background: var(--success); flex: 1; padding: 15px; }
+        .btn-absent { background: var(--danger); flex: 1; padding: 15px; }
 
-        .attendance-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid transparent; }
-        .status-present { background: #d4edda; color: #155724; border-right-color: var(--success); }
-        .status-absent { background: #f8d7da; color: #721c24; border-right-color: var(--danger); }
+        .attendance-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-radius: 10px; margin-bottom: 8px; }
+        .status-present { background: #d4edda; color: #155724; border-right: 5px solid var(--success); }
+        .status-absent { background: #f8d7da; color: #721c24; border-right: 5px solid var(--danger); }
 
         .alert-item { background: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 10px; }
-        .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-btns { display: flex; gap: 8px; }
         .wa-btn { background: var(--whatsapp); padding: 8px 12px; border-radius: 8px; text-decoration: none; color: white; font-size: 0.85rem; font-weight: bold; }
-        .word-btn { background: var(--word); }
+        .word-btn { background: var(--word); font-size: 0.85rem; }
 
         #loginPage { text-align: center; max-width: 400px; margin: 80px auto; }
-        @media (min-width: 600px) { .alert-item { flex-direction: row; justify-content: space-between; align-items: center; } }
+        @media (min-width: 600px) { .alert-item { flex-direction: row; justify-content: space-between; } }
     </style>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -58,9 +51,9 @@
 <body>
 
 <div id="loginPage" class="card">
-    <h1>نظام إدارة الحضور</h1>
-    <input type="text" id="user" placeholder="اسم المستخدم">
-    <input type="password" id="pass" placeholder="كلمة المرور">
+    <h1>نظام تسيير الحضور والغياب</h1>
+    <input type="text" id="user" placeholder="اسم المستخدم (admin)">
+    <input type="password" id="pass" placeholder="كلمة المرور (1234)">
     <button class="btn-add" style="width:100%; padding: 15px;" onclick="login()">دخول</button>
 </div>
 
@@ -68,11 +61,11 @@
     <h1>لوحة الإدارة المركزية</h1>
 
     <div class="card">
-        <h2> إعدادات المتربصين</h2>
+        <h2>📁 تهيئة المتربصين</h2>
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
-            <input type="text" id="specInput" placeholder="أضف تخصص جديد...">
+            <input type="text" id="specInput" placeholder="تخصص جديد...">
         </div>
         <div class="btn-group">
             <button class="btn-add" onclick="addSpec()">إضافة</button>
@@ -80,11 +73,11 @@
             <button style="background:var(--danger)" onclick="deleteSpec()">حذف</button>
         </div>
         <hr>
-        <label>بيانات المتربص:</label>
+        <label>المتربص:</label>
         <div style="display:flex; flex-direction:column; gap:5px;">
             <select id="traineeList"></select>
-            <input type="text" id="traineeInput" placeholder="الاسم الكامل للمتربص">
-            <input type="text" id="traineePhone" placeholder="رقم هاتف الولي (مثال: 213660000000)">
+            <input type="text" id="traineeInput" placeholder="اسم المتربص الكامل">
+            <input type="text" id="traineePhone" placeholder="رقم الهاتف (213...)">
         </div>
         <div class="btn-group">
             <button class="btn-add" onclick="addTrainee()">إضافة متربص</button>
@@ -94,9 +87,9 @@
     </div>
 
     <div class="card">
-        <h2>📅 تسجيل الحضور</h2>
+        <h2>📅 تسجيل اليوم</h2>
         <input type="date" id="attDate" onchange="refreshView()">
-        <input type="text" id="attNote" placeholder="ملاحظات (اختياري)...">
+        <input type="text" id="attNote" placeholder="ملاحظة...">
         <div style="display:flex; gap:15px; margin-top:10px;">
             <button class="btn-present" onclick="mark('حاضر')">حاضر</button>
             <button class="btn-absent" onclick="mark('غائب')">غائب</button>
@@ -104,42 +97,41 @@
     </div>
 
     <div class="card">
-        <h2>⚠️ تنبيهات الغياب المتكرر</h2>
+        <h2>⚠️ تنبيهات الغيابات (>3)</h2>
         <div id="absenceAlerts"></div>
         <hr>
-        <h3>الإحصائيات والسجلات</h3>
         <select id="filterSpec" onchange="refreshView()"><option value="">كل التخصصات</option></select>
-        <div style="max-width: 300px; margin: auto;"><canvas id="myChart"></canvas></div>
+        <div style="max-width: 280px; margin: auto;"><canvas id="myChart"></canvas></div>
         <input type="text" id="searchBox" placeholder="بحث بالاسم..." oninput="renderAttendance()">
-        <div id="attendanceLogs" style="margin-top:15px;"></div>
+        <div id="attendanceLogs"></div>
         
-        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-            <button style="background:#8e44ad;" onclick="exportExcel()">📥 تقرير Excel</button>
+        <div style="margin-top: 20px; display: grid; gap: 10px;">
+            <button style="background:#8e44ad;" onclick="exportExcel()">📥 تحميل تقرير Excel</button>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button onclick="exportJSON()" style="background: var(--success);">📤 نسخة JSON</button>
-                <button onclick="document.getElementById('importFile').click()" style="background: var(--warning);">📥 استيراد JSON</button>
+                <button onclick="exportJSON()" style="background: var(--success);">📤 تصدير نسخة JSON</button>
+                <button onclick="document.getElementById('importFile').click()" style="background: var(--warning);">📥 استيراد نسخة JSON</button>
                 <input type="file" id="importFile" style="display:none" onchange="importJSON(event)">
             </div>
-            <button onclick="logout()" style="background: #7f8c8d;">⬅️ تسجيل الخروج</button>
+            <button onclick="logout()" style="background: #7f8c8d;">⬅️ خروج وإغلاق</button>
         </div>
     </div>
 </div>
 
 <script>
-    let data = JSON.parse(localStorage.getItem('eduData_final')) || { specs: [], trainees: [], attendance: [] };
+    let data = JSON.parse(localStorage.getItem('eduData_final_v4')) || { specs: [], trainees: [], attendance: [] };
     let chartInstance = null;
 
-    function save() { localStorage.setItem('eduData_final', JSON.stringify(data)); }
+    function save() { localStorage.setItem('eduData_final_v4', JSON.stringify(data)); }
 
     function login() {
         if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === '1234') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             init();
-        } else alert("بيانات خاطئة");
+        } else alert("خطأ في البيانات");
     }
 
-    function logout() { location.reload(); }
+    function logout() { if(confirm("هل تريد الخروج؟")) location.reload(); }
 
     function init() {
         document.getElementById('attDate').valueAsDate = new Date();
@@ -164,13 +156,10 @@
     }
 
     function addTrainee() {
-        let n = document.getElementById('traineeInput').value.trim();
-        let p = document.getElementById('traineePhone').value.trim();
-        let s = document.getElementById('specList').value;
-        if(!n || !p || !s) return alert("أكمل البيانات");
+        let n = document.getElementById('traineeInput').value.trim(), p = document.getElementById('traineePhone').value.trim(), s = document.getElementById('specList').value;
+        if(!n || !p || !s) return alert("يرجى ملء البيانات");
         data.trainees.push({ id: Date.now(), name: n, phone: p, specId: s });
-        document.getElementById('traineeInput').value = '';
-        document.getElementById('traineePhone').value = '';
+        document.getElementById('traineeInput').value = ''; document.getElementById('traineePhone').value = '';
         save(); updateTraineeList();
     }
 
@@ -180,20 +169,15 @@
     }
 
     function mark(status) {
-        let t = document.getElementById('traineeList').value;
-        let d = document.getElementById('attDate').value;
-        let n = document.getElementById('attNote').value.trim();
+        let t = document.getElementById('traineeList').value, d = document.getElementById('attDate').value, n = document.getElementById('attNote').value.trim();
         if(!t || !d) return alert("اختر المتربص");
         data.attendance = data.attendance.filter(a => !(a.tId == t && a.date == d));
         data.attendance.push({ tId: t, date: d, status: status, note: n });
-        document.getElementById('attNote').value = '';
         save(); refreshView();
     }
 
     function renderAttendance() {
-        let d = document.getElementById('attDate').value;
-        let s = document.getElementById('searchBox').value.toLowerCase();
-        let f = document.getElementById('filterSpec').value;
+        let d = document.getElementById('attDate').value, s = document.getElementById('searchBox').value.toLowerCase(), f = document.getElementById('filterSpec').value;
         let html = '';
         data.attendance.filter(a => a.date === d).forEach(log => {
             let t = data.trainees.find(tr => tr.id == log.tId);
@@ -208,8 +192,7 @@
     }
 
     function checkAbsenceAlerts() {
-        const container = document.getElementById('absenceAlerts');
-        container.innerHTML = '';
+        const container = document.getElementById('absenceAlerts'); container.innerHTML = '';
         const m = new Date().getMonth(), y = new Date().getFullYear();
         let map = {};
         data.attendance.forEach(l => {
@@ -221,93 +204,63 @@
             if(map[id] >= 3) {
                 let t = data.trainees.find(tr => tr.id == id);
                 if(t) {
-                    let msg = `ليكن في علمكم أن المتربص ${t.name} قد تغيب ${map[id]} أيام هذا الشهر. يرجى التقرب من الإدارة.`;
+                    let msg = `المتربص ${t.name} غاب ${map[id]} أيام. يرجى التقرب من الإدارة.`;
                     container.innerHTML += `
                         <div class="alert-item">
                             <span><strong>${t.name}</strong> (${map[id]} غيابات)</span>
                             <div class="action-btns">
                                 <a href="https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn">واتساب</a>
-                                <button onclick="generateWordCall('${id}')" class="word-btn" style="padding:5px 10px; font-size:0.8rem">استدعاء Word</button>
+                                <button onclick="generateWordCall('${id}')" class="word-btn">ملف Word</button>
                             </div>
                         </div>`;
                 }
             }
         }
-        if(!container.innerHTML) container.innerHTML = '<p style="color:var(--success)">✅ الحضور منضبط</p>';
     }
 
     async function generateWordCall(tId) {
-    try {
-        const t = data.trainees.find(tr => tr.id == tId);
-        const s = data.specs.find(sp => sp.id == t.specId);
-        const m = new Date().getMonth(), y = new Date().getFullYear();
-        const absences = data.attendance.filter(a => a.tId == tId && a.status === 'غائب' && new Date(a.date).getMonth() === m).map(a => a.date);
+        try {
+            const t = data.trainees.find(tr => tr.id == tId);
+            const s = data.specs.find(sp => sp.id == t.specId);
+            const absences = data.attendance.filter(a => a.tId == tId && a.status === 'غائب' && new Date(a.date).getMonth() === new Date().getMonth()).map(a => a.date);
 
-        if (!window.docx) {
-            alert("خطأ: لم يتم تحميل مكتبة الملفات بعد. يرجى التأكد من الاتصال بالإنترنت وتحديث الصفحة.");
-            return;
-        }
+            if (typeof docx === 'undefined') return alert("المكتبة قيد التحميل، يرجى المحاولة بعد ثوانٍ.");
 
-        const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-        
-        const doc = new Document({
-            sections: [{
-                children: [
-                    new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "وزارة التكوين والتعليم المهنيين", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "\n", spacing: { before: 200 } }),
-                    new Paragraph({ 
-                        children: [new TextRun({ text: "إشعار استدعاء بسبب الغياب", bold: true, size: 28 })],
-                        alignment: AlignmentType.CENTER 
-                    }),
-                    new Paragraph({ text: `\nالمتربص: ${t.name}`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: `التخصص: ${s ? s.name : 'غير محدد'}`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: `الهاتف: ${t.phone}`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: `\nنحيطكم علماً أن المتربص المذكور سجل غيابات في التواريخ التالية:`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: absences.join(" | "), alignment: AlignmentType.RIGHT, bold: true }),
-                    new Paragraph({ text: `\nيرجى الحضور في أقرب وقت لتبرير الغياب.`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: `\nحرر بتاريخ: ${new Date().toLocaleDateString()}`, alignment: AlignmentType.LEFT }),
-                ]
-            }]
-        });
+            const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+            const doc = new Document({
+                sections: [{
+                    children: [
+                        new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
+                        new Paragraph({ text: "وزارة التكوين والتعليم المهنيين", alignment: AlignmentType.CENTER }),
+                        new Paragraph({ text: "\n إشعار استدعاء رسمي", bold: true, alignment: AlignmentType.CENTER }),
+                        new Paragraph({ text: `المتربص: ${t.name}`, alignment: AlignmentType.RIGHT }),
+                        new Paragraph({ text: `التخصص: ${s ? s.name : '-'}`, alignment: AlignmentType.RIGHT }),
+                        new Paragraph({ text: `لقد سجل المعني غيابات في التواريخ: ${absences.join(" / ")}`, alignment: AlignmentType.RIGHT }),
+                        new Paragraph({ text: `\nيرجى حضور الولي في أقرب وقت.`, alignment: AlignmentType.RIGHT }),
+                        new Paragraph({ text: `\nحرر بـ: ................ في: ${new Date().toLocaleDateString()}`, alignment: AlignmentType.LEFT }),
+                    ]
+                }]
+            });
 
-        const blob = await Packer.toBlob(doc);
-        saveAs(blob, `استدعاء_${t.name}.docx`);
-    } catch (error) {
-        console.error(error);
-        alert("حدث خطأ أثناء إنشاء الملف. تأكد من تحديث الصفحة.");
+            const blob = await Packer.toBlob(doc);
+            saveAs(blob, `استدعاء_${t.name}.docx`);
+        } catch (e) { alert("حدث خطأ، تأكد من أنك تفتح الملف في متصفح حديث."); }
     }
-}
 
     function updateChart() {
-        let d = document.getElementById('attDate').value, f = document.getElementById('filterSpec').value;
-        let logs = data.attendance.filter(a => a.date === d);
-        if(f) logs = logs.filter(a => data.trainees.find(t => t.id == a.tId)?.specId == f);
+        let d = document.getElementById('attDate').value, logs = data.attendance.filter(a => a.date === d);
         let p = logs.filter(a => a.status === 'حاضر').length, ab = logs.filter(a => a.status === 'غائب').length;
         if(chartInstance) chartInstance.destroy();
-        if(p+ab > 0) chartInstance = new Chart(document.getElementById('myChart'), { type: 'doughnut', data: { labels: ['حضور', 'غياب'], datasets: [{ data: [p, ab], backgroundColor: ['#27ae60', '#c0392b'] }] } });
+        if(p+ab > 0) chartInstance = new Chart(document.getElementById('myChart'), { type: 'doughnut', data: { labels: ['حاضر', 'غائب'], datasets: [{ data: [p, ab], backgroundColor: ['#27ae60', '#c0392b'] }] } });
     }
 
     function exportExcel() {
-        let report = data.attendance.map(a => {
-            let t = data.trainees.find(tr => tr.id == a.tId);
-            return { "التاريخ": a.date, "المتربص": t?t.name:"محذوف", "الحالة": a.status, "ملاحظة": a.note || "" };
-        });
-        const ws = XLSX.utils.json_to_sheet(report);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Attendance");
-        XLSX.writeFile(wb, "Report.xlsx");
+        let report = data.attendance.map(a => { let t = data.trainees.find(tr => tr.id == a.tId); return { "التاريخ": a.date, "الاسم": t?t.name:"", "الحالة": a.status }; });
+        XLSX.writeFile(XLSX.utils.book_new(), "Report.xlsx");
     }
 
-    function exportJSON() {
-        saveAs(new Blob([JSON.stringify(data)], {type: "application/json"}), "backup.json");
-    }
-
-    function importJSON(e) {
-        let r = new FileReader();
-        r.onload = f => { data = JSON.parse(f.target.result); save(); location.reload(); };
-        r.readAsText(e.target.files[0]);
-    }
+    function exportJSON() { saveAs(new Blob([JSON.stringify(data)], {type: "application/json"}), "backup.json"); }
+    function importJSON(e) { let r = new FileReader(); r.onload = f => { data = JSON.parse(f.target.result); save(); location.reload(); }; r.readAsText(e.target.files[0]); }
 </script>
 </body>
 </html>
