@@ -3,204 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الإدارة - نسخة الإصلاح الشامل</title>
+    <title>نظام إدارة الحضور - النسخة المستقرة</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --primary: #2980b9; --success: #27ae60; --danger: #c0392b;
-            --warning: #f39c12; --whatsapp: #25D366; --word: #2b579a;
-            --bg: #f0f2f5; --card: #ffffff; --text: #2f3640;
-        }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; direction: rtl; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .card { background: var(--card); padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        h1, h2 { color: var(--primary); text-align: center; }
-        input, select { font-family: 'Cairo', sans-serif; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e1e4e8; border-radius: 10px; box-sizing: border-box; }
-        button { font-family: 'Cairo', sans-serif; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; color: white; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        button:hover { opacity: 0.9; }
-        .btn-add { background: var(--primary); width: 100%; }
-        .btn-present { background: var(--success); flex: 1; }
-        .btn-absent { background: var(--danger); flex: 1; }
-        .alert-item { background: #fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .wa-btn { background: var(--whatsapp); padding: 8px 12px; border-radius: 8px; text-decoration: none; color: white; font-size: 0.85rem; }
-        .word-btn { background: var(--word); }
+        :root { --p: #2980b9; --s: #27ae60; --d: #c0392b; --w: #2b579a; --bg: #f8f9fa; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); direction: rtl; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-blue { background: var(--p); }
+        .btn-green { background: var(--s); }
+        .btn-red { background: var(--d); }
+        .btn-word { background: var(--w); margin-top: 5px; font-size: 0.8rem; }
+        .alert-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        #loginPage { max-width: 400px; margin: 100px auto; text-align: center; }
     </style>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.45.0/docxtemplater.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.45.0/build/docxtemplater.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 </head>
 <body>
 
 <div id="loginPage" class="card">
-    <h1>دخول النظام</h1>
-    <input type="text" id="user" placeholder="اسم المستخدم">
-    <input type="password" id="pass" placeholder="كلمة المرور">
-    <button class="btn-add" onclick="login()">دخول</button>
+    <h2>تسجيل الدخول</h2>
+    <input type="password" id="pass" placeholder="كلمة المرور (1234)">
+    <button class="btn-blue" onclick="login()">دخول</button>
 </div>
 
 <div id="mainApp" style="display:none;" class="container">
     <div class="card">
-        <h2>📁 البيانات الأساسية</h2>
+        <h2>إعدادات النظام</h2>
+        <input type="text" id="specInput" placeholder="أضف تخصص جديد...">
+        <button class="btn-blue" onclick="addSpec()">إضافة تخصص</button>
         <select id="specList" onchange="updateTraineeList()"></select>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="specInput" placeholder="تخصص جديد...">
-            <button class="btn-add" style="width:100px" onclick="addSpec()">إضافة</button>
-        </div>
         <hr>
-        <input type="text" id="traineeInput" placeholder="اسم المتربص">
-        <input type="text" id="traineePhone" placeholder="هاتف الولي">
-        <button class="btn-add" onclick="addTrainee()">حفظ المتربص</button>
-        <select id="traineeList" style="margin-top:10px;"></select>
+        <input type="text" id="traineeName" placeholder="اسم المتربص">
+        <input type="text" id="traineePhone" placeholder="رقم الهاتف">
+        <button class="btn-green" onclick="addTrainee()">حفظ المتربص</button>
     </div>
 
     <div class="card">
-        <h2>📅 تسجيل الحضور</h2>
-        <input type="date" id="attDate" onchange="refreshView()">
-        <div style="display:flex; gap:15px;">
-            <button class="btn-present" onclick="mark('حاضر')">حاضر</button>
-            <button class="btn-absent" onclick="mark('غائب')">غائب</button>
+        <h2>تسجيل الحضور <span id="displayDate"></span></h2>
+        <select id="traineeList"></select>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-green" onclick="mark('حاضر')">حاضر</button>
+            <button class="btn-red" onclick="mark('غائب')">غائب</button>
         </div>
     </div>
 
     <div class="card">
-        <h2>⚠️ تنبيهات الغياب (>3)</h2>
-        <div id="absenceAlerts"></div>
-        <div style="max-width: 250px; margin: auto;"><canvas id="myChart"></canvas></div>
-        <button onclick="location.reload()" style="background: #7f8c8d; width: 100%; margin-top: 20px;">خروج</button>
+        <h2>تنبيهات الغياب (>3)</h2>
+        <div id="alerts"></div>
     </div>
 </div>
 
 <script>
-    let data = JSON.parse(localStorage.getItem('edu_v7')) || { specs: [], trainees: [], attendance: [] };
-
-    function save() { localStorage.setItem('edu_v7', JSON.stringify(data)); }
+    let db = JSON.parse(localStorage.getItem('abs_system_v8')) || { specs: [], trainees: [], att: [] };
 
     function login() {
-        if(document.getElementById('user').value === 'admin' && document.getElementById('pass').value === '1234') {
+        if(document.getElementById('pass').value === '1234') {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            init();
-        } else alert("بيانات خاطئة");
-    }
-
-    function init() {
-        document.getElementById('attDate').valueAsDate = new Date();
-        refreshSpecs(); refreshView();
-    }
-
-    function refreshSpecs() {
-        document.getElementById('specList').innerHTML = data.specs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        updateTraineeList();
+            renderSpecs();
+            renderAlerts();
+        } else alert("كلمة المرور خطأ");
     }
 
     function addSpec() {
-        let n = document.getElementById('specInput').value.trim();
-        if(n) { data.specs.push({ id: Date.now(), name: n }); save(); refreshSpecs(); }
+        let val = document.getElementById('specInput').value;
+        if(val) { db.specs.push({id: Date.now(), name: val}); save(); renderSpecs(); }
+    }
+
+    function renderSpecs() {
+        let html = db.specs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        document.getElementById('specList').innerHTML = html;
+        updateTraineeList();
     }
 
     function addTrainee() {
-        let n = document.getElementById('traineeInput').value.trim(), p = document.getElementById('traineePhone').value.trim(), s = document.getElementById('specList').value;
-        if(n && p && s) { data.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); save(); updateTraineeList(); }
+        let name = document.getElementById('traineeName').value;
+        let phone = document.getElementById('traineePhone').value;
+        let spec = document.getElementById('specList').value;
+        if(name && spec) { db.trainees.push({id: Date.now(), name, phone, specId: spec}); save(); updateTraineeList(); }
     }
 
     function updateTraineeList() {
-        let s = document.getElementById('specList').value;
-        document.getElementById('traineeList').innerHTML = data.trainees.filter(t => t.specId == s).map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        let spec = document.getElementById('specList').value;
+        let html = db.trainees.filter(t => t.specId == spec).map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        document.getElementById('traineeList').innerHTML = html;
     }
 
     function mark(status) {
-        let t = document.getElementById('traineeList').value, d = document.getElementById('attDate').value;
-        data.attendance = data.attendance.filter(a => !(a.tId == t && a.date == d));
-        data.attendance.push({ tId: t, date: d, status: status });
-        save(); refreshView();
+        let tid = document.getElementById('traineeList').value;
+        let date = new Date().toLocaleDateString();
+        db.att = db.att.filter(a => !(a.tid == tid && a.date == date));
+        db.att.push({tid, date, status});
+        save(); renderAlerts();
+        alert("تم التسجيل");
     }
 
-    function refreshView() {
-        const container = document.getElementById('absenceAlerts'); container.innerHTML = '';
-        const m = new Date().getMonth(), y = new Date().getFullYear();
-        let map = {};
-        data.attendance.forEach(l => {
-            let d = new Date(l.date);
-            if(l.status === 'غائب' && d.getMonth() === m) map[l.tId] = (map[l.tId] || 0) + 1;
-        });
+    function renderAlerts() {
+        let container = document.getElementById('alerts');
+        container.innerHTML = '';
+        let counts = {};
+        db.att.filter(a => a.status === 'غائب').forEach(a => counts[a.tid] = (counts[a.tid] || 0) + 1);
 
-        for(let id in map) {
-            if(map[id] >= 3) {
-                let t = data.trainees.find(tr => tr.id == id);
+        for(let id in counts) {
+            if(counts[id] >= 3) {
+                let t = db.trainees.find(tr => tr.id == id);
                 if(t) {
                     container.innerHTML += `
-                        <div class="alert-item">
-                            <span><strong>${t.name}</strong> (${map[id]} غيابات)</span>
-                            <div style="display:flex; gap:5px;">
-                                <a href="https://wa.me/${t.phone}" class="wa-btn">واتساب</a>
-                                <button onclick="finalProcess('${id}')" class="word-btn" style="font-size:0.7rem">نموذج Word</button>
-                            </div>
+                        <div class="alert-row">
+                            <span>${t.name} (${counts[id]} غيابات)</span>
+                            <button class="btn-word" onclick="generateWord('${id}')">توليد Word</button>
                         </div>`;
                 }
             }
         }
-        updateChart();
     }
 
-    // الدالة المنقذة
-    async function finalProcess(tId) {
-        if (typeof window.PizZip === "undefined" || typeof window.docxtemplater === "undefined") {
-            alert("خطأ: المكتبات لم يتم تحميلها بعد. يرجى التأكد من الاتصال بالإنترنت.");
+    function save() { localStorage.setItem('abs_system_v8', JSON.stringify(db)); }
+
+    // وظيفة الوورد النهائية مع معالجة خطأ المكتبات
+    async function generateWord(tid) {
+        if (typeof window.PizZip === "undefined") {
+            alert("المكتبات لم تُحمل بعد بسبب مشكلة في الإنترنت. يرجى محاولة فتح الصفحة في متصفح آخر أو التأكد من الشبكة.");
             return;
         }
 
-        const t = data.trainees.find(tr => tr.id == tId);
-        const s = data.specs.find(sp => sp.id == t.specId);
-        const absences = data.attendance.filter(a => a.tId == tId && a.status === 'غائب' && new Date(a.date).getMonth() === new Date().getMonth()).map(a => a.date);
+        let t = db.trainees.find(tr => tr.id == tid);
+        let absences = db.att.filter(a => a.tid == tid && a.status === 'غائب').map(a => a.date);
 
-        alert("اختر قالب الوورد الذي يحتوي على {{name}} و {{specialty}} و {{dates}}");
+        alert("يرجى اختيار ملف القالب (Template) الذي يحتوي على {{name}}");
 
         let input = document.createElement('input');
         input.type = 'file';
-        input.accept = '.docx';
         input.onchange = async (e) => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
+            let reader = new FileReader();
             reader.onload = async (f) => {
                 try {
-                    const zip = new window.PizZip(f.target.result);
-                    const doc = new window.docxtemplater(zip, { 
-                        paragraphLoop: true, 
-                        linebreaks: true,
-                        delimiters: { start: '{{', end: '}}' } 
-                    });
-
+                    let zip = new PizZip(f.target.result);
+                    let doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+                    
                     doc.setData({
                         name: t.name,
-                        specialty: s ? s.name : "غير محدد",
-                        count: absences.length,
                         dates: absences.join(" / "),
-                        today: new Date().toLocaleDateString('ar-DZ')
+                        count: absences.length,
+                        today: new Date().toLocaleDateString()
                     });
 
                     doc.render();
-                    const out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+                    let out = doc.getZip().generate({type:"blob"});
                     saveAs(out, `استدعاء_${t.name}.docx`);
                 } catch (err) {
-                    alert("خطأ في معالجة القالب. تأكد من أن الأقواس {{ }} صحيحة.");
-                    console.error(err);
+                    alert("خطأ في القالب: تأكد من كتابة {{name}} بشكل صحيح.");
                 }
             };
-            reader.readAsArrayBuffer(file);
+            reader.readAsArrayBuffer(e.target.files[0]);
         };
         input.click();
-    }
-
-    let chartInstance = null;
-    function updateChart() {
-        let d = document.getElementById('attDate').value, logs = data.attendance.filter(a => a.date === d);
-        let p = logs.filter(a => a.status === 'حاضر').length, ab = logs.filter(a => a.status === 'غائب').length;
-        if(chartInstance) chartInstance.destroy();
-        if(p+ab > 0) chartInstance = new Chart(document.getElementById('myChart'), { type: 'pie', data: { labels: ['حاضر', 'غائب'], datasets: [{ data: [p, ab], backgroundColor: ['#27ae60', '#c0392b'] }] } });
     }
 </script>
 </body>
