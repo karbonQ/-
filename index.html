@@ -6,7 +6,6 @@
     <title> نظام إدارة حضور و غياب للمتربصيين </title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-
     <style>
         :root {
             --primary: #2980b9;
@@ -18,7 +17,6 @@
             --card: #ffffff;
             --text: #2f3640;
         }
-
         body { 
             font-family: 'Cairo', sans-serif; 
             background: var(--bg); 
@@ -27,9 +25,7 @@
             padding: 20px; 
             line-height: 1.6;
         }
-
         .container { max-width: 900px; margin: 0 auto; }
-        
         .card { 
             background: var(--card); 
             padding: 25px; 
@@ -41,9 +37,7 @@
         h1, h2, h3 { color: var(--primary); margin-top: 0; font-weight: 700; }
         h1 { text-align: center; margin-bottom: 30px; font-size: 1.8rem; }
         h2 { border-bottom: 2px solid var(--bg); padding-bottom: 10px; font-size: 1.4rem; }
-
         label { font-weight: 600; display: block; margin-top: 10px; }
-
         input, select { 
             font-family: 'Cairo', sans-serif;
             width: 100%; 
@@ -53,7 +47,6 @@
             border-radius: 10px; 
             box-sizing: border-box; 
         }
-
         .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
         
         button { 
@@ -66,9 +59,7 @@
             transition: 0.3s; 
             color: white; 
         }
-        
         button:hover { opacity: 0.9; transform: translateY(-1px); }
-
         .btn-add { background: var(--primary); }
         .btn-edit { background: var(--warning); }
         .btn-delete { background: var(--danger); }
@@ -83,7 +74,6 @@
             border-radius: 10px; 
             margin-bottom: 8px; 
         }
-
         .status-present { background: #d4edda; color: #155724; border-right: 5px solid var(--success); }
         .status-absent { background: #f8d7da; color: #721c24; border-right: 5px solid var(--danger); }
 
@@ -92,7 +82,6 @@
         #loginPage { text-align: center; max-width: 400px; margin: 80px auto; }
 
         hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
-
         .alert-item {
             background: #fff5f5; 
             border: 1px solid #feb2b2; 
@@ -103,7 +92,6 @@
             flex-direction: column;
             gap: 10px;
         }
-
         .wa-btn {
             background: var(--whatsapp);
             color: white;
@@ -117,17 +105,14 @@
             justify-content: center;
             gap: 5px;
         }
-
         @media (min-width: 600px) {
             .alert-item { flex-direction: row; justify-content: space-between; align-items: center; }
         }
     </style>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-
 <div id="loginPage" class="card">
     <h1>يرجى تسجيل الدخول </h1>
     <input type="text" id="user" placeholder="اسم المستخدم ">
@@ -164,7 +149,6 @@
             <button class="btn-delete" onclick="deleteTrainee()">حذف</button>
         </div>
     </div>
-
     <div class="card">
         <h2> تسجيل الحضور اليومي</h2>
         <label>التاريخ:</label>
@@ -293,27 +277,23 @@
         data.trainees = data.trainees.filter(t => t.id != id);
         save(); updateTraineeList();
     }
-
     // الحضور والغياب
     function mark(status) {
         let tId = document.getElementById('traineeList').value;
         let date = document.getElementById('attDate').value;
         let note = document.getElementById('attNote').value.trim();
         if(!tId || !date) return alert("اختر المتربص");
-
         data.attendance = data.attendance.filter(a => !(a.tId == tId && a.date == date));
         data.attendance.push({ tId: tId, date: date, status: status, note: note });
         
         document.getElementById('attNote').value = '';
         save(); refreshView();
     }
-
     function renderAttendance() {
         let date = document.getElementById('attDate').value;
         let search = document.getElementById('searchBox').value.toLowerCase();
         let filter = document.getElementById('filterSpec').value;
         let html = '';
-
         data.attendance.filter(a => a.date === date).forEach(log => {
             let t = data.trainees.find(tr => tr.id == log.tId);
             if(t && (!filter || t.specId == filter) && t.name.toLowerCase().includes(search)) {
@@ -323,7 +303,6 @@
         });
         document.getElementById('attendanceLogs').innerHTML = html || '<p style="text-align:center">لا سجلات</p>';
     }
-
     // نظام التنبيهات وإرسال الواتساب
     function checkAbsenceAlerts() {
         const container = document.getElementById('absenceAlerts');
@@ -331,14 +310,12 @@
         const month = new Date().getMonth();
         const year = new Date().getFullYear();
         let map = {};
-
         data.attendance.forEach(log => {
             let d = new Date(log.date);
             if (log.status === 'غائب' && d.getMonth() === month && d.getFullYear() === year) {
                 map[log.tId] = (map[log.tId] || 0) + 1;
             }
         });
-
         let found = false;
         for (let tId in map) {
             if (map[tId] >= 3) {
@@ -358,7 +335,6 @@
         }
         if(!found) container.innerHTML = '<p style="color:var(--success)">✅ لا تجاوزات حالياً</p>';
     }
-
     function updateChart() {
         let date = document.getElementById('attDate').value;
         let filter = document.getElementById('filterSpec').value;
@@ -377,7 +353,6 @@
             });
         }
     }
-
     function exportExcel() {
         let report = data.attendance.map(a => {
             let t = data.trainees.find(tr => tr.id == a.tId);
@@ -389,19 +364,18 @@
         XLSX.utils.book_append_sheet(wb, ws, "Attendance");
         XLSX.writeFile(wb, "Report_Attendance.xlsx");
     }
-
     function exportJSON() {
         let blob = new Blob([JSON.stringify(data)], {type: "application/json"});
         let url = URL.createObjectURL(blob);
         let a = document.createElement('a');
         a.href = url; a.download = 'backup_attendance.json'; a.click();
     }
-
     function importJSON(e) {
         let reader = new FileReader();
         reader.onload = function(f) { data = JSON.parse(f.target.result); save(); location.reload(); };
         reader.readAsText(e.target.files[0]);
     }
+     <h3> تم تطوير هذا البرنامج من طرف الأستاذ: دومة الهواري بومدين Psep2 </h3>
 </script>
 </body>
 </html>
