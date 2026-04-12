@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور والغياب - النسخة الاحترافية</title>
+    <title>  نظام إدارة الحضور والغياب للمتربصيين</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -142,10 +142,10 @@
 </div>
 
 <div id="mainApp" style="display:none;" class="container">
-    <h1>لوحة الإدارة الذكية</h1>
+    <h1>مركز التكوين المهني و التمهين الشهيد أحمد زبانة السوقر1</h1>
 
     <div class="card">
-        <h2>📁 إدارة التخصصات والمتربصين</h2>
+        <h2  التخصصات و المتربصين</h2>
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -161,7 +161,7 @@
         <div style="display:flex; flex-direction:column; gap:5px;">
             <select id="traineeList"></select>
             <input type="text" id="traineeInput" placeholder="اسم المتربص الكامل...">
-            <input type="text" id="traineePhone" placeholder="رقم الهاتف (مثال: 213660000000)">
+            <input type="text" id="traineePhone" placeholder="رقم هاتف ولى أمر المتربص (مثال: 213660000000)">
         </div>
         <div class="btn-group">
             <button class="btn-add" onclick="addTrainee()">إضافة متربص</button>
@@ -171,35 +171,30 @@
     </div>
 
     <div class="card">
-        <h2>📅 تسجيل الحضور اليومي</h2>
+        <h2 تسجيل الحضور اليومي</h2>
         <label>التاريخ:</label>
         <input type="date" id="attDate" onchange="refreshView()">
         
-        <label>ملاحظات إضافية:</label>
-        <input type="text" id="attNote" placeholder="سبب الغياب أو ملاحظة للمشرف...">
+        <label>أسباب الغياب :</label>
+        <input type="text" id="attNote" placeholder="سبب صحي ، غياب بعذر ، تأخر ...إلخ  ">
 
         <div style="display:flex; gap:15px; margin-top:10px;">
             <button class="btn-present" onclick="mark('حاضر')">✔ تسجيل حضور</button>
             <button class="btn-absent" onclick="mark('غائب')">✖ تسجيل غياب</button>
         </div>
     </div>
-
     <div class="card">
-        <h2>📊 الإحصائيات وإنذارات الغياب</h2>
-        
+        <h2> الإحصائيات وإنذارات الغياب</h2>
         <div style="display:flex; gap:10px; margin-bottom: 15px;">
             <select id="filterSpec" onchange="refreshView()" style="flex:1">
                 <option value="">جميع التخصصات</option>
             </select>
         </div>
-
         <div class="chart-box"><canvas id="myChart"></canvas></div>
-
         <div id="alertSection">
-            <h3 style="color: var(--danger); font-size: 1.1rem;">⚠️ تنبيه: تجاوز 3 غيابات (هذا الشهر)</h3>
+            <h3 style="color: var(--danger); font-size: 1.1rem;">⚠️ تنبيه: المتربص تجاوز 3 غيابات (هذا الشهر)</h3>
             <div id="absenceAlerts"></div>
         </div>
-
         <hr>
         <h3>سجل الحضور المباشر:</h3>
         <input type="text" id="searchBox" placeholder="بحث سريع بالاسم..." oninput="renderAttendance()">
@@ -216,7 +211,7 @@
 
         <div style="margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px;">
             <button onclick="logout()" style="background: #7f8c8d; width: 100%; padding: 12px;">
-                ⬅️ تسجيل الخروج من النظام
+                ⬅️ تسجيل الخروج  
             </button>
         </div>
     </div>
@@ -260,7 +255,6 @@
         updateChart();
         checkAbsenceAlerts();
     }
-
     // إدارة التخصصات
     function addSpec() {
         let name = document.getElementById('specInput').value.trim();
@@ -269,7 +263,6 @@
         document.getElementById('specInput').value = '';
         save(); refreshSpecs();
     }
-
     function refreshSpecs() {
         let html = data.specs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         document.getElementById('specList').innerHTML = html;
@@ -389,7 +382,7 @@
                     container.innerHTML += `
                         <div class="alert-item">
                             <span><strong>${t.name}</strong> غاب ${map[tId]} أيام</span>
-                            <a href="${url}" target="_blank" class="wa-btn">💬 مراسلة الولي</a>
+                            <a href="${url}" target="_blank" class="wa-btn">💬 إستدعاء ولى الأمر</a>
                         </div>`;
                 }
             }
