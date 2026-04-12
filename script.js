@@ -331,3 +331,56 @@ container.innerHTML += `
     input.click();
 }
 }
+    async function processMyTemplate(tId) {
+    const t = data.trainees.find(tr => tr.id == tId);
+    const s = data.specs.find(sp => sp.id == t.specId);
+    const absences = data.attendance.filter(a => a.tId == tId && a.status === 'غائب' && new Date(a.date).getMonth() === new Date().getMonth()).map(a => a.date);
+
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.docx';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = async (f) => {
+            try {
+                const zip = new PizZip(f.target.result);
+                // إضافة مصحح الأخطاء هنا
+                const doc = new window.docxtemplater(zip, { 
+                    paragraphLoop: true, 
+                    linebreaks: true,
+                    delimiters: { start: '{{', end: '}}' } // التأكيد على الأقواس
+                });
+
+                const dataToFill = {
+                    name: String(t.name),
+                    specialty: String(s ? s.name : "غير محدد"),
+                    count: String(absences.length),
+                    dates: String(absences.join(" / ")),
+                    today: String(new Date().toLocaleDateString('ar-DZ'))
+                };
+
+                doc.setData(dataToFill);
+                doc.render();
+
+                const out = doc.getZip().generate({ 
+                    type: "blob", 
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
+                });
+                
+                saveAs(out, `استدعاء_${t.name}.docx`);
+            } catch (err) {
+                // سيخبرك المتصفح هنا بالضبط أين المشكلة
+                console.error("Docxtemplater Error:", err);
+                if (err.properties && err.properties.errors) {
+                    const errorMessages = err.properties.errors.map(e => e.message).join("\n");
+                    alert("خطأ في القالب:\n" + errorMessages);
+                } else {
+                    alert("تأكد من إغلاق كافة الأقواس {{ }} في ملف الوورد");
+                }
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    };
+    input.click();
+}
