@@ -136,10 +136,10 @@
 </div>
 
 <div id="mainApp" style="display:none;" class="container">
-    <h1>لوحة الإدارة والمتابعة</h1>
+    <h1>برنامج تسيير الغيابات  </h1>
 
     <div class="card">
-        <h2>📁 إدارة التخصصات والمتربصين</h2>
+        <h2>  التخصصات و المتربصين</h2>
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -165,12 +165,12 @@
     </div>
 
     <div class="card">
-        <h2>📅 تسجيل الحضور اليومي</h2>
+        <h2> تسجيل الحضور اليومي</h2>
         <label>التاريخ:</label>
         <input type="date" id="attDate" onchange="refreshView()">
         
         <label>ملاحظة سريعة:</label>
-        <input type="text" id="attNote" placeholder="عذر طبي، تأخر، إلخ...">
+        <input type="text" id="attNote" placeholder="غياب بعذر، سبب طبي، تأخر، إلخ...">
 
         <div style="display:flex; gap:15px; margin-top:10px;">
             <button class="btn-present" onclick="mark('حاضر')">✔ حضور</button>
@@ -179,7 +179,7 @@
     </div>
 
     <div class="card">
-        <h2>📊 الإحصائيات وإنذارات الغياب</h2>
+        <h2>الإحصائيات و تنبيهات الغياب</h2>
         
         <div style="display:flex; gap:10px; margin-bottom: 15px;">
             <select id="filterSpec" onchange="refreshView()" style="flex:1">
