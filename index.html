@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام إدارة الحضور - النسخة المباشرة</title>
+    <title>نظام الاستدعاءات - نسخة الإصلاح</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
@@ -11,14 +11,15 @@
         .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; }
         input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; }
-        button { color: white; cursor: pointer; border: none; font-weight: bold; }
+        button { color: white; cursor: pointer; border: none; font-weight: bold; transition: 0.2s; }
         .btn-blue { background: var(--p); }
         .btn-green { background: var(--s); }
         .alert-row { background: #fff5f5; border-right: 5px solid var(--d); padding: 15px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; }
-        .btn-download { background: #2b579a; width: auto; padding: 8px 15px; font-size: 0.8rem; }
+        .btn-download { background: #2b579a; width: auto; padding: 8px 20px; font-size: 0.9rem; }
+        button:active { transform: scale(0.98); }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.js"></script>
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
@@ -34,7 +35,7 @@
     <div id="mainArea" style="display:none;">
         <label>إضافة متربص:</label>
         <input type="text" id="tName" placeholder="الاسم واللقب">
-        <button class="btn-green" onclick="addTrainee()">حفظ</button>
+        <button class="btn-green" onclick="addTrainee()">حفظ المتربص</button>
         
         <hr>
         <label>تسجيل غياب:</label>
@@ -42,20 +43,20 @@
         <button class="btn-blue" onclick="mark()">تسجيل غائب اليوم</button>
         
         <hr>
-        <h3>الاستدعاءات المستحقة</h3>
+        <h3>الاستدعاءات المستحقة (>3)</h3>
         <div id="alerts"></div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('final_sys_v10')) || { students: [], logs: [] };
+    let db = JSON.parse(localStorage.getItem('final_sys_v11')) || { students: [], logs: [] };
 
     function login() {
         if(document.getElementById('pass').value === '1234') {
             document.getElementById('loginArea').style.display = 'none';
             document.getElementById('mainArea').style.display = 'block';
             render();
-        }
+        } else { alert("كلمة المرور 1234"); }
     }
 
     function addTrainee() {
@@ -65,7 +66,12 @@
 
     function mark() {
         let id = document.getElementById('tSelect').value;
-        if(id) { db.logs.push({id: id, date: new Date().toLocaleDateString('ar-DZ')}); save(); render(); alert("تم التسجيل"); }
+        if(id) { 
+            db.logs.push({id: id, date: new Date().toLocaleDateString('ar-DZ')}); 
+            save(); 
+            render(); 
+            alert("تم تسجيل الغياب بنجاح"); 
+        }
     }
 
     function render() {
@@ -79,72 +85,77 @@
         for(let id in counts) {
             if(counts[id] >= 3) {
                 let s = db.students.find(st => st.id == id);
-                list.innerHTML += `<div class="alert-row">
-                    <span><b>${s.name}</b> (${counts[id]} غيابات)</span>
-                    <button class="btn-download" onclick="createDoc('${id}')">تحميل الاستدعاء</button>
-                </div>`;
+                if(s) {
+                    list.innerHTML += `<div class="alert-row">
+                        <span><b>${s.name}</b> (${counts[id]} غيابات)</span>
+                        <button class="btn-download" onclick="createDoc('${id}')">تحميل الوورد</button>
+                    </div>`;
+                }
             }
         }
     }
 
-    function save() { localStorage.setItem('final_sys_v10', JSON.stringify(db)); }
+    function save() { localStorage.setItem('final_sys_v11', JSON.stringify(db)); }
 
-    // وظيفة توليد ملف الوورد وتنسيقه برمجياً
     async function createDoc(id) {
-        const student = db.students.find(s => s.id == id);
-        const dates = db.logs.filter(l => l.id == id).map(l => l.date).join(" - ");
+        // فحص وجود المكتبة قبل البدء
+        if (typeof window.docx === "undefined") {
+            alert("خطأ: لم يتم تحميل مكتبة Word من الإنترنت. يرجى التأكد من الاتصال بالشبكة وتحديث الصفحة.");
+            return;
+        }
 
-        const { Document, Packer, Paragraph, TextRun, AlignmentType, HeadingLevel } = docx;
+        try {
+            const student = db.students.find(s => s.id == id);
+            const dates = db.logs.filter(l => l.id == id).map(l => l.date).join(" - ");
 
-        const doc = new Document({
-            sections: [{
-                properties: {},
-                children: [
-                    new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "وزارة التكوين والتعليم المهنيين", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "\n", spacing: { before: 200 } }),
-                    new Paragraph({
-                        children: [new TextRun({ text: "إشعار بتبليغ غيابات", bold: true, size: 32, underline: {} })],
-                        alignment: AlignmentType.CENTER,
-                    }),
-                    new Paragraph({ text: "\n", spacing: { before: 400 } }),
-                    new Paragraph({
-                        children: [
-                            new TextRun({ text: "إلى ولي أمر المتربص: ", bold: true }),
-                            new TextRun({ text: student.name })
-                        ],
-                        alignment: AlignmentType.RIGHT
-                    }),
-                    new Paragraph({ text: "\n" }),
-                    new Paragraph({
-                        text: "نحيطكم علماً أن المتربص المذكور أعلاه قد سجل غيابات متكررة وغير مبررة في التواريخ التالية:",
-                        alignment: AlignmentType.RIGHT
-                    }),
-                    new Paragraph({
-                        children: [new TextRun({ text: dates, bold: true, color: "FF0000" })],
-                        alignment: AlignmentType.CENTER,
-                        spacing: { before: 200, after: 200 }
-                    }),
-                    new Paragraph({
-                        text: "عليه، يرجى منكم الحضور لمصلحة المتابعة في أقرب وقت لتبرير هذه الغيابات وتفادي قرار الشطب.",
-                        alignment: AlignmentType.RIGHT
-                    }),
-                    new Paragraph({ text: "\n\n" }),
-                    new Paragraph({
-                        children: [new TextRun({ text: "حرر في: " + new Date().toLocaleDateString('ar-DZ'), italics: true })],
-                        alignment: AlignmentType.LEFT
-                    }),
-                    new Paragraph({
-                        children: [new TextRun({ text: "ختم وتوقيع الإدارة", bold: true })],
-                        alignment: AlignmentType.LEFT
-                    })
-                ],
-            }],
-        });
+            const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
 
-        Packer.toBlob(doc).then(blob => {
+            const doc = new Document({
+                sections: [{
+                    children: [
+                        new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
+                        new Paragraph({ text: "وزارة التكوين والتعليم المهنيين", alignment: AlignmentType.CENTER }),
+                        new Paragraph({ text: "\n", spacing: { before: 200 } }),
+                        new Paragraph({
+                            children: [new TextRun({ text: "إشعار بتبليغ غيابات", bold: true, size: 32 })],
+                            alignment: AlignmentType.CENTER,
+                        }),
+                        new Paragraph({ text: "\n", spacing: { before: 400 } }),
+                        new Paragraph({
+                            children: [
+                                new TextRun({ text: "اسم المتربص: ", bold: true }),
+                                new TextRun({ text: student.name })
+                            ],
+                            alignment: AlignmentType.RIGHT
+                        }),
+                        new Paragraph({ text: "\n" }),
+                        new Paragraph({
+                            text: "تواريخ الغيابات المسجلة:",
+                            alignment: AlignmentType.RIGHT
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({ text: dates, bold: true, color: "FF0000" })],
+                            alignment: AlignmentType.CENTER
+                        }),
+                        new Paragraph({ text: "\n\n" }),
+                        new Paragraph({
+                            children: [new TextRun({ text: "حرر في: " + new Date().toLocaleDateString('ar-DZ') })],
+                            alignment: AlignmentType.LEFT
+                        }),
+                        new Paragraph({
+                            children: [new TextRun({ text: "ختم الإدارة", bold: true })],
+                            alignment: AlignmentType.LEFT
+                        })
+                    ],
+                }],
+            });
+
+            const blob = await Packer.toBlob(doc);
             saveAs(blob, `استدعاء_${student.name}.docx`);
-        });
+        } catch (err) {
+            console.error(err);
+            alert("حدث خطأ أثناء إنشاء الملف. راجع المتصفح.");
+        }
     }
 </script>
 </body>
