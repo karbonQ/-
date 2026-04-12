@@ -2,170 +2,144 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور - النسخة المستقرة</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    
+    <title>نظام الإدارة - النسخة المستقلة تماماً</title>
     <style>
-        :root { --p: #2980b9; --s: #27ae60; --d: #c0392b; --w: #2b579a; --bg: #f8f9fa; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); direction: rtl; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; transition: 0.3s; }
+        :root { --p: #2c3e50; --s: #27ae60; --d: #e74c3c; --w: #3498db; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; direction: rtl; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd; font-size: 16px; }
+        button { color: white; cursor: pointer; border: none; font-weight: bold; }
         .btn-blue { background: var(--p); }
         .btn-green { background: var(--s); }
-        .btn-red { background: var(--d); }
-        .btn-word { background: var(--w); margin-top: 5px; font-size: 0.8rem; }
-        .alert-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        #loginPage { max-width: 400px; margin: 100px auto; text-align: center; }
+        .btn-word { background: var(--w); }
+        .alert-box { border-right: 5px solid var(--d); background: #fff5f5; padding: 10px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.45.0/build/docxtemplater.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
 
-<div id="loginPage" class="card">
-    <h2>تسجيل الدخول</h2>
-    <input type="password" id="pass" placeholder="كلمة المرور (1234)">
-    <button class="btn-blue" onclick="login()">دخول</button>
-</div>
+<div class="container">
+    <h2 style="text-align: center;">نظام تسيير الاستدعاءات</h2>
+    
+    <div id="loginSection">
+        <input type="password" id="passInput" placeholder="كلمة المرور (1234)">
+        <button class="btn-blue" onclick="checkLogin()">دخول</button>
+    </div>
 
-<div id="mainApp" style="display:none;" class="container">
-    <div class="card">
-        <h2>إعدادات النظام</h2>
-        <input type="text" id="specInput" placeholder="أضف تخصص جديد...">
-        <button class="btn-blue" onclick="addSpec()">إضافة تخصص</button>
-        <select id="specList" onchange="updateTraineeList()"></select>
+    <div id="appSection" style="display:none;">
+        <label>إضافة متربص:</label>
+        <input type="text" id="tName" placeholder="الاسم الكامل">
+        <button class="btn-green" onclick="saveTrainee()">حفظ المتربص</button>
+        
         <hr>
-        <input type="text" id="traineeName" placeholder="اسم المتربص">
-        <input type="text" id="traineePhone" placeholder="رقم الهاتف">
-        <button class="btn-green" onclick="addTrainee()">حفظ المتربص</button>
-    </div>
-
-    <div class="card">
-        <h2>تسجيل الحضور <span id="displayDate"></span></h2>
-        <select id="traineeList"></select>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-green" onclick="mark('حاضر')">حاضر</button>
-            <button class="btn-red" onclick="mark('غائب')">غائب</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <h2>تنبيهات الغياب (>3)</h2>
-        <div id="alerts"></div>
+        
+        <label>تسجيل غياب اليوم:</label>
+        <select id="tSelect"></select>
+        <button class="btn-blue" onclick="markAbsence()">تسجيل كـ غائب</button>
+        
+        <hr>
+        
+        <h3>الاستدعاءات المستحقة (>3 غيابات)</h3>
+        <div id="alertList"></div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('abs_system_v8')) || { specs: [], trainees: [], att: [] };
+    let storage = JSON.parse(localStorage.getItem('off_sys_v9')) || { trainees: [], att: [] };
 
-    function login() {
-        if(document.getElementById('pass').value === '1234') {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            renderSpecs();
-            renderAlerts();
-        } else alert("كلمة المرور خطأ");
+    function checkLogin() {
+        if(document.getElementById('passInput').value === '1234') {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('appSection').style.display = 'block';
+            renderData();
+        } else alert("خطأ");
     }
 
-    function addSpec() {
-        let val = document.getElementById('specInput').value;
-        if(val) { db.specs.push({id: Date.now(), name: val}); save(); renderSpecs(); }
+    function saveTrainee() {
+        let n = document.getElementById('tName').value;
+        if(n) {
+            storage.trainees.push({id: Date.now(), name: n});
+            localStorage.setItem('off_sys_v9', JSON.stringify(storage));
+            renderData();
+            document.getElementById('tName').value = '';
+        }
     }
 
-    function renderSpecs() {
-        let html = db.specs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        document.getElementById('specList').innerHTML = html;
-        updateTraineeList();
-    }
-
-    function addTrainee() {
-        let name = document.getElementById('traineeName').value;
-        let phone = document.getElementById('traineePhone').value;
-        let spec = document.getElementById('specList').value;
-        if(name && spec) { db.trainees.push({id: Date.now(), name, phone, specId: spec}); save(); updateTraineeList(); }
-    }
-
-    function updateTraineeList() {
-        let spec = document.getElementById('specList').value;
-        let html = db.trainees.filter(t => t.specId == spec).map(t => `<option value="${t.id}">${t.name}</option>`).join('');
-        document.getElementById('traineeList').innerHTML = html;
-    }
-
-    function mark(status) {
-        let tid = document.getElementById('traineeList').value;
-        let date = new Date().toLocaleDateString();
-        db.att = db.att.filter(a => !(a.tid == tid && a.date == date));
-        db.att.push({tid, date, status});
-        save(); renderAlerts();
-        alert("تم التسجيل");
-    }
-
-    function renderAlerts() {
-        let container = document.getElementById('alerts');
-        container.innerHTML = '';
+    function renderData() {
+        let select = document.getElementById('tSelect');
+        select.innerHTML = storage.trainees.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+        
+        let list = document.getElementById('alertList');
+        list.innerHTML = '';
+        
         let counts = {};
-        db.att.filter(a => a.status === 'غائب').forEach(a => counts[a.tid] = (counts[a.tid] || 0) + 1);
-
+        storage.att.forEach(a => counts[a.id] = (counts[a.id] || 0) + 1);
+        
         for(let id in counts) {
             if(counts[id] >= 3) {
-                let t = db.trainees.find(tr => tr.id == id);
-                if(t) {
-                    container.innerHTML += `
-                        <div class="alert-row">
-                            <span>${t.name} (${counts[id]} غيابات)</span>
-                            <button class="btn-word" onclick="generateWord('${id}')">توليد Word</button>
+                let trainee = storage.trainees.find(t => t.id == id);
+                if(trainee) {
+                    list.innerHTML += `
+                        <div class="alert-box">
+                            <span>${trainee.name} (${counts[id]} غيابات)</span>
+                            <button class="btn-word" style="width:auto;" onclick="runWord('${id}')">تحميل الوورد</button>
                         </div>`;
                 }
             }
         }
     }
 
-    function save() { localStorage.setItem('abs_system_v8', JSON.stringify(db)); }
+    function markAbsence() {
+        let id = document.getElementById('tSelect').value;
+        if(id) {
+            storage.att.push({id: id, date: new Date().toLocaleDateString()});
+            localStorage.setItem('off_sys_v9', JSON.stringify(storage));
+            renderData();
+            alert("تم تسجيل الغياب");
+        }
+    }
 
-    // وظيفة الوورد النهائية مع معالجة خطأ المكتبات
-    async function generateWord(tid) {
+    async function runWord(id) {
+        // التحقق من المكتبة
         if (typeof window.PizZip === "undefined") {
-            alert("المكتبات لم تُحمل بعد بسبب مشكلة في الإنترنت. يرجى محاولة فتح الصفحة في متصفح آخر أو التأكد من الشبكة.");
+            alert("لا تزال هناك مشكلة في تحميل المكتبات من الإنترنت. يرجى فتح الملف مرة واحدة في مكان به إنترنت ليتم حفظ المكتبات في المتصفح.");
             return;
         }
 
-        let t = db.trainees.find(tr => tr.id == tid);
-        let absences = db.att.filter(a => a.tid == tid && a.status === 'غائب').map(a => a.date);
+        let trainee = storage.trainees.find(t => t.id == id);
+        let dates = storage.att.filter(a => a.id == id).map(a => a.date).join(" / ");
 
-        alert("يرجى اختيار ملف القالب (Template) الذي يحتوي على {{name}}");
+        alert("الآن اختر ملف القالب (الذي وضعت فيه {{name}} و {{dates}})");
 
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.onchange = async (e) => {
+        let fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.docx';
+        fileInput.onchange = e => {
             let reader = new FileReader();
-            reader.onload = async (f) => {
+            reader.onload = f => {
                 try {
                     let zip = new PizZip(f.target.result);
                     let doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
                     
                     doc.setData({
-                        name: t.name,
-                        dates: absences.join(" / "),
-                        count: absences.length,
+                        name: trainee.name,
+                        dates: dates,
                         today: new Date().toLocaleDateString()
                     });
 
                     doc.render();
                     let out = doc.getZip().generate({type:"blob"});
-                    saveAs(out, `استدعاء_${t.name}.docx`);
+                    saveAs(out, `استدعاء_${trainee.name}.docx`);
                 } catch (err) {
-                    alert("خطأ في القالب: تأكد من كتابة {{name}} بشكل صحيح.");
+                    alert("تأكد من أن القالب يحتوي على الأقواس {{ }} بشكل صحيح");
                 }
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         };
-        input.click();
+        fileInput.click();
     }
 </script>
 </body>
