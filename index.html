@@ -2,17 +2,20 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام الإدارة - النسخة المستقلة تماماً</title>
+    <title>نظام إدارة الاستدعاءات - النسخة المستقلة</title>
     <style>
-        :root { --p: #2c3e50; --s: #27ae60; --d: #e74c3c; --w: #3498db; }
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; direction: rtl; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: 1px solid #ddd; font-size: 16px; }
-        button { color: white; cursor: pointer; border: none; font-weight: bold; }
-        .btn-blue { background: var(--p); }
-        .btn-green { background: var(--s); }
-        .btn-word { background: var(--w); }
-        .alert-box { border-right: 5px solid var(--d); background: #fff5f5; padding: 10px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --word: #3498db; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; direction: rtl; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; font-size: 16px; box-sizing: border-box; }
+        button { color: white; cursor: pointer; border: none; font-weight: bold; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-blue { background: var(--primary); }
+        .btn-green { background: var(--success); }
+        .btn-word { background: var(--word); }
+        .alert-card { background: #fff5f5; border-right: 6px solid var(--danger); padding: 15px; margin: 15px 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .info-text { font-size: 0.9rem; color: #666; margin-bottom: 20px; text-align: center; }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.1.4/pizzip.min.js"></script>
@@ -22,124 +25,148 @@
 <body>
 
 <div class="container">
-    <h2 style="text-align: center;">نظام تسيير الاستدعاءات</h2>
-    
-    <div id="loginSection">
-        <input type="password" id="passInput" placeholder="كلمة المرور (1234)">
-        <button class="btn-blue" onclick="checkLogin()">دخول</button>
+    <h2>نظام تسيير غيابات المتربصين</h2>
+    <p class="info-text">ملاحظة: تأكد من استخدام الأقواس {{name}} و {{dates}} داخل ملف الوورد الخاص بك.</p>
+
+    <div id="loginArea">
+        <input type="password" id="pass" placeholder="كلمة المرور (1234)">
+        <button class="btn-blue" onclick="doLogin()">دخول النظام</button>
     </div>
 
-    <div id="appSection" style="display:none;">
-        <label>إضافة متربص:</label>
-        <input type="text" id="tName" placeholder="الاسم الكامل">
-        <button class="btn-green" onclick="saveTrainee()">حفظ المتربص</button>
+    <div id="appArea" style="display:none;">
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+            <label><b>إضافة متربص جديد:</b></label>
+            <input type="text" id="traineeName" placeholder="الاسم واللقب">
+            <button class="btn-green" onclick="addNewTrainee()">+ حفظ في القاعدة</button>
+        </div>
+
+        <label><b>تسجيل غياب يومي:</b></label>
+        <select id="traineeSelect"></select>
+        <button class="btn-blue" onclick="registerAbsence()">تسجيل غائب اليوم</button>
+
+        <hr style="margin: 25px 0;">
         
-        <hr>
-        
-        <label>تسجيل غياب اليوم:</label>
-        <select id="tSelect"></select>
-        <button class="btn-blue" onclick="markAbsence()">تسجيل كـ غائب</button>
-        
-        <hr>
-        
-        <h3>الاستدعاءات المستحقة (>3 غيابات)</h3>
-        <div id="alertList"></div>
+        <h3>⚠️ المتربصون المستحقون للاستدعاء</h3>
+        <div id="alertContainer"></div>
     </div>
 </div>
 
 <script>
-    let storage = JSON.parse(localStorage.getItem('off_sys_v9')) || { trainees: [], att: [] };
+    // قاعدة البيانات المحلية
+    let db = JSON.parse(localStorage.getItem('trainee_db_final')) || { list: [], logs: [] };
 
-    function checkLogin() {
-        if(document.getElementById('passInput').value === '1234') {
-            document.getElementById('loginSection').style.display = 'none';
-            document.getElementById('appSection').style.display = 'block';
-            renderData();
-        } else alert("خطأ");
-    }
-
-    function saveTrainee() {
-        let n = document.getElementById('tName').value;
-        if(n) {
-            storage.trainees.push({id: Date.now(), name: n});
-            localStorage.setItem('off_sys_v9', JSON.stringify(storage));
-            renderData();
-            document.getElementById('tName').value = '';
+    function doLogin() {
+        if(document.getElementById('pass').value === '1234') {
+            document.getElementById('loginArea').style.display = 'none';
+            document.getElementById('appArea').style.display = 'block';
+            updateUI();
+        } else {
+            alert("كلمة مرور خاطئة");
         }
     }
 
-    function renderData() {
-        let select = document.getElementById('tSelect');
-        select.innerHTML = storage.trainees.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    function addNewTrainee() {
+        let name = document.getElementById('traineeName').value.trim();
+        if(name) {
+            db.list.push({ id: Date.now(), name: name });
+            save();
+            document.getElementById('traineeName').value = '';
+            updateUI();
+        }
+    }
+
+    function registerAbsence() {
+        let id = document.getElementById('traineeSelect').value;
+        if(id) {
+            db.logs.push({ tId: id, date: new Date().toLocaleDateString('ar-DZ') });
+            save();
+            updateUI();
+            alert("تم تسجيل الغياب بنجاح");
+        }
+    }
+
+    function updateUI() {
+        // تحديث القائمة المنسدلة
+        let select = document.getElementById('traineeSelect');
+        select.innerHTML = db.list.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+
+        // تحديث التنبيهات
+        let container = document.getElementById('alertContainer');
+        container.innerHTML = '';
         
-        let list = document.getElementById('alertList');
-        list.innerHTML = '';
-        
+        // حساب الغيابات
         let counts = {};
-        storage.att.forEach(a => counts[a.id] = (counts[a.id] || 0) + 1);
-        
+        db.logs.forEach(log => {
+            counts[log.tId] = (counts[log.tId] || 0) + 1;
+        });
+
         for(let id in counts) {
             if(counts[id] >= 3) {
-                let trainee = storage.trainees.find(t => t.id == id);
+                let trainee = db.list.find(t => t.id == id);
                 if(trainee) {
-                    list.innerHTML += `
-                        <div class="alert-box">
-                            <span>${trainee.name} (${counts[id]} غيابات)</span>
-                            <button class="btn-word" style="width:auto;" onclick="runWord('${id}')">تحميل الوورد</button>
+                    container.innerHTML += `
+                        <div class="alert-card">
+                            <div>
+                                <b>${trainee.name}</b><br>
+                                <small>مجموع الغيابات: ${counts[id]}</small>
+                            </div>
+                            <button class="btn-word" style="width:auto; padding: 8px 15px;" onclick="exportToWord('${id}')">ملء الوورد</button>
                         </div>`;
                 }
             }
         }
+        if(container.innerHTML === '') container.innerHTML = '<p style="text-align:center; color:#999;">لا يوجد استدعاءات حالياً</p>';
     }
 
-    function markAbsence() {
-        let id = document.getElementById('tSelect').value;
-        if(id) {
-            storage.att.push({id: id, date: new Date().toLocaleDateString()});
-            localStorage.setItem('off_sys_v9', JSON.stringify(storage));
-            renderData();
-            alert("تم تسجيل الغياب");
-        }
+    function save() {
+        localStorage.setItem('trainee_db_final', JSON.stringify(db));
     }
 
-    async function runWord(id) {
-        // التحقق من المكتبة
+    async function exportToWord(tId) {
+        // فحص المكتبات
         if (typeof window.PizZip === "undefined") {
-            alert("لا تزال هناك مشكلة في تحميل المكتبات من الإنترنت. يرجى فتح الملف مرة واحدة في مكان به إنترنت ليتم حفظ المكتبات في المتصفح.");
+            alert("المتصفح يمنع تحميل المكتبة. يرجى فتح الملف مرة واحدة بوجود إنترنت أو محاولة استخدام متصفح كروم.");
             return;
         }
 
-        let trainee = storage.trainees.find(t => t.id == id);
-        let dates = storage.att.filter(a => a.id == id).map(a => a.date).join(" / ");
+        let trainee = db.list.find(t => t.id == tId);
+        let absences = db.logs.filter(l => l.tId == tId).map(l => l.date).join(" - ");
 
-        alert("الآن اختر ملف القالب (الذي وضعت فيه {{name}} و {{dates}})");
+        alert("يرجى اختيار ملف القالب الخاص بك (Template.docx)");
 
-        let fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.docx';
-        fileInput.onchange = e => {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.docx';
+        input.onchange = e => {
             let reader = new FileReader();
             reader.onload = f => {
                 try {
                     let zip = new PizZip(f.target.result);
-                    let doc = new window.docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
-                    
+                    let doc = new window.docxtemplater(zip, { 
+                        paragraphLoop: true, 
+                        linebreaks: true,
+                        delimiters: { start: '{{', end: '}}' }
+                    });
+
+                    // إرسال البيانات للقالب
                     doc.setData({
                         name: trainee.name,
-                        dates: dates,
-                        today: new Date().toLocaleDateString()
+                        dates: absences,
+                        count: db.logs.filter(l => l.tId == tId).length,
+                        today: new Date().toLocaleDateString('ar-DZ')
                     });
 
                     doc.render();
-                    let out = doc.getZip().generate({type:"blob"});
+                    let out = doc.getZip().generate({ type: "blob", mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
                     saveAs(out, `استدعاء_${trainee.name}.docx`);
                 } catch (err) {
-                    alert("تأكد من أن القالب يحتوي على الأقواس {{ }} بشكل صحيح");
+                    console.error(err);
+                    alert("خطأ: تأكد من أن القالب يحتوي على {{name}} و {{dates}} بشكل صحيح.");
                 }
             };
             reader.readAsArrayBuffer(e.target.files[0]);
         };
-        fileInput.click();
+        input.click();
     }
 </script>
 </body>
