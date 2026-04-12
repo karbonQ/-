@@ -255,13 +255,16 @@ filterSpecialty.addEventListener("change", renderChart);
             let message = `تحية طيبة، نود إعلامكم أن المتربص ${t.name} قد تغيب ${map[tId]} أيام خلال هذا الشهر. يرجى مراجعة الإدارة.`;
             let whatsappUrl = `https://wa.me/${t.phone}?text=${encodeURIComponent(message)}`;
 
-            container.innerHTML += `
-                <div class="alert-item">
-                    <span><strong>${t.name}</strong> (${map[tId]} غيابات)</span>
-                    <a href="${whatsappUrl}" target="_blank" style="background:#25D366; color:white; padding:5px 10px; border-radius:8px; text-decoration:none; font-size:0.8rem;">
-                        💬 إرسال واتساب
-                    </a>
-                </div>`;
+container.innerHTML += `
+    <div class="alert-item">
+        <span><strong>${t.name}</strong> غاب ${map[tId]} أيام</span>
+        <div style="display:flex; gap:5px;">
+            <a href="${url}" target="_blank" class="wa-btn">💬 واتساب</a>
+            <button onclick="generateWordCall('${tId}')" style="background:#2980b9; font-size:0.8rem; padding:5px 10px;">
+                📄 ملف Word
+            </button>
+        </div>
+    </div>`;
         }
     }
     if (!found) container.innerHTML = '<p style="text-align:center; color:var(--success);">✅ الحضور منتظم</p>';
@@ -278,5 +281,83 @@ filterSpecialty.addEventListener("change", renderChart);
         // العودة لأعلى الصفحة
         window.scrollTo(0, 0);
     }
+}
+        async function generateWordCall(tId) {
+    const t = data.trainees.find(tr => tr.id == tId);
+    const s = data.specs.find(sp => sp.id == t.specId);
+    const month = new Date().getMonth();
+    const year = new Date().getFullYear();
+    
+    // جلب تواريخ الغياب لهذا الشهر
+    const absences = data.attendance.filter(a => 
+        a.tId == tId && 
+        a.status === 'غائب' && 
+        new Date(a.date).getMonth() === month && 
+        new Date(a.date).getFullYear() === year
+    ).map(a => a.date);
+
+    const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, AlignmentType, HeadingLevel } = docx;
+
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: [
+                new Paragraph({
+                    text: "الجمهورية الجزائرية الديمقراطية الشعبية",
+                    alignment: AlignmentType.CENTER,
+                }),
+                new Paragraph({
+                    text: "وزارة التكوين والتعليم المهنيين",
+                    alignment: AlignmentType.CENTER,
+                }),
+                new Paragraph({ text: "\n", spacing: { before: 200 } }),
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: "إشعار استدعاء بسبب الغياب", bold: true, size: 32, underline: {} }),
+                    ],
+                    alignment: AlignmentType.CENTER,
+                }),
+                new Paragraph({ text: "\n", spacing: { before: 400 } }),
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `إلى ولي أمر المتربص: `, bold: true }),
+                        new TextRun(t.name),
+                    ],
+                    alignment: AlignmentType.RIGHT,
+                }),
+                new Paragraph({
+                    children: [
+                        new TextRun({ text: `التخصص: `, bold: true }),
+                        new TextRun(s ? s.name : "غير محدد"),
+                    ],
+                    alignment: AlignmentType.RIGHT,
+                }),
+                new Paragraph({ text: "\n" }),
+                new Paragraph({
+                    text: `نحيطكم علماً أن المتربص المذكور أعلاه قد تغيب عن الدروس دون مبرر في التواريخ التالية:`,
+                    alignment: AlignmentType.RIGHT,
+                }),
+                new Paragraph({ text: absences.join(" | "), alignment: AlignmentType.RIGHT }),
+                new Paragraph({ text: "\n" }),
+                new Paragraph({
+                    text: "وعليه، يرجى التقدم إلى مصلحة التوجيه في أقرب وقت لتسوية الوضعية، وإلا سيتم اتخاذ الإجراءات القانونية اللازمة.",
+                    alignment: AlignmentType.RIGHT,
+                }),
+                new Paragraph({ text: "\n\n" }),
+                new Paragraph({
+                    text: `حرر بـ .................... في: ${new Date().toLocaleDateString()}`,
+                    alignment: AlignmentType.LEFT,
+                }),
+                new Paragraph({
+                    text: "ختم وتوقيع الإدارة",
+                    alignment: AlignmentType.LEFT,
+                }),
+            ],
+        }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+        saveAs(blob, `استدعاء_${t.name}.docx`);
+    });
 }
 }
