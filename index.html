@@ -68,7 +68,7 @@
     <h1>لوحة الإدارة المركزية</h1>
 
     <div class="card">
-        <h2>📁 إعدادات المتربصين</h2>
+        <h2> إعدادات المتربصين</h2>
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -237,27 +237,47 @@
     }
 
     async function generateWordCall(tId) {
+    try {
         const t = data.trainees.find(tr => tr.id == tId);
         const s = data.specs.find(sp => sp.id == t.specId);
         const m = new Date().getMonth(), y = new Date().getFullYear();
         const absences = data.attendance.filter(a => a.tId == tId && a.status === 'غائب' && new Date(a.date).getMonth() === m).map(a => a.date);
 
-        const { Document, Packer, Paragraph, TextRun, AlignmentType } = docx;
+        if (!window.docx) {
+            alert("خطأ: لم يتم تحميل مكتبة الملفات بعد. يرجى التأكد من الاتصال بالإنترنت وتحديث الصفحة.");
+            return;
+        }
+
+        const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
+        
         const doc = new Document({
             sections: [{
                 children: [
                     new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "إشعار استدعاء بسبب الغياب", bold: true, alignment: AlignmentType.CENTER }),
+                    new Paragraph({ text: "وزارة التكوين والتعليم المهنيين", alignment: AlignmentType.CENTER }),
+                    new Paragraph({ text: "\n", spacing: { before: 200 } }),
+                    new Paragraph({ 
+                        children: [new TextRun({ text: "إشعار استدعاء بسبب الغياب", bold: true, size: 28 })],
+                        alignment: AlignmentType.CENTER 
+                    }),
                     new Paragraph({ text: `\nالمتربص: ${t.name}`, alignment: AlignmentType.RIGHT }),
                     new Paragraph({ text: `التخصص: ${s ? s.name : 'غير محدد'}`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: `\nلقد سجل المتربص المذكور غيابات في التواريخ التالية:`, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: absences.join(" | "), alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: `\nيرجى الحضور لتبرير الغياب في أقرب وقت.`, alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: `الهاتف: ${t.phone}`, alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: `\nنحيطكم علماً أن المتربص المذكور سجل غيابات في التواريخ التالية:`, alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: absences.join(" | "), alignment: AlignmentType.RIGHT, bold: true }),
+                    new Paragraph({ text: `\nيرجى الحضور في أقرب وقت لتبرير الغياب.`, alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: `\nحرر بتاريخ: ${new Date().toLocaleDateString()}`, alignment: AlignmentType.LEFT }),
                 ]
             }]
         });
-        Packer.toBlob(doc).then(blob => saveAs(blob, `استدعاء_${t.name}.docx`));
+
+        const blob = await Packer.toBlob(doc);
+        saveAs(blob, `استدعاء_${t.name}.docx`);
+    } catch (error) {
+        console.error(error);
+        alert("حدث خطأ أثناء إنشاء الملف. تأكد من تحديث الصفحة.");
     }
+}
 
     function updateChart() {
         let d = document.getElementById('attDate').value, f = document.getElementById('filterSpec').value;
