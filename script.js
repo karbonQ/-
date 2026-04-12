@@ -265,4 +265,18 @@ filterSpecialty.addEventListener("change", renderChart);
         }
     }
     if (!found) container.innerHTML = '<p style="text-align:center; color:var(--success);">✅ الحضور منتظم</p>';
+        function logout() {
+    if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+        // إخفاء التطبيق وإظهار صفحة الدخول
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'block';
+        
+        // تفريغ حقول الدخول لزيادة الأمان
+        document.getElementById('user').value = '';
+        document.getElementById('pass').value = '';
+        
+        // العودة لأعلى الصفحة
+        window.scrollTo(0, 0);
+    }
+}
 }
