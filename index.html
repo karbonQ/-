@@ -175,9 +175,8 @@
         <h2> تسجيل الحضور اليومي</h2>
         <label>التاريخ:</label>
         <input type="date" id="attDate" onchange="refreshView()">
-        
         <label>ملاحظات إضافية:</label>
-        <input type="text" id="attNote" placeholder="سبب الغياب أو ملاحظة للمشرف...">
+        <input type="text" id="attNote" placeholder="سبب صحي ، تأخر ، غياب بدون عذر...">
 
         <div style="display:flex; gap:15px; margin-top:10px;">
             <button class="btn-present" onclick="mark('حاضر')">✔ تسجيل حضور</button>
@@ -384,7 +383,7 @@
                 found = true;
                 let t = data.trainees.find(tr => tr.id == tId);
                 if (t) {
-                    let msg = `السيد ولي أمر المتربص ${t.name}، نحيطكم علماً بأن المتربص قد سجل ${map[tId]} غيابات خلال هذا الشهر. يرجى التواصل مع الإدارة لتبرير الغياب.`;
+                    let msg = `السيد ولي أمر المتربص ${t.name}، نحيطكم علماً بأن المتربص قد سجل ${map[tId]} غيابات خلال هذا الشهر. يرجى التواصل مع إدارة المركز .`;
                     let url = `https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}`;
                     
                     container.innerHTML += `
