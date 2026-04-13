@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة الحضور والغياب - النسخة الاحترافية</title>
+    <title>نظام إدارة الحضور والغياب</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -134,18 +134,19 @@
 <body>
 
 <div id="loginPage" class="card">
-    <h1>نظام إدارة الحضور</h1>
-    <p>يرجى إدخال بيانات الوصول</p>
+    <h1>برنامج تسيير حضور/غياب المتربصين </h1>
+    <p>يرجى إدخال اسم المستخدم و كلمة المرور</p>
     <input type="text" id="user" placeholder="اسم المستخدم (admin)">
     <input type="password" id="pass" placeholder="كلمة المرور (1234)">
     <button class="btn-add" style="width:100%; padding: 15px;" onclick="login()">دخول النظام</button>
 </div>
 
 <div id="mainApp" style="display:none;" class="container">
-    <h1>لوحة الإدارة الذكية</h1>
-
+    <h1>    </h1>
+<h1>    </h1>
+    <h1>    </h1>
     <div class="card">
-        <h2>📁 إدارة التخصصات والمتربصين</h2>
+        <h2>  التخصصات و المتربصين</h2>
         <label>التخصص:</label>
         <div style="display:flex; gap:10px;">
             <select id="specList" onchange="updateTraineeList()"></select>
@@ -171,7 +172,7 @@
     </div>
 
     <div class="card">
-        <h2>📅 تسجيل الحضور اليومي</h2>
+        <h2> تسجيل الحضور اليومي</h2>
         <label>التاريخ:</label>
         <input type="date" id="attDate" onchange="refreshView()">
         
@@ -185,7 +186,7 @@
     </div>
 
     <div class="card">
-        <h2>📊 الإحصائيات وإنذارات الغياب</h2>
+        <h2> الإحصائيات و إشعارات الغياب</h2>
         
         <div style="display:flex; gap:10px; margin-bottom: 15px;">
             <select id="filterSpec" onchange="refreshView()" style="flex:1">
@@ -196,13 +197,13 @@
         <div class="chart-box"><canvas id="myChart"></canvas></div>
 
         <div id="alertSection">
-            <h3 style="color: var(--danger); font-size: 1.1rem;">⚠️ تنبيه: تجاوز 3 غيابات (هذا الشهر)</h3>
+            <h3 style="color: var(--danger); font-size: 1.1rem;">⚠️ تنبيه: المتربصين الذين تجاوز 3 غيابات (هذا الشهر)</h3>
             <div id="absenceAlerts"></div>
         </div>
 
         <hr>
-        <h3>سجل الحضور المباشر:</h3>
-        <input type="text" id="searchBox" placeholder="بحث سريع بالاسم..." oninput="renderAttendance()">
+        <h3>سجل الحضور :</h3>
+        <input type="text" id="searchBox" placeholder="بحث" oninput="renderAttendance()">
         <div id="attendanceLogs" style="margin-top:15px;"></div>
         
         <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 12px;">
@@ -216,7 +217,7 @@
 
         <div style="margin-top: 30px; border-top: 2px solid #eee; padding-top: 20px;">
             <button onclick="logout()" style="background: #7f8c8d; width: 100%; padding: 12px;">
-                ⬅️ تسجيل الخروج من النظام
+                 تسجيل الخروج  
             </button>
         </div>
     </div>
