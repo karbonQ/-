@@ -297,7 +297,7 @@
         let name = document.getElementById('traineeInput').value.trim();
         let phone = document.getElementById('traineePhone').value.trim();
         let specId = document.getElementById('specList').value;
-        if(!name || !specId || !phone) return alert("يرجى إكمال كافة البيانات (الاسم ورقم الهاتف)");
+        if(!name || !specId || !phone) return alert("يرجى إكمال كافة البيانات (الاسم و رقم هاتف ولى الأمر)");
         
         data.trainees.push({ id: Date.now(), name: name, phone: phone, specId: specId });
         document.getElementById('traineeInput').value = '';
@@ -389,7 +389,7 @@
                     container.innerHTML += `
                         <div class="alert-item">
                             <span><strong>${t.name}</strong> غاب ${map[tId]} أيام</span>
-                            <a href="${url}" target="_blank" class="wa-btn">💬 مراسلة الولي</a>
+                            <a href="${url}" target="_blank" class="wa-btn">💬 مراسلة ولى الأمر</a>
                         </div>`;
                 }
             }
