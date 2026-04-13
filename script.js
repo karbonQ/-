@@ -6,7 +6,7 @@ document.getElementById('attendanceDate').valueAsDate = new Date();
 function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    if(username === "admin" && password === "1234") {
+    if(username === "houari" && password === "1234") {
         document.getElementById('loginPage').style.display = "none";
         document.getElementById('app').style.display = "block";
         loadSpecialties();
