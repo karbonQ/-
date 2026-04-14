@@ -2,23 +2,24 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام الاستدعاءات - المسح الذكي</title>
+    <title>نظام إدارة الحضور المتكامل</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    
     <style>
-        :root { --p: #2c3e50; --s: #27ae60; --d: #e74c3c; --w: #2b579a; }
-        body { font-family: 'Cairo', sans-serif; background: #f4f7f6; padding: 20px; direction: rtl; }
-        .container { max-width: 650px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h2, h3 { text-align: center; color: var(--p); border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo'; box-sizing: border-box; }
-        button { color: white; cursor: pointer; border: none; font-weight: bold; transition: 0.2s; }
-        .btn-blue { background: var(--p); }
-        .btn-green { background: var(--s); }
-        .btn-red { background: var(--d); }
-        .alert-row { background: #fff5f5; border-right: 5px solid var(--d); padding: 15px; margin: 10px 0; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; }
-        .btn-download { background: var(--w); width: auto; padding: 8px 20px; font-size: 0.9rem; }
-        .control-group { display: flex; gap: 10px; }
-        .card { background: #fafafa; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee; }
+        :root { --primary: #2980b9; --success: #27ae60; --danger: #c0392b; --dark: #2c3e50; }
+        body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; direction: rtl; }
+        .container { max-width: 850px; margin: 0 auto; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        input, select, button { font-family: 'Cairo', sans-serif; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e1e4e8; border-radius: 10px; box-sizing: border-box; }
+        button { color: white; cursor: pointer; border: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-add { background: var(--primary); }
+        .btn-present { background: var(--success); flex: 1; }
+        .btn-absent { background: var(--danger); flex: 1; }
+        .btn-delete { background: #7f8c8d; margin-top: 5px; font-size: 0.9rem; }
+        .alert-item { background: #fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .word-btn { background: #2b579a; width: auto; padding: 8px 15px; }
+        .flex-group { display: flex; gap: 10px; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 20px 0; }
     </style>
 
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
@@ -27,150 +28,146 @@
 <body>
 
 <div class="container">
-    <h2>نظام تسيير الاستدعاءات</h2>
-    
-    <div id="loginArea">
+    <div id="loginPage" class="card" style="max-width: 400px; margin: 100px auto;">
+        <h2>دخول النظام</h2>
         <input type="password" id="pass" placeholder="كلمة المرور (1234)">
-        <button class="btn-blue" onclick="login()">دخول</button>
+        <button class="btn-add" onclick="login()">دخول</button>
     </div>
 
-    <div id="mainArea" style="display:none;">
+    <div id="mainApp" style="display:none;">
         <div class="card">
-            <label><b>إضافة متربص جديد:</b></label>
-            <input type="text" id="tName" placeholder="الاسم واللقب">
-            <button class="btn-green" onclick="addTrainee()">حفظ المتربص</button>
-        </div>
-        
-        <div class="card">
-            <label><b>إدارة غياب التاريخ المختار:</b></label>
-            <input type="date" id="attDate">
-            
-            <select id="tSelect"></select>
-            
-            <div class="control-group">
-                <button class="btn-blue" onclick="mark()">تسجيل غياب</button>
-                <button class="btn-red" onclick="deleteBySelectedDate()">مسح تسجيلات هذا التاريخ</button>
+            <h2>📊 إدارة المتربصين</h2>
+            <div class="flex-group">
+                <input type="text" id="specInput" placeholder="أضف تخصص جديد...">
+                <button class="btn-add" style="width:120px" onclick="addSpec()">إضافة</button>
             </div>
-            <p style="font-size: 0.8rem; color: #666; text-align: center; margin-top: 5px;">
-                * زر المسح سيحذف كافة غيابات المتربصين في التاريخ المختار أعلاه.
-            </p>
+            <select id="specList" onchange="updateTraineeList()"></select>
+            <hr>
+            <input type="text" id="traineeInput" placeholder="اسم المتربص الكامل">
+            <button class="btn-add" onclick="addTrainee()">حفظ المتربص</button>
         </div>
-        
-        <hr>
-        
-        <h3>الاستدعاءات المستحقة (>3 غيابات)</h3>
-        <div id="alerts"></div>
+
+        <div class="card">
+            <h2>📅 تسجيل الحضور اليومي</h2>
+            <label>اختر التاريخ:</label>
+            <input type="date" id="attDate" onchange="renderAlerts()">
+            
+            <label>اختر المتربص:</label>
+            <select id="traineeList"></select>
+            
+            <div class="flex-group">
+                <button class="btn-present" onclick="mark('حاضر')">✅ تسجيل حضور</button>
+                <button class="btn-absent" onclick="mark('غائب')">❌ تسجيل غياب</button>
+            </div>
+            
+            <button class="btn-delete" onclick="deleteBySelectedDate()">🗑️ مسح كافة تسجيلات التاريخ المختار</button>
+        </div>
+
+        <div class="card">
+            <h2>⚠️ قائمة الاستدعاءات (>3 غيابات)</h2>
+            <div id="absenceAlerts"></div>
+            <button onclick="location.reload()" style="background: #95a5a6; margin-top: 20px;">⬅️ خروج من النظام</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('sys_v13_final')) || { students: [], logs: [] };
+    let data = JSON.parse(localStorage.getItem('edu_sys_final_v14')) || { specs: [], trainees: [], attendance: [] };
 
     function login() {
         if(document.getElementById('pass').value === '1234') {
-            document.getElementById('loginArea').style.display = 'none';
-            document.getElementById('mainArea').style.display = 'block';
-            document.getElementById('attDate').valueAsDate = new Date();
-            render();
-        } else { alert("كلمة المرور 1234"); }
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            init();
+        } else alert("خطأ!");
+    }
+
+    function init() {
+        document.getElementById('attDate').valueAsDate = new Date();
+        refreshSpecs();
+        renderAlerts();
+    }
+
+    function addSpec() {
+        let n = document.getElementById('specInput').value.trim();
+        if(n) { data.specs.push({ id: Date.now(), name: n }); save(); refreshSpecs(); document.getElementById('specInput').value = ''; }
+    }
+
+    function refreshSpecs() {
+        document.getElementById('specList').innerHTML = data.specs.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        updateTraineeList();
     }
 
     function addTrainee() {
-        let n = document.getElementById('tName').value.trim();
-        if(n) { 
-            db.students.push({id: Date.now(), name: n}); 
-            save(); render(); 
-            document.getElementById('tName').value = ''; 
-        }
+        let n = document.getElementById('traineeInput').value.trim(), s = document.getElementById('specList').value;
+        if(n && s) { data.trainees.push({ id: Date.now(), name: n, specId: s }); save(); updateTraineeList(); document.getElementById('traineeInput').value = ''; }
     }
 
-    function mark() {
-        let id = document.getElementById('tSelect').value;
-        let date = document.getElementById('attDate').value;
-        if(id && date) { 
-            // منع التكرار
-            db.logs = db.logs.filter(l => !(l.id == id && l.date == date));
-            db.logs.push({id: id, date: date}); 
-            save(); render(); 
-            alert("تم تسجيل الغياب لهذا اليوم"); 
-        }
+    function updateTraineeList() {
+        let s = document.getElementById('specList').value;
+        document.getElementById('traineeList').innerHTML = data.trainees.filter(t => t.specId == s).map(t => `<option value="${t.id}">${t.name}</option>`).join('');
     }
 
-    // الدالة المعدلة: تمسح بناءً على التاريخ المختار في خانة تسجيل الغياب
+    function mark(status) {
+        let t = document.getElementById('traineeList').value, d = document.getElementById('attDate').value;
+        if(!t || !d) return alert("اختر المتربص والتاريخ");
+        data.attendance = data.attendance.filter(a => !(a.tId == t && a.date == d));
+        data.attendance.push({ tId: t, date: d, status: status });
+        save(); renderAlerts(); alert("تم التسجيل");
+    }
+
+    // دالة المسح حسب التاريخ المختار
     function deleteBySelectedDate() {
-        let targetDate = document.getElementById('attDate').value;
-        if(!targetDate) return alert("يرجى اختيار التاريخ أولاً من خانة التاريخ");
-
-        if(confirm(`هل أنت متأكد من حذف كافة الغيابات المسجلة بتاريخ: ${targetDate}؟`)) {
-            let initialCount = db.logs.length;
-            db.logs = db.logs.filter(l => l.date !== targetDate);
-            let deletedCount = initialCount - db.logs.length;
-
-            if(deletedCount > 0) {
-                save(); render();
-                alert(`تم بنجاح حذف ${deletedCount} تسجيل.`);
-            } else {
-                alert("لا توجد تسجيلات لهذا التاريخ لمسحها.");
-            }
+        let d = document.getElementById('attDate').value;
+        if(!d) return alert("يرجى اختيار تاريخ أولاً");
+        if(confirm(`هل تريد فعلاً حذف كل التسجيلات بتاريخ ${d}؟`)) {
+            data.attendance = data.attendance.filter(a => a.date !== d);
+            save(); renderAlerts(); alert("تم الحذف بنجاح");
         }
     }
 
-    function render() {
-        document.getElementById('tSelect').innerHTML = db.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        let list = document.getElementById('alerts');
-        list.innerHTML = '';
-        
+    function renderAlerts() {
+        let container = document.getElementById('absenceAlerts');
+        container.innerHTML = '';
         let counts = {};
-        db.logs.forEach(l => counts[l.id] = (counts[l.id] || 0) + 1);
-        
+        data.attendance.filter(a => a.status === 'غائب').forEach(a => counts[a.tId] = (counts[a.tId] || 0) + 1);
+
         for(let id in counts) {
             if(counts[id] >= 3) {
-                let s = db.students.find(st => st.id == id);
-                if(s) {
-                    list.innerHTML += `<div class="alert-row">
-                        <span><b>${s.name}</b> (${counts[id]} غيابات)</span>
-                        <button class="btn-download" onclick="createDoc('${id}')">تحميل الوورد</button>
-                    </div>`;
+                let t = data.trainees.find(tr => tr.id == id);
+                if(t) {
+                    container.innerHTML += `
+                        <div class="alert-item">
+                            <span><strong>${t.name}</strong> (${counts[id]} غيابات)</span>
+                            <button class="word-btn" onclick="generateDoc('${id}')">📄 وورد</button>
+                        </div>`;
                 }
             }
         }
+        if(!container.innerHTML) container.innerHTML = '<p style="text-align:center;">لا يوجد استدعاءات حالياً</p>';
     }
 
-    function save() { localStorage.setItem('sys_v13_final', JSON.stringify(db)); }
+    function save() { localStorage.setItem('edu_sys_final_v14', JSON.stringify(data)); }
 
-    async function createDoc(id) {
-        if (typeof window.docx === "undefined") return alert("المكتبة غير محملة");
-        try {
-            const student = db.students.find(s => s.id == id);
-            const dates = db.logs.filter(l => l.id == id).map(l => l.date).join(" / ");
-            const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-
-            const doc = new Document({
-                sections: [{
-                    children: [
-                        new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
-                        new Paragraph({ text: "وزارة التكوين والتعليم المهنيين", alignment: AlignmentType.CENTER }),
-                        new Paragraph({ text: "\n" }),
-                        new Paragraph({
-                            children: [new TextRun({ text: "إشعار بتبليغ غيابات", bold: true, size: 32 })],
-                            alignment: AlignmentType.CENTER,
-                        }),
-                        new Paragraph({ text: "\n" }),
-                        new Paragraph({
-                            children: [new TextRun({ text: "اسم المتربص: ", bold: true }), new TextRun({ text: student.name })],
-                            alignment: AlignmentType.RIGHT
-                        }),
-                        new Paragraph({ text: "التواريخ: " + dates, alignment: AlignmentType.RIGHT }),
-                        new Paragraph({ text: "\n" }),
-                        new Paragraph({ children: [new TextRun({ text: "حرر في: " + new Date().toLocaleDateString('ar-DZ') })], alignment: AlignmentType.LEFT }),
-                        new Paragraph({ children: [new TextRun({ text: "ختم الإدارة", bold: true })], alignment: AlignmentType.LEFT })
-                    ],
-                }],
-            });
-
-            const blob = await Packer.toBlob(doc);
-            saveAs(blob, `استدعاء_${student.name}.docx`);
-        } catch (err) { alert("خطأ في التوليد"); }
+    async function generateDoc(tId) {
+        const t = data.trainees.find(tr => tr.id == tId);
+        const abs = data.attendance.filter(a => a.tId == tId && a.status === 'غائب').map(a => a.date).join(" / ");
+        
+        const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
+                    new Paragraph({ text: "إشعار بتبليغ غيابات", alignment: AlignmentType.CENTER, heading: "Heading1" }),
+                    new Paragraph({ text: "\n" }),
+                    new Paragraph({ children: [new TextRun({ text: "اسم المتربص: ", bold: true }), new TextRun({ text: t.name })], alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: "تواريخ الغياب: " + abs, alignment: AlignmentType.RIGHT }),
+                    new Paragraph({ text: "\n" }),
+                    new Paragraph({ text: "حرر في: " + new Date().toLocaleDateString('ar-DZ'), alignment: AlignmentType.LEFT })
+                ]
+            }]
+        });
+        Packer.toBlob(doc).then(blob => saveAs(blob, `استدعاء_${t.name}.docx`));
     }
 </script>
 </body>
