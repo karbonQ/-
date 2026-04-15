@@ -159,7 +159,7 @@
                         <div class="alert-item">
                             <span><strong>${t.name}</strong> (${counts[id]} غيابات)</span>
                             <div class="action-btns">
-                                <a href="https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn">واتساب</a>
+                                <a href="https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn">ارسال رسالة الى ولى أمر المتربص</a>
                                 <button class="word-btn" onclick="generateDoc('${id}')">وورد</button>
                             </div>
                         </div>`;
@@ -196,7 +196,9 @@
             sections: [{
                 children: [
                     new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "إشعار غياب", alignment: AlignmentType.CENTER, heading: "Heading1" }),
+                      new Paragraph({ text: "مركز التكوبن المهني و التمهين الشهيد أحمد زبانة السوقر1 ", alignment: AlignmentType.CENTER }),
+
+                    new Paragraph({ text: " إشعار بغياب غير نظامي", alignment: AlignmentType.CENTER, heading: "Heading1" }),
                     new Paragraph({ text: "\n" }),
                     new Paragraph({ children: [new TextRun({ text: "المتربص: ", bold: true }), new TextRun({ text: t.name })], alignment: AlignmentType.RIGHT }),
                     new Paragraph({ text: "تواريخ الغياب: " + abs, alignment: AlignmentType.RIGHT }),
