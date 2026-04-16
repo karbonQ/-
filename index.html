@@ -250,17 +250,17 @@
 
                 // بيانات المتربص
                 new Paragraph({
-                    alignment: AlignmentType.RIGHT,
+                    alignment: AlignmentType.right,
                     bidirectional: true,
                     spacing: { line: 400 },
                     children: [
-                        new TextRun({ text: "اسم ولقب المتربص: ", bold: true, size: 28, font: "Cairo" }),
+                        new TextRun({ text: "اسم ولقب المتربص: ", bold: true, size: 28, font: "Cairo" ,right}),
                         new TextRun({ text: t.name, size: 28, font: "Cairo", color: "2980b9" }),
                     ],
                 }),
 
                 new Paragraph({
-                    alignment: AlignmentType.RIGHT,
+                    alignment: AlignmentType.right,
                     bidirectional: true,
                     spacing: { line: 400 },
                     children: [
