@@ -253,6 +253,8 @@
                     bidirectional: true,
                     children: [
                         new TextRun({ text: "وزارة التكوين والتعليم المهنيين", bold: true, size: 24, font: "Cairo" }),
+                         new TextRun({ text: " مديرية التكوين والتعليم المهنيين لولاية تيارت", bold: true, size: 24, font: "Cairo" }),
+                         new TextRun({ text: "مركز التكوين المهني و التمهين الشهيد أحمد زبانة السوقر1", bold: true, size: 24, font: "Cairo" }),
                     ],
                 }),
 
@@ -267,11 +269,11 @@
                         top: { color: "000000", space: 10, style: BorderStyle.SINGLE, size: 6 },
                     },
                     children: [
-                        new TextRun({ text: "إشعار بتبليغ غيابات للمتربص", bold: true, size: 36, font: "Cairo" }),
+                        new TextRun({ text: "إشعار بغياب غير نظامي ", bold: true, size: 36, font: "Cairo" }),
                     ],
                 }),
 
-                new Paragraph({ text: "", spacing: { before: 600 } }),
+                new Paragraph({ text: "", spacing: { before: 400 } }),
 
                 // بيانات المتربص
                 new Paragraph({
@@ -309,7 +311,7 @@
                     spacing: { before: 200, after: 500 },
                     children: [
                         new TextRun({ 
-                            text: abs.join(" - "), 
+                            text: abs.join("/"), 
                             bold: true, 
                             size: 24, 
                             font: "Cairo", 
@@ -326,7 +328,7 @@
                     alignment: AlignmentType.LEFT,
                     bidirectional: true,
                     children: [
-                        new TextRun({ text: `حرر بـ: .................... في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" }),
+                        new TextRun({ text: `حرر بـ: .................... في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" ?left}),
                     ],
                 }),
                 
@@ -343,7 +345,7 @@
     });
 
     Packer.toBlob(doc).then(blob => {
-        saveAs(blob, `استدعاء_${t.name}.docx`);
+        saveAs(blob, `:تغيب غير النظامي الخاص بـ_${t.name}.docx`);
     });
 }
 </script>
