@@ -2,29 +2,43 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>النظام الشامل - إدارة كاملة</title>
+    <title>النظام المتكامل لإدارة الحضور</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2980b9; --success: #27ae60; --danger: #c0392b; --whatsapp: #25D366; --word: #2b579a; --edit: #f39c12; }
+        :root { --primary: #2980b9; --success: #27ae60; --danger: #c0392b; --edit: #f39c12; --word: #2b579a; --dark: #2c3e50; }
         body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; direction: rtl; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        h2 { color: var(--primary); text-align: center; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        input, select, button { font-family: 'Cairo', sans-serif; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e1e4e8; border-radius: 10px; box-sizing: border-box; }
-        button { color: white; cursor: pointer; border: none; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-add { background: var(--primary); }
-        .btn-edit { background: var(--edit); width: auto; padding: 5px 10px; font-size: 0.8rem; }
-        .btn-delete-small { background: var(--danger); width: auto; padding: 5px 10px; font-size: 0.8rem; }
-        .btn-present { background: var(--success); flex: 1; }
-        .btn-absent { background: var(--danger); flex: 1; }
-        .flex-group { display: flex; gap: 10px; align-items: center; }
-        .alert-item { background: #fffaf0; border: 1px solid #feebc8; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .action-btns { display: flex; gap: 5px; }
-        .wa-btn { background: var(--whatsapp); padding: 8px 12px; border-radius: 8px; text-decoration: none; color: white; font-size: 0.8rem; font-weight: bold; }
-        .word-btn { background: var(--word); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; width: auto; }
-        .stats-container { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: center; }
-        #chartDiv { max-width: 220px; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; padding: 5px 10px; border-radius: 8px; margin-bottom: 5px; border: 1px solid #eee; }
+        .container { max-width: 950px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        h2 { color: var(--dark); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        
+        input, select, button { font-family: 'Cairo'; width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .btn-save { background: var(--success); color: white; border: none; cursor: pointer; }
+        
+        /* تنسيق جدول النتائج الجديد */
+        .table-container { margin-top: 15px; max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: center; font-size: 0.9rem; }
+        th { background: #f8f9fa; position: sticky; top: 0; }
+        .status-present { color: var(--success); font-weight: bold; }
+        .status-absent { color: var(--danger); font-weight: bold; }
+
+        /* أزرار الإدارة */
+        .admin-controls { display: flex; gap: 5px; justify-content: center; }
+        .edit-btn { background: var(--edit); color: white; width: auto !important; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; border: none; border-radius: 5px; }
+        .del-btn { background: var(--danger); color: white; width: auto !important; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; border: none; border-radius: 5px; }
+        
+        .item-list { border: 1px solid #eee; border-radius: 8px; max-height: 150px; overflow-y: auto; background: #fafafa; margin-top: 5px; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
+        
+        .flex-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .flex-1 { flex: 1; min-width: 300px; }
+        
+        .wa-btn { background: #25D366; color: white; padding: 5px 12px; text-decoration: none; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
+        .word-btn { background: var(--word); color: white; padding: 5px 12px; border: none; border-radius: 5px; font-size: 0.8rem; cursor: pointer; }
+        
+        #chartArea { max-width: 200px; margin: 0 auto; }
     </style>
 
     <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
@@ -34,234 +48,201 @@
 <body>
 
 <div class="container">
-    <div id="loginPage" class="card" style="max-width: 400px; margin: 80px auto;">
+    <div id="loginPanel" class="card" style="max-width: 400px; margin: 50px auto;">
         <h2>دخول النظام</h2>
-        <input type="password" id="pass" placeholder="كلمة المرور">
-        <button class="btn-add" onclick="login()">دخول</button>
+        <input type="password" id="sysPass" placeholder="كلمة المرور (1234)">
+        <button class="btn-main" onclick="doLogin()">دخول</button>
     </div>
 
-    <div id="mainApp" style="display:none;">
-        <div class="card">
-            <h2>📁 إدارة التخصصات</h2>
-            <div class="flex-group">
-                <input type="text" id="specInput" placeholder="اسم التخصص الجديد...">
-                <button class="btn-add" style="width:120px" onclick="addSpec()">إضافة</button>
-            </div>
-            <div id="specListManager" style="max-height: 150px; overflow-y: auto; margin-top: 10px;"></div>
-        </div>
-
-        <div class="card">
-            <h2>👥 إدارة المتربصين</h2>
-            <label>التخصص الحالي:</label>
-            <select id="specSelectForTrainee" onchange="updateTraineeList()"></select>
-            <hr>
-            <input type="text" id="traineeInput" placeholder="اسم المتربص الكامل">
-            <input type="text" id="traineePhone" placeholder="رقم الهاتف (213...)">
-            <button class="btn-add" onclick="addTrainee()">حفظ المتربص</button>
-            <div id="traineeListManager" style="max-height: 200px; overflow-y: auto; margin-top: 15px;"></div>
-        </div>
-
-        <div class="card">
-            <h2>📅 الحضور والغياب</h2>
-            <div class="stats-container">
-                <div style="flex: 1; min-width: 250px;">
-                    <input type="date" id="attDate" onchange="refreshAll()">
-                    <select id="attTraineeList"></select>
-                    <div class="flex-group">
-                        <button class="btn-present" onclick="mark('حاضر')">حاضر</button>
-                        <button class="btn-absent" onclick="mark('غائب')">غائب</button>
-                    </div>
-                    <button style="background:#7f8c8d; font-size: 0.8rem;" onclick="deleteByDate()">🗑️ مسح سجلات هذا التاريخ</button>
+    <div id="appPanel" style="display:none;">
+        <div class="flex-group">
+            <div class="card flex-1">
+                <h2>📁 إدارة التخصصات</h2>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="specNameIn" placeholder="تخصص جديد...">
+                    <button class="btn-main" style="width:80px" onclick="addSpec()">إضافة</button>
                 </div>
-                <div id="chartDiv"><canvas id="myChart"></canvas></div>
+                <div id="specUI" class="item-list"></div>
+            </div>
+
+            <div class="card flex-1">
+                <h2>👥 إدارة المتربصين</h2>
+                <select id="specFilter" onchange="renderTrainees()"></select>
+                <input type="text" id="traineeNameIn" placeholder="اسم المتربص">
+                <input type="text" id="traineePhoneIn" placeholder="الهاتف (213...)">
+                <button class="btn-save" onclick="addTrainee()">حفظ المتربص</button>
+                <div id="traineeUI" class="item-list"></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>⚠️ تنبيهات الاستدعاء</h2>
-            <div id="absenceAlerts"></div>
-            <button onclick="location.reload()" style="background: #95a5a6; margin-top: 20px;">خروج</button>
+            <h2>📅 تسجيل الحضور والغياب اليومي</h2>
+            <div class="flex-group">
+                <div style="flex: 2;">
+                    <input type="date" id="targetDate" onchange="refreshAll()">
+                    <select id="traineeSelect"></select>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-save" onclick="record('حاضر')">✅ تسجيل كحاضر</button>
+                        <button class="btn-main" style="background:var(--danger)" onclick="record('غائب')">❌ تسجيل كغائب</button>
+                    </div>
+                </div>
+                <div style="flex: 1;" id="chartArea">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 سجل نتائج غيابات اليوم</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>المتربص</th>
+                            <th>الحالة</th>
+                            <th>تعديل سريع</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody"></tbody>
+                </table>
+            </div>
+            <button style="background:#7f8c8d; color:white; margin-top:10px; width:auto; padding:8px 15px;" onclick="clearHistory()">🗑️ مسح كل سجلات هذا التاريخ</button>
+        </div>
+
+        <div class="card">
+            <h2>⚠️ استدعاءات مستحقة (>3 غيابات)</h2>
+            <div id="alertUI"></div>
+            <button onclick="location.reload()" style="background:#95a5a6; margin-top:20px; width:100px;">خروج</button>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('edu_pro_v16')) || { specs: [], trainees: [], attendance: [] };
-    let myChart = null;
+    let db = JSON.parse(localStorage.getItem('abs_master_final')) || { specs: [], trainees: [], logs: [] };
+    let chartObj = null;
 
-    function login() {
-        if(document.getElementById('pass').value === '1234') {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            init();
+    function doLogin() {
+        if(document.getElementById('sysPass').value === '1234') {
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('appPanel').style.display = 'block';
+            document.getElementById('targetDate').valueAsDate = new Date();
+            renderSpecs();
+            refreshAll();
         }
-    }
-
-    function init() {
-        document.getElementById('attDate').valueAsDate = new Date();
-        refreshSpecs();
-        refreshAll();
     }
 
     // إدارة التخصصات
     function addSpec() {
-        let n = document.getElementById('specInput').value.trim();
-        if(n) { db.specs.push({ id: Date.now(), name: n }); save(); refreshSpecs(); document.getElementById('specInput').value=''; }
+        let n = document.getElementById('specNameIn').value.trim();
+        if(n) { db.specs.push({ id: Date.now(), name: n }); save(); renderSpecs(); document.getElementById('specNameIn').value = ''; }
     }
-
-    function editSpec(id) {
-        let spec = db.specs.find(s => s.id == id);
-        let newName = prompt("تعديل اسم التخصص:", spec.name);
-        if(newName) { spec.name = newName; save(); refreshSpecs(); }
-    }
-
-    function deleteSpec(id) {
-        if(confirm("هل تريد حذف التخصص وكل المتربصين التابعين له؟")) {
-            db.specs = db.specs.filter(s => s.id != id);
-            db.trainees = db.trainees.filter(t => t.specId != id);
-            save(); refreshSpecs(); refreshAll();
-        }
-    }
-
-    function refreshSpecs() {
-        let html = '';
-        let options = '';
+    function renderSpecs() {
+        let ui = document.getElementById('specUI'), filter = document.getElementById('specFilter');
+        ui.innerHTML = ''; filter.innerHTML = '';
         db.specs.forEach(s => {
-            html += `<div class="item-row"><span>${s.name}</span>
-                <div class="action-btns">
-                    <button class="btn-edit" onclick="editSpec(${s.id})">✎</button>
-                    <button class="btn-delete-small" onclick="deleteSpec(${s.id})">✕</button>
-                </div></div>`;
-            options += `<option value="${s.id}">${s.name}</option>`;
+            ui.innerHTML += `<div class="item-row"><span>${s.name}</span><div class="admin-controls">
+                <button class="edit-btn" onclick="editSpec(${s.id})">✎</button>
+                <button class="del-btn" onclick="delSpec(${s.id})">✕</button></div></div>`;
+            filter.innerHTML += `<option value="${s.id}">${s.name}</option>`;
         });
-        document.getElementById('specListManager').innerHTML = html;
-        document.getElementById('specSelectForTrainee').innerHTML = options;
-        updateTraineeList();
+        renderTrainees();
     }
+    function editSpec(id) { let s = db.specs.find(x => x.id == id); let n = prompt("تعديل الاسم:", s.name); if(n){ s.name = n; save(); renderSpecs(); } }
+    function delSpec(id) { if(confirm("حذف التخصص وكل متربصيه؟")) { db.specs = db.specs.filter(x => x.id != id); db.trainees = db.trainees.filter(x => x.specId != id); save(); renderSpecs(); refreshAll(); } }
 
     // إدارة المتربصين
     function addTrainee() {
-        let n = document.getElementById('traineeInput').value.trim();
-        let p = document.getElementById('traineePhone').value.trim();
-        let s = document.getElementById('specSelectForTrainee').value;
-        if(n && s) { 
-            db.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); 
-            save(); updateTraineeList(); 
-            document.getElementById('traineeInput').value = ''; document.getElementById('traineePhone').value = '';
-        }
+        let n = document.getElementById('traineeNameIn').value.trim(), p = document.getElementById('traineePhoneIn').value.trim(), s = document.getElementById('specFilter').value;
+        if(n && s) { db.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); save(); renderTrainees(); document.getElementById('traineeNameIn').value=''; document.getElementById('traineePhoneIn').value=''; }
     }
-
-    function editTrainee(id) {
-        let t = db.trainees.find(x => x.id == id);
-        let n = prompt("تعديل الاسم:", t.name);
-        let p = prompt("تعديل الهاتف:", t.phone);
-        if(n) { t.name = n; t.phone = p; save(); updateTraineeList(); refreshAll(); }
-    }
-
-    function deleteTrainee(id) {
-        if(confirm("حذف المتربص وسجل غياباته؟")) {
-            db.trainees = db.trainees.filter(x => x.id != id);
-            db.attendance = db.attendance.filter(x => x.tId != id);
-            save(); updateTraineeList(); refreshAll();
-        }
-    }
-
-    function updateTraineeList() {
-        let sId = document.getElementById('specSelectForTrainee').value;
-        let filtered = db.trainees.filter(t => t.specId == sId);
-        
-        let html = '';
-        let options = '';
-        filtered.forEach(t => {
-            html += `<div class="item-row"><span>${t.name}</span>
-                <div class="action-btns">
-                    <button class="btn-edit" onclick="editTrainee(${t.id})">✎</button>
-                    <button class="btn-delete-small" onclick="deleteTrainee(${t.id})">✕</button>
-                </div></div>`;
-            options += `<option value="${t.id}">${t.name}</option>`;
+    function renderTrainees() {
+        let sId = document.getElementById('specFilter').value, ui = document.getElementById('traineeUI'), sel = document.getElementById('traineeSelect');
+        ui.innerHTML = ''; sel.innerHTML = '';
+        db.trainees.filter(t => t.specId == sId).forEach(t => {
+            ui.innerHTML += `<div class="item-row"><span>${t.name}</span><div class="admin-controls">
+                <button class="edit-btn" onclick="editTrainee(${t.id})">✎</button>
+                <button class="del-btn" onclick="delTrainee(${t.id})">✕</button></div></div>`;
+            sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
         });
-        document.getElementById('traineeListManager').innerHTML = html;
-        document.getElementById('attTraineeList').innerHTML = options;
     }
+    function editTrainee(id) { let t = db.trainees.find(x => x.id == id); let n = prompt("الاسم:", t.name); let p = prompt("الهاتف:", t.phone); if(n){ t.name = n; t.phone = p; save(); renderTrainees(); refreshAll(); } }
+    function delTrainee(id) { if(confirm("حذف المتربص؟")) { db.trainees = db.trainees.filter(x => x.id != id); db.logs = db.logs.filter(x => x.tId != id); save(); renderTrainees(); refreshAll(); } }
 
-    // الحضور والغياب
-    function mark(status) {
-        let t = document.getElementById('attTraineeList').value, d = document.getElementById('attDate').value;
+    // التسجيل والجدول والإحصائيات
+    function record(status) {
+        let t = document.getElementById('traineeSelect').value, d = document.getElementById('targetDate').value;
         if(!t || !d) return;
-        db.attendance = db.attendance.filter(a => !(a.tId == t && a.date == d));
-        db.attendance.push({ tId: t, date: d, status: status });
+        db.logs = db.logs.filter(x => !(x.tId == t && x.date == d));
+        db.logs.push({ tId: t, date: d, status: status });
         save(); refreshAll();
     }
 
-    function deleteByDate() {
-        let d = document.getElementById('attDate').value;
-        if(confirm(`حذف كل سجلات ${d}؟`)) {
-            db.attendance = db.attendance.filter(a => a.date !== d);
-            save(); refreshAll();
-        }
+    function toggleStatus(tId, date) {
+        let log = db.logs.find(x => x.tId == tId && x.date == date);
+        if(log) { log.status = log.status === 'حاضر' ? 'غائب' : 'حاضر'; save(); refreshAll(); }
     }
 
     function refreshAll() {
-        renderAlerts();
+        renderTable();
         updateChart();
+        renderAlerts();
     }
 
-    function renderAlerts() {
-        let container = document.getElementById('absenceAlerts');
-        container.innerHTML = '';
-        let counts = {};
-        db.attendance.filter(a => a.status === 'غائب').forEach(a => counts[a.tId] = (counts[a.tId] || 0) + 1);
-
-        for(let id in counts) {
-            if(counts[id] >= 3) {
-                let t = db.trainees.find(tr => tr.id == id);
-                if(t) {
-                    let msg = `تنبيه غياب: المتربص ${t.name} غاب ${counts[id]} مرات.`;
-                    container.innerHTML += `
-                        <div class="alert-item">
-                            <span><strong>${t.name}</strong></span>
-                            <div class="action-btns">
-                                <a href="https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}" target="_blank" class="wa-btn">واتساب</a>
-                                <button class="word-btn" onclick="generateDoc('${id}')">وورد</button>
-                            </div>
-                        </div>`;
-                }
+    function renderTable() {
+        let d = document.getElementById('targetDate').value, tbody = document.getElementById('logsTableBody');
+        tbody.innerHTML = '';
+        db.logs.filter(x => x.date === d).forEach(log => {
+            let t = db.trainees.find(x => x.id == log.tId);
+            if(t) {
+                let sClass = log.status === 'حاضر' ? 'status-present' : 'status-absent';
+                tbody.innerHTML += `<tr><td>${t.name}</td><td class="${sClass}">${log.status}</td>
+                <td><button class="edit-btn" onclick="toggleStatus(${log.tId}, '${log.date}')">تغيير الحالة</button></td></tr>`;
             }
-        }
+        });
     }
 
     function updateChart() {
-        let d = document.getElementById('attDate').value;
-        let logs = db.attendance.filter(a => a.date === d);
-        let p = logs.filter(a => a.status === 'حاضر').length;
-        let ab = logs.filter(a => a.status === 'غائب').length;
-        if(myChart) myChart.destroy();
-        myChart = new Chart(document.getElementById('myChart'), {
+        let d = document.getElementById('targetDate').value, logs = db.logs.filter(x => x.date === d);
+        let p = logs.filter(x => x.status === 'حاضر').length, ab = logs.filter(x => x.status === 'غائب').length;
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(document.getElementById('dailyChart'), {
             type: 'doughnut',
             data: { labels: ['حاضر', 'غائب'], datasets: [{ data: [p, ab], backgroundColor: ['#27ae60', '#c0392b'] }] },
             options: { plugins: { legend: { display: false } } }
         });
     }
 
-    function save() { localStorage.setItem('edu_pro_v16', JSON.stringify(db)); }
+    function renderAlerts() {
+        let ui = document.getElementById('alertUI'); ui.innerHTML = '';
+        let counts = {};
+        db.logs.filter(x => x.status === 'غائب').forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
+        for(let id in counts) {
+            if(counts[id] >= 3) {
+                let t = db.trainees.find(x => x.id == id);
+                if(t) ui.innerHTML += `<div class="item-row" style="background:#fff5f5"><span>${t.name} (${counts[id]} غيابات)</span>
+                    <div class="admin-controls">
+                        <a class="wa-btn" href="https://wa.me/${t.phone}?text=تنبيه غياب للمتربص ${t.name}" target="_blank">واتساب</a>
+                        <button class="word-btn" onclick="makeWord(${id})">وورد</button>
+                    </div></div>`;
+            }
+        }
+    }
 
-    async function generateDoc(tId) {
-        const t = db.trainees.find(tr => tr.id == tId);
-        const abs = db.attendance.filter(a => a.tId == tId && a.status === 'غائب').map(a => a.date).join(" / ");
+    function clearHistory() { let d = document.getElementById('targetDate').value; if(confirm(`مسح سجلات ${d}؟`)) { db.logs = db.logs.filter(x => x.date !== d); save(); refreshAll(); } }
+    function save() { localStorage.setItem('abs_master_final', JSON.stringify(db)); }
+
+    async function makeWord(id) {
+        let t = db.trainees.find(x => x.id == id), abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date).join(" / ");
         const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-        const doc = new Document({
-            sections: [{
-                children: [
-                    new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
-                    new Paragraph({ text: "إشعار غياب", alignment: AlignmentType.CENTER, heading: "Heading1" }),
-                    new Paragraph({ text: "\n" }),
-                    new Paragraph({ children: [new TextRun({ text: "المتربص: ", bold: true }), new TextRun({ text: t.name })], alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: "تواريخ الغياب: " + abs, alignment: AlignmentType.RIGHT }),
-                    new Paragraph({ text: "\n" }),
-                    new Paragraph({ text: "حرر في: " + new Date().toLocaleDateString('ar-DZ'), alignment: AlignmentType.LEFT })
-                ]
-            }]
-        });
+        const doc = new Document({ sections: [{ children: [
+            new Paragraph({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", alignment: AlignmentType.CENTER }),
+            new Paragraph({ text: "إشعار بتبليغ غيابات", alignment: AlignmentType.CENTER, heading: "Heading1" }),
+            new Paragraph({ text: "\n" }),
+            new Paragraph({ children: [new TextRun({ text: "اسم المتربص: ", bold: true }), new TextRun({ text: t.name })], alignment: AlignmentType.RIGHT }),
+            new Paragraph({ text: "التواريخ: " + abs, alignment: AlignmentType.RIGHT }),
+            new Paragraph({ text: "\n" }),
+            new Paragraph({ text: "حرر في: " + new Date().toLocaleDateString('ar-DZ'), alignment: AlignmentType.LEFT })
+        ] }] });
         Packer.toBlob(doc).then(blob => saveAs(blob, `استدعاء_${t.name}.docx`));
     }
 </script>
