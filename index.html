@@ -242,7 +242,7 @@
                         top: { color: "000000", space: 10, style: BorderStyle.SINGLE, size: 6 },
                     },
                     children: [
-                        new TextRun({ text: "إشعار بتبليغ غيابات للمتربص", bold: true, size: 36, font: "Cairo" }),
+                        new TextRun({ text: "إشعار بتبليغ غيابات للمتربص", bold: true, size: 36, font: "Cairo" ,underline: {}}),
                     ],
                 }),
 
@@ -298,15 +298,15 @@
 
                 // التوقيع والتاريخ
                 new Paragraph({
-                    alignment: AlignmentType.LEFT,
+                    alignment: AlignmentType.right,
                     bidirectional: true,
                     children: [
-                        new TextRun({ text: `حرر بـ: .................... في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" }),
+                        new TextRun({ text: `حرر في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" }),
                     ],
                 }),
                 
                 new Paragraph({
-                    alignment: AlignmentType.LEFT,
+                    alignment: AlignmentType.right,
                     bidirectional: true,
                     spacing: { before: 400 },
                     children: [
