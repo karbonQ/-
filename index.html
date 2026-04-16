@@ -206,21 +206,121 @@
     function clearHistory() { let d = document.getElementById('targetDate').value; if(confirm(`مسح سجلات ${d}؟`)) { db.logs = db.logs.filter(x => x.date !== d); save(); refreshAll(); } }
     function save() { localStorage.setItem('abs_final_stable', JSON.stringify(db)); }
 
-    async function makeWord(id) {
-        let t = db.trainees.find(x => x.id == id), abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date);
-        const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } = window.docx;
-        const doc = new Document({ sections: [{ children: [
-            new Paragraph({ alignment: AlignmentType.CENTER, bidirectional: true, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 28, font: "Cairo" })] }),
-            new Paragraph({ text: "", spacing: { after: 400 } }),
-            new Paragraph({ alignment: AlignmentType.CENTER, bidirectional: true, border: { bottom: { color: "000000", style: BorderStyle.SINGLE, size: 6 } }, children: [new TextRun({ text: "إشعار بتبليغ غيابات", bold: true, size: 36, font: "Cairo" })] }),
-            new Paragraph({ text: "", spacing: { after: 400 } }),
-            new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28, font: "Cairo" })] }),
-            new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "التواريخ: " + abs.join(" - "), size: 24, font: "Cairo" })] }),
-            new Paragraph({ text: "", spacing: { before: 800 } }),
-            new Paragraph({ alignment: AlignmentType.LEFT, bidirectional: true, children: [new TextRun({ text: "ختم الإدارة", bold: true, size: 26, font: "Cairo" })] })
-        ] }] });
-        Packer.toBlob(doc).then(blob => saveAs(blob, `استدعاء_${t.name}.docx`));
-    }
+   async function makeWord(id) {
+    const t = db.trainees.find(x => x.id == id);
+    const abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date);
+    
+    const { Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle } = window.docx;
+
+    const doc = new Document({
+        sections: [{
+            children: [
+                // رأس الصفحة
+                new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    bidirectional: true, // تفعيل اتجاه اليمين لليسار
+                    children: [
+                        new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 28, font: "Cairo" }),
+                    ],
+                }),
+                new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    bidirectional: true,
+                    children: [
+                        new TextRun({ text: "وزارة التكوين والتعليم المهنيين", bold: true, size: 24, font: "Cairo" }),
+                    ],
+                }),
+
+                new Paragraph({ text: "", spacing: { before: 400, after: 400 } }),
+
+                // عنوان المستند مؤطر
+                new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    bidirectional: true,
+                    border: {
+                        bottom: { color: "000000", space: 10, style: BorderStyle.SINGLE, size: 6 },
+                        top: { color: "000000", space: 10, style: BorderStyle.SINGLE, size: 6 },
+                    },
+                    children: [
+                        new TextRun({ text: "إشعار بتبليغ غيابات للمتربص", bold: true, size: 36, font: "Cairo" }),
+                    ],
+                }),
+
+                new Paragraph({ text: "", spacing: { before: 600 } }),
+
+                // بيانات المتربص
+                new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    bidirectional: true,
+                    spacing: { line: 400 },
+                    children: [
+                        new TextRun({ text: "اسم ولقب المتربص: ", bold: true, size: 28, font: "Cairo" }),
+                        new TextRun({ text: t.name, size: 28, font: "Cairo", color: "2980b9" }),
+                    ],
+                }),
+
+                new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    bidirectional: true,
+                    spacing: { line: 400 },
+                    children: [
+                        new TextRun({ text: "عدد الغيابات الإجمالي: ", bold: true, size: 28, font: "Cairo" }),
+                        new TextRun({ text: abs.length.toString(), size: 28, font: "Cairo", color: "c0392b" }),
+                    ],
+                }),
+
+                new Paragraph({ text: "", spacing: { before: 300 } }),
+
+                // تفاصيل التواريخ
+                new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    bidirectional: true,
+                    children: [new TextRun({ text: "تفاصيل تواريخ الغياب:", bold: true, size: 24, font: "Cairo" })],
+                }),
+                
+                new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    bidirectional: true,
+                    spacing: { before: 200, after: 500 },
+                    children: [
+                        new TextRun({ 
+                            text: abs.join(" - "), 
+                            bold: true, 
+                            size: 24, 
+                            font: "Cairo", 
+                            color: "555555",
+                            shading: { fill: "F2F2F2" }
+                        }),
+                    ],
+                }),
+
+                new Paragraph({ text: "", spacing: { before: 800 } }),
+
+                // التوقيع والتاريخ
+                new Paragraph({
+                    alignment: AlignmentType.LEFT,
+                    bidirectional: true,
+                    children: [
+                        new TextRun({ text: `حرر بـ: .................... في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" }),
+                    ],
+                }),
+                
+                new Paragraph({
+                    alignment: AlignmentType.LEFT,
+                    bidirectional: true,
+                    spacing: { before: 400 },
+                    children: [
+                        new TextRun({ text: "ختم وتوقيع الإدارة", bold: true, size: 26, font: "Cairo", underline: {} }),
+                    ],
+                }),
+            ],
+        }],
+    });
+
+    Packer.toBlob(doc).then(blob => {
+        saveAs(blob, `استدعاء_${t.name}.docx`);
+    });
+}
 </script>
 </body>
 </html>
