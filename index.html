@@ -206,7 +206,7 @@
     function clearHistory() { let d = document.getElementById('targetDate').value; if(confirm(`مسح سجلات ${d}؟`)) { db.logs = db.logs.filter(x => x.date !== d); save(); refreshAll(); } }
     function save() { localStorage.setItem('abs_final_stable', JSON.stringify(db)); }
 
-   async function makeWord(id) {
+async function makeWord(id) {
     const t = db.trainees.find(x => x.id == id);
     const abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date);
     
@@ -242,7 +242,7 @@
                         top: { color: "000000", space: 10, style: BorderStyle.SINGLE, size: 6 },
                     },
                     children: [
-                        new TextRun({ text: "إشعار بتبليغ غيابات للمتربص", bold: true, size: 36, font: "Cairo" ,underline: {}}),
+                        new TextRun({ text: "إشعار بتبليغ غيابات للمتربص", bold: true, size: 36, font: "Cairo" }),
                     ],
                 }),
 
@@ -250,17 +250,17 @@
 
                 // بيانات المتربص
                 new Paragraph({
-                    alignment: AlignmentType.right,
+                    alignment: AlignmentType.RIGHT,
                     bidirectional: true,
                     spacing: { line: 400 },
                     children: [
-                        new TextRun({ text: "اسم ولقب المتربص: ", bold: true, size: 28, font: "Cairo", right}),
+                        new TextRun({ text: "اسم ولقب المتربص: ", bold: true, size: 28, font: "Cairo" }),
                         new TextRun({ text: t.name, size: 28, font: "Cairo", color: "2980b9" }),
                     ],
                 }),
 
                 new Paragraph({
-                    alignment: AlignmentType.right,
+                    alignment: AlignmentType.RIGHT,
                     bidirectional: true,
                     spacing: { line: 400 },
                     children: [
@@ -298,15 +298,15 @@
 
                 // التوقيع والتاريخ
                 new Paragraph({
-                    alignment: AlignmentType.right,
+                    alignment: AlignmentType.LEFT,
                     bidirectional: true,
                     children: [
-                        new TextRun({ text: `حرر في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" }),
+                        new TextRun({ text: `حرر بـ: .................... في: ${new Date().toLocaleDateString('ar-DZ')}`, size: 24, font: "Cairo" }),
                     ],
                 }),
                 
                 new Paragraph({
-                    alignment: AlignmentType.right,
+                    alignment: AlignmentType.LEFT,
                     bidirectional: true,
                     spacing: { before: 400 },
                     children: [
