@@ -207,6 +207,7 @@
     function save() { localStorage.setItem('abs_final_stable', JSON.stringify(db)); }
 
 async function makeWord(id) {
+    <html lang="ar" dir="rtl">
     const t = db.trainees.find(x => x.id == id);
     const abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date);
     
