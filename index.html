@@ -72,7 +72,7 @@
         </div>
 
         <div class="card">
-            <h2>📅 تسجيل الغياب</h2>
+            <h2>📅 تسجيل الحضور/الغياب</h2>
             <div class="flex-group">
                 <div style="flex: 2;">
                     <input type="date" id="targetDate" onchange="refreshAll()">
@@ -87,7 +87,7 @@
         </div>
 
         <div class="card">
-            <h2>📝 سجل نتائج اليوم</h2>
+            <h2>📝 السجلات اليومية </h2>
             <div class="table-container">
                 <table>
                     <thead><tr><th>المتربص</th><th>الحالة</th><th>تعديل</th></tr></thead>
@@ -95,7 +95,7 @@
                 </table>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-excel" onclick="exportToExcel()">📊 تصدير Excel اليوم</button>
+                <button class="btn-excel" onclick="exportToExcel()"> حفظ  </button>
                 <button style="background:#7f8c8d; color:white; margin-top:10px; width:auto; padding:8px 15px; border:none; border-radius:8px; cursor:pointer;" onclick="clearHistory()">🗑️ مسح الكل اليوم</button>
             </div>
         </div>
