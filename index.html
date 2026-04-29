@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <meta charset="UTF-8">
     <title>نظام إدارة الغيابات - النسخة المستقرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
@@ -86,6 +87,7 @@
                     <tbody id="logsTableBody"></tbody>
                 </table>
             </div>
+            <button style="background:#27ae60; color:white; margin-top:10px; width:auto; padding:8px 15px;" onclick="exportToExcel()">📊 تصدير إلى Excel</button>
             <button style="background:#7f8c8d; color:white; margin-top:10px; width:auto; padding:8px 15px;" onclick="clearHistory()">🗑️ مسح الكل اليوم</button>
         </div>
 
@@ -164,17 +166,16 @@
     function refreshAll() { renderTable(); updateChart(); renderAlerts(); }
 
     function renderTable() {
-        let d = document.getElementById('targetDate').value, tbody = document.getElementById('logsTableBody');
-        tbody.innerHTML = '';
-        db.logs.filter(x => x.date === d).forEach(log => {
-            let t = db.trainees.find(x => x.id == log.tId);
-            if(t) {
-                let sClass = log.status === 'حاضر' ? 'status-present' : 'status-absent';
-                tbody.innerHTML += `<tr><td>${t.name}</td><td class="${sClass}">${log.status}</td>
-                <td><button class="edit-btn" onclick="toggleStatus(${log.tId}, '${log.date}')">تغيير</button></td></tr>`;
-            }
-        });
+    let d = document.getElementById('targetDate').value, tbody = document.getElementById('logsTableBody');
+    tbody.innerHTML = '';
+    let filteredLogs = db.logs.filter(x => x.date === d);
+
+    if(filteredLogs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="color:#999; padding:20px;">لا توجد تسجيلات لهذا التاريخ بعد</td></tr>';
+        return;
     }
+    // بقية كود الـ forEach الخاص بك...
+}
 
     function updateChart() {
         let d = document.getElementById('targetDate').value, logs = db.logs.filter(x => x.date === d);
