@@ -240,20 +240,37 @@
 
     // الاستدعاءات والتنبيهات
     function renderAlerts() {
-        let ui = document.getElementById('alertUI'); ui.innerHTML = '';
-        let counts = {};
-        db.logs.filter(x => x.status === 'غائب').forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
-        for(let id in counts) {
-            if(counts[id] >= 3) {
-                let t = db.trainees.find(x => x.id == id);
-                if(t) ui.innerHTML += `<div class="item-row" style="background:#fff5f5"><span>${t.name} (${counts[id]} غيابات)</span>
+    let ui = document.getElementById('alertUI'); ui.innerHTML = '';
+    let counts = {};
+    
+    // حساب غيابات كل متربص
+    db.logs.filter(x => x.status === 'غائب').forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
+    
+    for(let id in counts) {
+        if(counts[id] >= 3) {
+            let t = db.trainees.find(x => x.id == id);
+            
+            if(t) {
+                // --- صياغة الرسالة المطلوبة ---
+                let message = `*مركز التكوين المهني والتمهين الشهيد أحمد زبانة السوقر 01*
+
+*تنبيه بغيابات ابنكم:* ${counts[id]} غيابات.
+
+يؤسفنا أن نبلغ سيادتكم بغياب ابن(ت)كم المتربص(ة): *${t.name}*، ولهذا يرجى منكم التقرب لدى مصلحة الرقابة العامة في أقرب وقت ممكن.`;
+
+                // تحويل النص ليكون صالحاً للرابط
+                let encodedMsg = encodeURIComponent(message);
+
+                ui.innerHTML += `<div class="item-row" style="background:#fff5f5">
+                    <span>${t.name} (${counts[id]} غيابات)</span>
                     <div class="admin-controls">
-                        <a class="wa-btn" href="https://wa.me/${t.phone}?text=تنبيه غياب" target="_blank">واتساب</a>
+                        <a class="wa-btn" href="https://wa.me/${t.phone}?text=${encodedMsg}" target="_blank">واتساب</a>
                         <button class="word-btn" onclick="makeWord(${id})">وورد</button>
                     </div></div>`;
             }
         }
     }
+}
 
     // مسح التاريخ وحفظ البيانات
     function clearHistory() { let d = document.getElementById('targetDate').value; if(confirm(`مسح سجلات ${d}؟`)) { db.logs = db.logs.filter(x => x.date !== d); save(); refreshAll(); } }
