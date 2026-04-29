@@ -419,4 +419,51 @@ container.innerHTML += `
     };
     input.click();
 }
+    function renderTable() {
+    let d = document.getElementById('targetDate').value;
+    let tbody = document.getElementById('logsTableBody');
+    if(!tbody) return; 
+
+    tbody.innerHTML = '';
+    
+    // فلترة السجلات حسب التاريخ المختار
+    let filteredLogs = db.logs.filter(x => x.date === d);
+
+    if(filteredLogs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">لا توجد سجلات لهذا التاريخ</td></tr>';
+        return;
+    }
+
+    filteredLogs.forEach(log => {
+        // نستخدم == بدلاً من === للتعامل مع اختلاف نوع البيانات (رقم/نص)
+        let t = db.trainees.find(x => x.id == log.tId);
+        if(t) {
+            let sClass = log.status === 'حاضر' ? 'status-present' : 'status-absent';
+            tbody.innerHTML += `
+                <tr>
+                    <td>${t.name}</td>
+                    <td class="${sClass}">${log.status}</td>
+                    <td>
+                        <button class="edit-btn" onclick="toggleStatus(${log.tId}, '${log.date}')">تغيير</button>
+                    </td>
+                </tr>`;
+        }
+    });
+}
+    function doLogin() {
+    if(document.getElementById('sysPass').value === '1234') {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('appPanel').style.display = 'block';
+        
+        // تعيين تاريخ اليوم تلقائياً عند الدخول
+        if(!document.getElementById('targetDate').value) {
+            document.getElementById('targetDate').valueAsDate = new Date();
+        }
+        
+        renderSpecs(); 
+        refreshAll(); // هذا السطر هو المسؤول عن إظهار السجل فور الدخول
+    } else { 
+        alert("كلمة المرور خاطئة!"); 
+    }
+}
     document.getElementById('targetDate').addEventListener('change', refreshAll);
