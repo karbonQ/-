@@ -419,3 +419,4 @@ container.innerHTML += `
     };
     input.click();
 }
+    document.getElementById('targetDate').addEventListener('change', refreshAll);
