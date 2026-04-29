@@ -331,6 +331,43 @@ container.innerHTML += `
     input.click();
 }
 }
+    function exportToExcel() {
+    let d = document.getElementById('targetDate').value;
+    // 1. تصفية سجلات اليوم المختار
+    let dailyLogs = db.logs.filter(x => x.date === d);
+
+    if (dailyLogs.length === 0) {
+        alert("لا توجد سجلات لتصديرها لهذا اليوم!");
+        return;
+    }
+
+    // 2. تحضير البيانات لتكون مناسبة للإكسيل
+    let excelData = dailyLogs.map(log => {
+        let trainee = db.trainees.find(t => t.id == log.tId);
+        let spec = db.specs.find(s => s.id == (trainee ? trainee.specId : null));
+        
+        return {
+            "التاريخ": log.date,
+            "الاسم واللقب": trainee ? trainee.name : "غير معروف",
+            "التخصص": spec ? spec.name : "غير معروف",
+            "الحالة": log.status,
+            "الهاتف": trainee ? trainee.phone : ""
+        };
+    });
+
+    // 3. إنشاء ورقة العمل (Worksheet)
+    const ws = XLSX.utils.json_to_sheet(excelData);
+    
+    // ضبط اتجاه الورقة ليكون من اليمين لليسار (للغة العربية)
+    ws['!dir'] = "rtl";
+
+    // 4. إنشاء كتاب العمل (Workbook) وتحميل الملف
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "سجل الحضور");
+    
+    // 5. حفظ الملف باسم يحتوي على التاريخ
+    XLSX.writeFile(wb, `سجل_حضور_${d}.xlsx`);
+}
     async function processMyTemplate(tId) {
     const t = data.trainees.find(tr => tr.id == tId);
     const s = data.specs.find(sp => sp.id == t.specId);
