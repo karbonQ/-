@@ -291,9 +291,8 @@
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] }),
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] }),
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "التواريخ: " + abs.join(" + "), size: 24 })] })
-                ]
-            }]
-        });
+                [
+        
         Packer.toBlob(doc).then(blob => { saveAs(blob, `استدعاء_${t.name}.docx`); });
     }
 </script>
