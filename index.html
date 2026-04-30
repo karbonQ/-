@@ -85,7 +85,6 @@
                 <div style="flex: 1;" id="chartArea"><canvas id="dailyChart"></canvas></div>
             </div>
         </div>
-
         <div class="card">
             <h2>📝 السجلات اليومية </h2>
             <div class="table-container">
@@ -283,16 +282,16 @@
         const doc = new Document({
             sections: [{
                 children: [
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية  "}),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "وزارة التكوين و التعليم المهنيين    "}),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مديرية التكوين و التعليم المهنيين    "}),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1  "}),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "إشعار بغياب غير نظامي ",bold:true, size:28}),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية  "})] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "وزارة التكوين و التعليم المهنيين    "})] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مديرية التكوين و التعليم المهنيين    "})] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1  "})] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "إشعار بغياب غير نظامي ",bold:true, size:28})] }),
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] }),
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] }),
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "التواريخ: " + abs.join(" + "), size: 24 })] })
                 [
-        
+                                                                                                    
         Packer.toBlob(doc).then(blob => { saveAs(blob, `استدعاء_${t.name}.docx`); });
     }
 </script>
