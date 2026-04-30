@@ -322,7 +322,7 @@
             new Paragraph({ 
                 alignment: AlignmentType.left, 
                 bidirectional: true, 
-                children: [new TextRun({ text: "عدد الغيابات  : " + abs.length, size: 28 })] 
+                children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] 
             }),
             new Paragraph({ 
                 alignment: AlignmentType.left, 
@@ -332,10 +332,10 @@
 
             // توقيع الإدارة
             new Paragraph({ 
-                alignment: AlignmentType.right, // التوقيع يكون يساراً عادة
+                alignment: AlignmentType.RIGHT,
                 bidirectional: true,
-             //   spacing: { before: 800 }, 
-                children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 24 ,underline: {}})] 
+             spacing: { before: 800 }, 
+                children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 26 ,underline: {}})] 
             })
         ]
     }]
