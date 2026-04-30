@@ -322,7 +322,7 @@
             new Paragraph({ 
                 alignment: AlignmentType.left, 
                 bidirectional: true, 
-                children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] 
+                children: [new TextRun({ text: "عدد الغيابات  : " + abs.length, size: 28 })] 
             }),
             new Paragraph({ 
                 alignment: AlignmentType.left, 
@@ -334,8 +334,8 @@
             new Paragraph({ 
                 alignment: AlignmentType.right, // التوقيع يكون يساراً عادة
                 bidirectional: true,
-                spacing: { before: 800 }, 
-                children: [new TextRun({ text: "ختم ومصلحة الرقابة العامة", bold: true, size: 24 })] 
+             //   spacing: { before: 800 }, 
+                children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 24 ,underline: {}})] 
             })
         ]
     }]
