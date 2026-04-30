@@ -102,4 +102,50 @@ ul li {
     max-width: 90%;      /* يبقى متجاوب على الشاشات الصغيرة */
     margin: 20px auto;
 }
+/* تحسينات عامة للهواتف */
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* تقليل الحواف لتوفير مساحة */
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    /* جعل الكروت تأخذ العرض الكامل وترتب عمودياً */
+    .flex-group {
+        flex-direction: column; 
+    }
+
+    .flex-1 {
+        min-width: 100%;
+    }
+
+    /* تكبير الأزرار لتسهيل الضغط بالإصبع */
+    button, .wa-btn, .word-btn {
+        padding: 12px;
+        margin: 8px 0;
+        font-size: 1rem;
+    }
+
+    /* تحسين عرض الجدول على الشاشات الصغيرة */
+    .table-container {
+        overflow-x: auto; /* السماح بالتمرير الأفقي للجدول فقط */
+    }
+
+    table {
+        font-size: 0.8rem; /* تصغير الخط قليلاً ليناسب العرض */
+    }
+
+    /* ضبط حجم الرسم البياني */
+    #chartArea {
+        max-width: 150px;
+        margin: 10px auto;
+    }
+
+    /* جعل ترويسة المركز تظهر بشكل أوضح */
+    h3 {
+        font-size: 1.1rem;
+    }
+}
 
