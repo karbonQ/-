@@ -281,19 +281,66 @@
         const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
         const doc = new Document({
             sections: [{
-               children: [
-                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 24 })] }),
-                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "وزارة التكوين و التعليم المهنيين", bold: true, size: 22 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مديرية التكوين و التعليم المهنيين لولاية تيارت", size: 20 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1", size: 20 })] }),
-                    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 400, after: 400 }, children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 36, underline: {} })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, spacing: { before: 200 }, children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "التواريخ: " + abs.join(" / "), size: 24 })] }),
-                    new Paragraph({ alignment: AlignmentType.LEFT, spacing: { before: 800 }, children: [new TextRun({ text: "ختم الإدارة", bold: true, size: 24 })] })
-                ]
-            }]
-        });
+              const doc = new Document({
+    sections: [{
+        children: [
+            // ترويسة الوسط
+            new Paragraph({ 
+                alignment: AlignmentType.CENTER, 
+                children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 24 })] 
+            }),
+            new Paragraph({ 
+                alignment: AlignmentType.CENTER, 
+                children: [new TextRun({ text: "وزارة التكوين و التعليم المهنيين", bold: true, size: 22 })] 
+            }),
+            
+            // ترويسة اليمين (المديرية والمركز)
+            new Paragraph({ 
+                alignment: AlignmentType.RIGHT, // محاذاة لليمين
+                bidirectional: true,            // اتجاه النص عربي (RTL)
+                children: [new TextRun({ text: "مديرية التكوين و التعليم المهنيين لولاية تيارت", size: 20 })] 
+            }),
+            new Paragraph({ 
+                alignment: AlignmentType.RIGHT, 
+                bidirectional: true, 
+                children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1", size: 20 })] 
+            }),
+
+            // العنوان الرئيسي (إشعار الغياب)
+            new Paragraph({ 
+                alignment: AlignmentType.CENTER, 
+                spacing: { before: 400, after: 400 }, 
+                children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 36, underline: {} })] 
+            }),
+
+            // تفاصيل المتربص
+            new Paragraph({ 
+                alignment: AlignmentType.RIGHT, 
+                bidirectional: true, 
+                spacing: { before: 200 }, 
+                children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] 
+            }),
+            new Paragraph({ 
+                alignment: AlignmentType.RIGHT, 
+                bidirectional: true, 
+                children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] 
+            }),
+            new Paragraph({ 
+                alignment: AlignmentType.RIGHT, 
+                bidirectional: true, 
+                children: [new TextRun({ text: "التواريخ: " + abs.join(" / "), size: 24 })] 
+            }),
+
+            // توقيع الإدارة
+            new Paragraph({ 
+                alignment: AlignmentType.LEFT, // التوقيع يكون يساراً عادة
+                bidirectional: true,
+                spacing: { before: 800 }, 
+                children: [new TextRun({ text: "ختم ومصلحة الرقابة العامة", bold: true, size: 24 })] 
+            })
+        ]
+    }]
+});
                                                                                                     
         Packer.toBlob(doc).then(blob => { saveAs(blob, `استدعاء_${t.name}.docx`); });
     }
