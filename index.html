@@ -279,11 +279,10 @@
         const t = db.trainees.find(x => x.id == id);
         const abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date);
         const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-        const doc = new Document({
-            sections: [{
+              
               const doc = new Document({
-    sections: [{
-        children: [
+                    sections: [{    
+           children: [
             // ترويسة الوسط
             new Paragraph({ 
                 alignment: AlignmentType.CENTER, 
