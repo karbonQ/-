@@ -2,16 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام إدارة الغيابات - النسخة المتكاملة</title>
+    <title>نظام إدارة الغيابات </title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- المكتبات الخارجية -->
-    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+  <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- مكتبة تصدير Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
     <style>
         :root { --primary: #2980b9; --success: #27ae60; --danger: #c0392b; --edit: #f39c12; --word: #2b579a; --dark: #2c3e50; --excel: #1d6f42; }
         body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; direction: rtl; }
@@ -41,17 +38,20 @@
     </style>
 </head>
 <body>
-
 <div class="container">
-    <!-- لوحة الدخول -->
     <div id="loginPanel" class="card" style="max-width: 400px; margin: 50px auto;">
         <h2>دخول النظام</h2>
         <input type="password" id="sysPass" placeholder="كلمة المرور">
         <button class="btn-main" onclick="doLogin()">دخول</button>
     </div>
-
-    <!-- التطبيق الرئيسي -->
+    
     <div id="appPanel" style="display:none;">
+        <!-- ترويسة التطبيق العلوية -->
+<div class="card" style="text-align: center; border-bottom: 3px solid var(--primary);">
+    <h3 style="margin: 0; color: var(--dark);">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
+    <h3 style="margin: 5px 0; color: var(--primary);">مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1</h3>
+    <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">نظام إدارة ومتابعة غيابات المتربصين</p>
+</div>
         <div class="flex-group">
             <div class="card flex-1">
                 <h2>📁 التخصصات</h2>
