@@ -295,12 +295,12 @@
             
             // ترويسة اليمين (المديرية والمركز)
             new Paragraph({ 
-                alignment: AlignmentType.RIGHT, // محاذاة لليمين
+                alignment: AlignmentType.left, // محاذاة لليمين
                 bidirectional: true,            // اتجاه النص عربي (RTL)
                 children: [new TextRun({ text: "مديرية التكوين و التعليم المهنيين لولاية تيارت", size: 20 })] 
             }),
             new Paragraph({ 
-                alignment: AlignmentType.RIGHT, 
+                alignment: AlignmentType.left, 
                 bidirectional: true, 
                 children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1", size: 20 })] 
             }),
@@ -314,13 +314,13 @@
 
             // تفاصيل المتربص
             new Paragraph({ 
-                alignment: AlignmentType.RIGHT, 
+                alignment: AlignmentType.left, 
                 bidirectional: true, 
                 spacing: { before: 200 }, 
                 children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] 
             }),
             new Paragraph({ 
-                alignment: AlignmentType.RIGHT, 
+                alignment: AlignmentType.left, 
                 bidirectional: true, 
                 children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 28 })] 
             }),
@@ -332,7 +332,7 @@
 
             // توقيع الإدارة
             new Paragraph({ 
-                alignment: AlignmentType.LEFT, // التوقيع يكون يساراً عادة
+                alignment: AlignmentType.right, // التوقيع يكون يساراً عادة
                 bidirectional: true,
                 spacing: { before: 800 }, 
                 children: [new TextRun({ text: "ختم ومصلحة الرقابة العامة", bold: true, size: 24 })] 
