@@ -1,58 +1,79 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>نظام إدارة الغيابات </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الغيابات - مركز أحمد زبانة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
+    
+    <!-- المكتبات الخارجية -->
+    <script src="https://unpkg.com/docx@7.1.0/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- مكتبة تصدير Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <style>
         :root { --primary: #2980b9; --success: #27ae60; --danger: #c0392b; --edit: #f39c12; --word: #2b579a; --dark: #2c3e50; --excel: #1d6f42; }
         body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; direction: rtl; }
         .container { max-width: 950px; margin: 0 auto; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        h2 { color: var(--dark); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
-        input, select, button { font-family: 'Cairo'; width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        
+        .official-header { text-align: center; border-bottom: 3px solid var(--primary); background: #fff; margin-bottom: 20px; }
+        .official-header h3 { margin: 5px 0; color: var(--dark); font-size: 1.1rem; }
+        .official-header h2 { margin: 10px 0; color: var(--primary); font-size: 1.4rem; border: none; }
+
+        input, select, button { font-family: 'Cairo'; width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1rem; }
         .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
-        .btn-save { background: var(--success); color: white; border: none; cursor: pointer; }
-        .btn-excel { background: var(--excel); color: white; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; width: auto; padding: 10px 20px; }
-        .table-container { margin-top: 15px; max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #eee; padding: 10px; text-align: center; font-size: 0.9rem; }
+        .btn-save { background: var(--success); color: white; border: none; cursor: pointer; font-weight: bold; }
+        .btn-excel { background: var(--excel); color: white; border: none; cursor: pointer; font-weight: bold; width: auto; padding: 10px 20px; margin-top: 10px; }
+        
+        .period-selector { display: flex; gap: 15px; justify-content: center; background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0; border: 1px solid #eee; }
+        .period-selector label { font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+        .table-container { margin-top: 15px; max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; background: white; min-width: 400px; }
+        th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
         th { background: #f8f9fa; position: sticky; top: 0; }
+        
         .status-present { color: var(--success); font-weight: bold; }
         .status-absent { color: var(--danger); font-weight: bold; }
-        .admin-controls { display: flex; gap: 5px; justify-content: center; }
-        .edit-btn { background: var(--edit); color: white; width: auto !important; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; border: none; border-radius: 5px; }
-        .del-btn { background: var(--danger); color: white; width: auto !important; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; border: none; border-radius: 5px; }
-        .item-list { border: 1px solid #eee; border-radius: 8px; max-height: 150px; overflow-y: auto; background: #fafafa; margin-top: 5px; }
-        .item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #eee; }
         .flex-group { display: flex; gap: 15px; flex-wrap: wrap; }
         .flex-1 { flex: 1; min-width: 300px; }
-        .wa-btn { background: #25D366; color: white; padding: 5px 12px; text-decoration: none; border-radius: 5px; font-size: 0.8rem; font-weight: bold; }
-        .word-btn { background: var(--word); color: white; padding: 5px 12px; border: none; border-radius: 5px; font-size: 0.8rem; cursor: pointer; }
-        #chartArea { max-width: 200px; margin: 0 auto; }
+        
+        .wa-btn { background: #25D366; color: white; padding: 6px 12px; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; display: inline-block; }
+        .word-btn { background: var(--word); color: white; padding: 6px 12px; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
+        .edit-btn { background: var(--edit); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+
+        /* شاشات الهاتف */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .flex-group { flex-direction: column; }
+            .flex-1 { min-width: 100%; }
+            .official-header h2 { font-size: 1.1rem; }
+            .table-container { overflow-x: auto; }
+            .btn-excel { width: 100%; }
+        }
     </style>
 </head>
 <body>
+
 <div class="container">
+    <!-- لوحة الدخول -->
     <div id="loginPanel" class="card" style="max-width: 400px; margin: 50px auto;">
-        <h2>دخول النظام</h2>
-        <input type="password" id="sysPass" placeholder="كلمة المرور">
+        <h2 style="text-align:center">دخول النظام</h2>
+        <input type="password" id="sysPass" placeholder="كلمة المرور (1234)">
         <button class="btn-main" onclick="doLogin()">دخول</button>
     </div>
-    
+
+    <!-- التطبيق الرئيسي -->
     <div id="appPanel" style="display:none;">
-   <div class="card" style="text-align: center; border-bottom: 3px solid var(--primary);">
-    <h3 style="margin: 0; color: var(--dark);">الجمهورية الجزائرية الديمقراطية الشعبية</h3>
-    <h3 style="margin: 5px 0; color: var(--primary);">مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1</h3>
-    <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">نظام إدارة ومتابعة غيابات المتربصين</p>
-        <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">برنامج من تصميم الأستاذ: دومة الهواري بومدين</p>
-</div>
+        
+        <div class="official-header card">
+            <h3>الجمهورية الجزائرية الديمقراطية الشعبية</h3>
+            <h2>مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1</h2>
+            <p style="color: #666; margin: 0;">نظام متابعة الغيابات الرقمي</p>
+        </div>
+
         <div class="flex-group">
             <div class="card flex-1">
                 <h2>📁 التخصصات</h2>
@@ -60,34 +81,44 @@
                     <input type="text" id="specNameIn" placeholder="تخصص جديد...">
                     <button class="btn-main" style="width:80px" onclick="addSpec()">إضافة</button>
                 </div>
-                <div id="specUI" class="item-list"></div>
+                <div id="specUI" style="max-height: 150px; overflow-y: auto; margin-top: 10px; border: 1px solid #f0f0f0;"></div>
             </div>
+            
             <div class="card flex-1">
                 <h2>👥 المتربصين</h2>
                 <select id="specFilter" onchange="renderTrainees()"></select>
                 <input type="text" id="traineeNameIn" placeholder="اسم المتربص">
-                <input type="text" id="traineePhoneIn" placeholder="الهاتف">
-                <button class="btn-save" onclick="addTrainee()">حفظ</button>
-                <div id="traineeUI" class="item-list"></div>
+                <input type="text" id="traineePhoneIn" placeholder="رقم الهاتف">
+                <button class="btn-save" onclick="addTrainee()">حفظ المتربص</button>
+                <div id="traineeUI" style="max-height: 150px; overflow-y: auto; margin-top: 10px; border: 1px solid #f0f0f0;"></div>
             </div>
         </div>
 
         <div class="card">
-            <h2>📅 تسجيل الحضور/الغياب</h2>
+            <h2>📅 تسجيل الحضور اليومي</h2>
             <div class="flex-group">
                 <div style="flex: 2;">
                     <input type="date" id="targetDate" onchange="refreshAll()">
+                    
+                    <div class="period-selector">
+                        <label><input type="radio" name="period" value="صباحية" checked onchange="refreshAll()"> ☀️ صباحية</label>
+                        <label><input type="radio" name="period" value="مسائية" onchange="refreshAll()"> 🌙 مسائية</label>
+                    </div>
+
                     <select id="traineeSelect"></select>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn-save" onclick="record('حاضر')">✅ حاضر</button>
-                        <button class="btn-main" style="background:var(--danger)" onclick="record('غائب')">❌ غياب</button>
+                        <button class="btn-save" style="flex:1" onclick="record('حاضر')">✅ حاضر</button>
+                        <button class="btn-main" style="flex:1; background:var(--danger)" onclick="record('غائب')">❌ غياب</button>
                     </div>
                 </div>
-                <div style="flex: 1;" id="chartArea"><canvas id="dailyChart"></canvas></div>
+                <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                    <div style="max-width: 180px;"><canvas id="dailyChart"></canvas></div>
+                </div>
             </div>
         </div>
+
         <div class="card">
-            <h2>📝 السجلات اليومية </h2>
+            <h2>📝 سجل نتائج الفترة</h2>
             <div class="table-container">
                 <table>
                     <thead><tr><th>المتربص</th><th>الحالة</th><th>تعديل</th></tr></thead>
@@ -95,8 +126,8 @@
                 </table>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-excel" onclick="exportToExcel()"> حفظ  </button>
-                <button style="background:#7f8c8d; color:white; margin-top:10px; width:auto; padding:8px 15px; border:none; border-radius:8px; cursor:pointer;" onclick="clearHistory()">🗑️ مسح التسجيلات </button>
+                <button class="btn-excel" onclick="exportToExcel()">📊 تصدير Excel للفترة</button>
+                <button style="background:#7f8c8d; color:white; margin-top:10px; width:auto; padding:10px 20px; border:none; border-radius:8px; cursor:pointer;" onclick="clearHistory()">🗑️ مسح سجل الفترة</button>
             </div>
         </div>
 
@@ -108,11 +139,9 @@
 </div>
 
 <script>
-    // قاعدة البيانات
-    let db = JSON.parse(localStorage.getItem('abs_final_stable')) || { specs: [], trainees: [], logs: [] };
+    let db = JSON.parse(localStorage.getItem('abs_zabbana_db')) || { specs: [], trainees: [], logs: [] };
     let chartObj = null;
 
-    // الدخول
     function doLogin() {
         if(document.getElementById('sysPass').value === '1234') {
             document.getElementById('loginPanel').style.display = 'none';
@@ -123,7 +152,7 @@
         } else { alert("كلمة المرور خاطئة!"); }
     }
 
-    // إدارة التخصصات
+    // إدارة البيانات الأساسية
     function addSpec() {
         let n = document.getElementById('specNameIn').value.trim();
         if(n) { db.specs.push({ id: Date.now(), name: n }); save(); renderSpecs(); document.getElementById('specNameIn').value = ''; }
@@ -133,61 +162,62 @@
         let ui = document.getElementById('specUI'), filter = document.getElementById('specFilter');
         ui.innerHTML = ''; filter.innerHTML = '';
         db.specs.forEach(s => {
-            ui.innerHTML += `<div class="item-row"><span>${s.name}</span><div class="admin-controls">
-                <button class="edit-btn" onclick="editSpec(${s.id})">✎</button>
-                <button class="del-btn" onclick="delSpec(${s.id})">✕</button></div></div>`;
+            ui.innerHTML += `<div style="display:flex; justify:space-between; padding:8px; border-bottom:1px solid #eee">
+                <span>${s.name}</span>
+                <button onclick="delSpec(${s.id})" style="width:30px; padding:2px; background:red; color:white; border:none; margin-right:auto">✕</button>
+            </div>`;
             filter.innerHTML += `<option value="${s.id}">${s.name}</option>`;
         });
         renderTrainees();
     }
 
-    function editSpec(id) { let s = db.specs.find(x => x.id == id); let n = prompt("تعديل التخصص:", s.name); if(n){ s.name = n; save(); renderSpecs(); } }
-    function delSpec(id) { if(confirm("حذف التخصص وكل متربصيه؟")) { db.specs = db.specs.filter(x => x.id != id); db.trainees = db.trainees.filter(x => x.specId != id); save(); renderSpecs(); refreshAll(); } }
+    function delSpec(id) { if(confirm("حذف التخصص؟")) { db.specs = db.specs.filter(x => x.id != id); save(); renderSpecs(); } }
 
-    // إدارة المتربصين
     function addTrainee() {
         let n = document.getElementById('traineeNameIn').value.trim(), p = document.getElementById('traineePhoneIn').value.trim(), s = document.getElementById('specFilter').value;
-        if(n && s) { db.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); save(); renderTrainees(); document.getElementById('traineeNameIn').value=''; document.getElementById('traineePhoneIn').value=''; }
+        if(n && s) { db.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); save(); renderTrainees(); }
     }
 
     function renderTrainees() {
         let sId = document.getElementById('specFilter').value, ui = document.getElementById('traineeUI'), sel = document.getElementById('traineeSelect');
         ui.innerHTML = ''; sel.innerHTML = '';
         db.trainees.filter(t => t.specId == sId).forEach(t => {
-            ui.innerHTML += `<div class="item-row"><span>${t.name}</span><div class="admin-controls">
-                <button class="edit-btn" onclick="editTrainee(${t.id})">✎</button>
-                <button class="del-btn" onclick="delTrainee(${t.id})">✕</button></div></div>`;
+            ui.innerHTML += `<div style="display:flex; justify:space-between; padding:8px; border-bottom:1px solid #eee">
+                <span>${t.name}</span>
+                <button onclick="delTrainee(${t.id})" style="width:30px; padding:2px; background:red; color:white; border:none; margin-right:auto">✕</button>
+            </div>`;
             sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
         });
     }
 
-    function editTrainee(id) { let t = db.trainees.find(x => x.id == id); let n = prompt("الاسم:", t.name); let p = prompt("الهاتف:", t.phone); if(n){ t.name = n; t.phone = p; save(); renderTrainees(); refreshAll(); } }
-    function delTrainee(id) { if(confirm("حذف المتربص؟")) { db.trainees = db.trainees.filter(x => x.id != id); db.logs = db.logs.filter(x => x.tId != id); save(); renderTrainees(); refreshAll(); } }
+    function delTrainee(id) { if(confirm("حذف المتربص؟")) { db.trainees = db.trainees.filter(x => x.id != id); save(); renderTrainees(); } }
 
-    // تسجيل الغياب
+    // نظام التسجيل المطور (فترتين)
     function record(status) {
-        let t = document.getElementById('traineeSelect').value, d = document.getElementById('targetDate').value;
-        if(!t || !d) { alert("اختر التاريخ والمتربص"); return; }
-        db.logs = db.logs.filter(x => !(x.tId == t && x.date == d));
-        db.logs.push({ tId: t, date: d, status: status });
+        let tId = document.getElementById('traineeSelect').value, d = document.getElementById('targetDate').value;
+        let p = document.querySelector('input[name="period"]:checked').value;
+        if(!tId || !d) return;
+
+        db.logs = db.logs.filter(x => !(x.tId == tId && x.date == d && x.period == p));
+        db.logs.push({ tId: tId, date: d, period: p, status: status });
         save(); refreshAll();
     }
 
-    // تبديل الحالة من الجدول
-    function toggleStatus(tId, date) {
-        let log = db.logs.find(x => x.tId == tId && x.date == date);
+    function toggleStatus(tId, date, period) {
+        let log = db.logs.find(x => x.tId == tId && x.date == date && x.period == period);
         if(log) { log.status = log.status === 'حاضر' ? 'غائب' : 'حاضر'; save(); refreshAll(); }
     }
 
-    // التحديث العام
     function refreshAll() { renderTable(); updateChart(); renderAlerts(); }
 
     function renderTable() {
-        let d = document.getElementById('targetDate').value, tbody = document.getElementById('logsTableBody');
+        let d = document.getElementById('targetDate').value, p = document.querySelector('input[name="period"]:checked').value;
+        let tbody = document.getElementById('logsTableBody');
         tbody.innerHTML = '';
-        let filtered = db.logs.filter(x => x.date === d);
+        let filtered = db.logs.filter(x => x.date === d && x.period === p);
+        
         if(filtered.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3">لا توجد سجلات لهذا التاريخ</td></tr>';
+            tbody.innerHTML = `<tr><td colspan="3">لا توجد تسجيلات لفترة ${p}</td></tr>`;
             return;
         }
         filtered.forEach(log => {
@@ -195,155 +225,89 @@
             if(t) {
                 let sClass = log.status === 'حاضر' ? 'status-present' : 'status-absent';
                 tbody.innerHTML += `<tr><td>${t.name}</td><td class="${sClass}">${log.status}</td>
-                <td><button class="edit-btn" onclick="toggleStatus(${log.tId}, '${log.date}')">تغيير</button></td></tr>`;
+                <td><button class="edit-btn" onclick="toggleStatus(${log.tId}, '${log.date}', '${log.period}')">تبديل</button></td></tr>`;
             }
         });
     }
 
-    // الرسم البياني
     function updateChart() {
-        let d = document.getElementById('targetDate').value, logs = db.logs.filter(x => x.date === d);
-        let p = logs.filter(x => x.status === 'حاضر').length, ab = logs.filter(x => x.status === 'غائب').length;
+        let d = document.getElementById('targetDate').value, p = document.querySelector('input[name="period"]:checked').value;
+        let logs = db.logs.filter(x => x.date === d && x.period === p);
+        let pres = logs.filter(x => x.status === 'حاضر').length, abs = logs.filter(x => x.status === 'غائب').length;
         let ctx = document.getElementById('dailyChart').getContext('2d');
         if(chartObj) chartObj.destroy();
         chartObj = new Chart(ctx, {
             type: 'doughnut',
-            data: { labels: ['حاضر', 'غائب'], datasets: [{ data: [p, ab], backgroundColor: ['#27ae60', '#c0392b'] }] },
+            data: { labels: ['حاضر', 'غائب'], datasets: [{ data: [pres, abs], backgroundColor: ['#27ae60', '#c0392b'] }] },
             options: { plugins: { legend: { display: false } } }
         });
     }
 
-    // تصدير Excel
-    function exportToExcel() {
-        let d = document.getElementById('targetDate').value;
-        let dailyLogs = db.logs.filter(x => x.date === d);
-        if (dailyLogs.length === 0) { alert("لا توجد بيانات لهذا اليوم!"); return; }
-
-        let excelData = dailyLogs.map(log => {
-            let t = db.trainees.find(x => x.id == log.tId);
-            let s = db.specs.find(x => x.id == (t ? t.specId : null));
-            return {
-                "التاريخ": log.date,
-                "اسم المتربص": t ? t.name : "غير معروف",
-                "التخصص": s ? s.name : "غير معروف",
-                "الحالة": log.status,
-             //   "الهاتف": t ? t.phone : ""
-            };
-        });
-
-        const ws = XLSX.utils.json_to_sheet(excelData);
-        ws['!dir'] = "rtl";
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "الحضور");
-        XLSX.writeFile(wb, `سجل_حضور_${d}.xlsx`);
-    }
-
-    // الاستدعاءات والتنبيهات
     function renderAlerts() {
-    let ui = document.getElementById('alertUI'); ui.innerHTML = '';
-    let counts = {};
-    
-    // حساب غيابات كل متربص
-    db.logs.filter(x => x.status === 'غائب').forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
-    
-    for(let id in counts) {
-        if(counts[id] >= 3) {
-            let t = db.trainees.find(x => x.id == id);
-            
-            if(t) {
-                // --- صياغة الرسالة المطلوبة ---
-                let message = `*مركز التكوين المهني والتمهين الشهيد أحمد زبانة السوقر 01*
-
-إستدعاء
-يؤسفنا أن نبلغ سيادتكم بغياب ابن(ت)كم المتربص(ة): *${t.name}*، ولهذا يرجى منكم التقرب لدى مصلحة الرقابة العامة في أقرب وقت ممكن.`;
-
-                // تحويل النص ليكون صالحاً للرابط
-                let encodedMsg = encodeURIComponent(message);
-
-                ui.innerHTML += `<div class="item-row" style="background:#fff5f5">
-                    <span>${t.name} (${counts[id]} غيابات)</span>
-                    <div class="admin-controls">
-                        <a class="wa-btn" href="https://wa.me/${t.phone}?text=${encodedMsg}" target="_blank">واتساب</a>
-                        <button class="word-btn" onclick="makeWord(${id})">وورد</button>
-                    </div></div>`;
+        let ui = document.getElementById('alertUI'); ui.innerHTML = '';
+        let counts = {};
+        db.logs.filter(x => x.status === 'غائب').forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
+        
+        for(let id in counts) {
+            if(counts[id] >= 3) {
+                let t = db.trainees.find(x => x.id == id);
+                if(t) {
+                    let msg = `*مركز التكوين المهني والتمهين الشهيد أحمد زبانة السوقر 01*\n\nتنبيه بغيابات ابنكم\nيؤسفنا أن نبلغ سيادتكم بغياب ابن(ت)كم المتربص(ة): *${t.name}*، ولهذا يرجى منكم التقرب لدى مصلحة الرقابة العامة في أقرب وقت ممكن.`;
+                    ui.innerHTML += `<div style="display:flex; align-items:center; justify:space-between; padding:10px; background:#fff5f5; border-radius:8px; margin-bottom:5px; border:1px solid #ffcccc">
+                        <span style="flex:1"><b>${t.name}</b> (${counts[id]} غيابات)</span>
+                        <div style="display:flex; gap:5px;">
+                            <a class="wa-btn" href="https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}" target="_blank">واتساب</a>
+                            <button class="word-btn" onclick="makeWord(${id})">وورد</button>
+                        </div>
+                    </div>`;
+                }
             }
         }
     }
-}
 
-    // مسح التاريخ وحفظ البيانات
-    function clearHistory() { let d = document.getElementById('targetDate').value; if(confirm(`مسح سجلات ${d}؟`)) { db.logs = db.logs.filter(x => x.date !== d); save(); refreshAll(); } }
-    function save() { localStorage.setItem('abs_final_stable', JSON.stringify(db)); }
+    // التصدير والملفات
+    function exportToExcel() {
+        let d = document.getElementById('targetDate').value, p = document.querySelector('input[name="period"]:checked').value;
+        let daily = db.logs.filter(x => x.date === d && x.period === p);
+        if(daily.length === 0) return alert("لا بيانات!");
+        let data = daily.map(l => {
+            let t = db.trainees.find(x => x.id == l.tId);
+            return { "التاريخ": l.date, "الفترة": l.period, "المتربص": t?t.name:"", "الحالة": l.status };
+        });
+        let ws = XLSX.utils.json_to_sheet(data);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "الحضور");
+        XLSX.writeFile(wb, `حضور_${p}_${d}.xlsx`);
+    }
 
-    // تصدير Word (كما هو في كودك)
     async function makeWord(id) {
         const t = db.trainees.find(x => x.id == id);
-        const abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => x.date);
+        const abs = db.logs.filter(x => x.tId == id && x.status === 'غائب').map(x => `${x.date} (${x.period})`);
         const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-              
-              const doc = new Document({
-                    sections: [{    
-           children: [
-            // ترويسة الوسط
-            new Paragraph({ 
-                alignment: AlignmentType.CENTER, 
-                children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 24 })] 
-            }),
-            new Paragraph({ 
-                alignment: AlignmentType.CENTER, 
-                children: [new TextRun({ text: "وزارة التكوين و التعليم المهنيين", bold: true, size: 22 })] 
-            }),
-            
-            // ترويسة اليمين (المديرية والمركز)
-            new Paragraph({ 
-                alignment: AlignmentType.left, // محاذاة لليمين
-                bidirectional: true,            // اتجاه النص عربي (RTL)
-                children: [new TextRun({ text: "مديرية التكوين و التعليم المهنيين لولاية تيارت", size: 20 })] 
-            }),
-            new Paragraph({ 
-                alignment: AlignmentType.left, 
-                bidirectional: true, 
-                children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1", size: 20 })] 
-            }),
 
-            // العنوان الرئيسي (إشعار الغياب)
-            new Paragraph({ 
-                alignment: AlignmentType.CENTER, 
-                spacing: { before: 400, after: 400 }, 
-                children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 36, underline: {} })] 
-            }),
-
-            // تفاصيل المتربص
-            new Paragraph({ 
-                alignment: AlignmentType.left, 
-                bidirectional: true, 
-                spacing: { before: 200 }, 
-                children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] 
-            }),
-            new Paragraph({ 
-                alignment: AlignmentType.left, 
-                bidirectional: true, 
-                children: [new TextRun({ text: "عدد الغيابات : " + abs.length, size: 28 })] 
-            }),
-            new Paragraph({ 
-                alignment: AlignmentType.left, 
-                bidirectional: true, 
-                children: [new TextRun({ text: "التواريخ : " + abs.join(" / "), size: 28 })] 
-            }),
-
-            // توقيع الإدارة
-            new Paragraph({ 
-                alignment: AlignmentType.RIGHT,
-                bidirectional: true,
-             spacing: { before: 800 }, 
-                children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 26 ,underline: {}})] 
-            })
-        ]
-    }]
-});
-                                                                                                    
-        Packer.toBlob(doc).then(blob => { saveAs(blob, `استدعاء_${t.name}.docx`); });
+        const doc = new Document({
+            sections: [{
+                children: [
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 24 })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "وزارة التكوين و التعليم المهنيين", bold: true, size: 22 })] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1", size: 20 })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, spacing: {before:400, after:400}, children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 36, underline: {} })] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مجموع الغيابات: " + abs.length, size: 26 })] }),
+                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "التواريخ والفترات: " + abs.join(" / "), size: 22 })] }),
+                    new Paragraph({ alignment: AlignmentType.LEFT, spacing: {before:600}, children: [new TextRun({ text: "ختم مصلحة الرقابة العامة", bold: true, size: 24 })] })
+                ]
+            }]
+        });
+        Packer.toBlob(doc).then(blob => saveAs(blob, `إشعار_${t.name}.docx`));
     }
+
+    function clearHistory() { 
+        let d = document.getElementById('targetDate').value, p = document.querySelector('input[name="period"]:checked').value;
+        if(confirm(`حذف سجلات فترة ${p} لهذا اليوم؟`)) { db.logs = db.logs.filter(x => !(x.date === d && x.period === p)); save(); refreshAll(); }
+    }
+
+    function save() { localStorage.setItem('abs_zabbana_db', JSON.stringify(db)); }
 </script>
 </body>
 </html>
