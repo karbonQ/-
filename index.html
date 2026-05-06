@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام غيابات مركز أحمد زبانة - نسخة الفترات المتعددة</title>
+    <title>نظام غيابات مركز أحمد زبانة - المطور</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     
     <!-- المكتبات الخارجية -->
@@ -15,39 +15,39 @@
     <style>
         :root { --primary: #2980b9; --success: #27ae60; --danger: #c0392b; --edit: #f39c12; --word: #2b579a; --dark: #2c3e50; --excel: #1d6f42; }
         body { font-family: 'Cairo', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; direction: rtl; }
-        .container { max-width: 950px; margin: 0 auto; }
+        .container { max-width: 1000px; margin: 0 auto; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        .official-header { text-align: center; border-bottom: 3px solid var(--primary); background: #fff; margin-bottom: 20px; }
-        .official-header h3 { margin: 5px 0; color: var(--dark); font-size: 1.1rem; }
-        .official-header h2 { margin: 10px 0; color: var(--primary); font-size: 1.4rem; border: none; }
+        .official-header { text-align: center; border-bottom: 3px solid var(--primary); background: #fff; }
+        .official-header h3 { margin: 5px 0; color: var(--dark); }
+        .official-header h2 { margin: 10px 0; color: var(--primary); }
 
         input, select, button { font-family: 'Cairo'; width: 100%; padding: 12px; margin: 5px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; font-size: 1rem; }
         .btn-main { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
         .btn-save { background: var(--success); color: white; border: none; cursor: pointer; font-weight: bold; }
         
-        /* تنسيق مربعات التأشير الجديدة */
-        .check-group { display: flex; gap: 15px; justify-content: center; background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0; border: 1px solid #ddd; flex-wrap: wrap; }
-        .check-group label { font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 5px 10px; background: white; border-radius: 5px; border: 1px solid #eee; }
-        .check-group input[type="checkbox"] { width: 20px; height: 20px; margin: 0; cursor: pointer; }
+        /* عناصر القائمة مع أزرار التحكم */
+        .item-list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #fff; border-radius: 5px; margin-bottom: 5px; }
+        .action-btns { display: flex; gap: 5px; }
+        .btn-small-edit { background: var(--edit); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .btn-small-del { background: var(--danger); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+
+        .check-group { display: flex; gap: 15px; justify-content: center; background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0; border: 1px solid #ddd; }
+        .check-group label { font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 
         .table-container { margin-top: 15px; max-height: 400px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; background: white; min-width: 500px; }
+        table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #eee; padding: 12px; text-align: center; }
-        th { background: #f8f9fa; position: sticky; top: 0; z-index: 10; }
+        th { background: #f8f9fa; position: sticky; top: 0; }
         
-        .status-absent { color: var(--danger); font-weight: bold; background: #fffafa; }
         .flex-group { display: flex; gap: 15px; flex-wrap: wrap; }
         .flex-1 { flex: 1; min-width: 300px; }
         
-        .wa-btn { background: #25D366; color: white; padding: 6px 12px; text-decoration: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
-        .word-btn { background: var(--word); color: white; padding: 6px 12px; border: none; border-radius: 6px; font-size: 0.85rem; cursor: pointer; }
-        .del-btn-table { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; }
+        #chartArea { width: 100%; max-width: 350px; margin: 20px auto; min-height: 350px; }
 
         @media (max-width: 768px) {
             .flex-group { flex-direction: column; }
-            .check-group { flex-direction: column; align-items: flex-start; }
-            .check-group label { width: 100%; }
+            #chartArea { max-width: 250px; min-height: 250px; }
         }
     </style>
 </head>
@@ -56,7 +56,7 @@
 <div class="container">
     <div id="loginPanel" class="card" style="max-width: 400px; margin: 50px auto;">
         <h2 style="text-align:center">دخول النظام</h2>
-        <input type="password" id="sysPass" placeholder="كلمة المرور (1234)">
+        <input type="password" id="sysPass" placeholder="كلمة المرور">
         <button class="btn-main" onclick="doLogin()">دخول</button>
     </div>
 
@@ -64,82 +64,72 @@
         <div class="official-header card">
             <h3>الجمهورية الجزائرية الديمقراطية الشعبية</h3>
             <h2>مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1</h2>
-            <p style="color: #666; margin: 0;">نظام متابعة الغيابات (تحديث الفترات المتعددة)</p>
+            <p>نظام إدارة الغيابات المطور</p>
         </div>
 
         <div class="flex-group">
+            <!-- التخصصات -->
             <div class="card flex-1">
-                <h2>📁 التخصصات</h2>
+                <h2>📁 إدارة التخصصات</h2>
                 <div style="display:flex; gap:5px;">
-                    <input type="text" id="specNameIn" placeholder="تخصص جديد...">
-                    <button class="btn-main" style="width:80px" onclick="addSpec()">إضافة</button>
+                    <input type="text" id="specNameIn" placeholder="اسم التخصص الجديد">
+                    <button class="btn-main" style="width:100px" onclick="addSpec()">إضافة</button>
                 </div>
-                <div id="specUI" style="max-height: 150px; overflow-y: auto; margin-top: 10px;"></div>
+                <div id="specUI" style="max-height: 200px; overflow-y: auto; margin-top: 10px;"></div>
             </div>
             
+            <!-- المتربصين -->
             <div class="card flex-1">
-                <h2>👥 المتربصين</h2>
+                <h2>👥 إدارة المتربصين</h2>
                 <select id="specFilter" onchange="renderTrainees()"></select>
                 <input type="text" id="traineeNameIn" placeholder="اسم المتربص">
                 <input type="text" id="traineePhoneIn" placeholder="رقم الهاتف">
                 <button class="btn-save" onclick="addTrainee()">حفظ المتربص</button>
-                <div id="traineeUI" style="max-height: 150px; overflow-y: auto; margin-top: 10px;"></div>
+                <div id="traineeUI" style="max-height: 200px; overflow-y: auto; margin-top: 10px;"></div>
             </div>
         </div>
 
+        <!-- التسجيل -->
         <div class="card">
-            <h2>❌ تسجيل غياب جديد</h2>
-            <div class="flex-group">
-                <div style="flex: 2;">
+            <h2>❌ تسجيل غياب</h2>
+            <div class="flex-group" style="align-items: center;">
+                <div style="flex: 1.5;">
                     <input type="date" id="targetDate" onchange="refreshAll()">
-                    
-                    <!-- قسم الـ Checkboxes الجديد -->
                     <div class="check-group">
-                        <label><input type="checkbox" id="chkMorning">  الفترة الصباحية</label>
-                        <label><input type="checkbox" id="chkEvening">  الفترة المسائية</label>
-                        <label style="border-left: 3px solid var(--primary); color: var(--primary);">
-                            <input type="checkbox" id="chkFullDay" onchange="toggleFullDay(this)">  كل اليوم
-                        </label>
+                        <label><input type="checkbox" id="chkMorning"> الصباح ☀️</label>
+                        <label><input type="checkbox" id="chkEvening"> المساء 🌙</label>
+                        <label><input type="checkbox" id="chkFullDay" onchange="toggleFullDay(this)"> كل اليوم 📅</label>
                     </div>
-
                     <select id="traineeSelect"></select>
-                    <button class="btn-main" style="background:var(--danger); margin-top:10px;" onclick="recordAbsence()">
-                        تسجيل الغياب   
-                    </button>
+                    <button class="btn-main" style="background:var(--danger); margin-top:10px;" onclick="recordAbsence()">تسجيل غياب</button>
                 </div>
-                <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
-                    <div style="max-width: 150px;"><canvas id="dailyChart"></canvas></div>
+                <!-- الرسم البياني المكبر -->
+                <div style="flex: 1; text-align: center;">
+                    <div id="chartArea"><canvas id="dailyChart"></canvas></div>
                 </div>
             </div>
         </div>
 
+        <!-- السجل -->
         <div class="card">
-            <h2>📝 سجل نتائج غيابات اليوم</h2>
+            <h2>📝 سجل الغيابات</h2>
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>المتربص</th>
-                            <th>فترة الغياب</th>
-                            <th>الحالة</th>
-                            <th></th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>المتربص</th><th>الفترة</th><th>الحالة</th><th>حذف</th></tr></thead>
                     <tbody id="logsTableBody"></tbody>
                 </table>
             </div>
-            <button class="btn-save" style="background:var(--excel); width:auto; padding:10px 20px; margin-top:10px;" onclick="exportToExcel()">📊 تصدير Excel للغيابات</button>
         </div>
 
         <div class="card">
-            <h2>⚠️ الاستدعاءات (3 غيابات فأكثر)</h2>
+            <h2>⚠️ قائمة الاستدعاءات</h2>
             <div id="alertUI"></div>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('abs_zabbana_final_v2')) || { specs: [], trainees: [], logs: [] };
+    let db = JSON.parse(localStorage.getItem('abs_zabbana_v3')) || { specs: [], trainees: [], logs: [] };
     let chartObj = null;
 
     function doLogin() {
@@ -147,120 +137,11 @@
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('appPanel').style.display = 'block';
             document.getElementById('targetDate').valueAsDate = new Date();
-            renderSpecs(); 
-            refreshAll();
+            renderSpecs(); refreshAll();
         } else { alert("كلمة المرور خاطئة!"); }
     }
 
-    // --- وظائف اختيار الفترات ---
-    function toggleFullDay(el) {
-        document.getElementById('chkMorning').checked = el.checked;
-        document.getElementById('chkEvening').checked = el.checked;
-    }
-
-    // --- تسجيل الغياب (التعديل الرئيسي) ---
-    function recordAbsence() {
-        let tId = document.getElementById('traineeSelect').value;
-        let d = document.getElementById('targetDate').value;
-        let isMorning = document.getElementById('chkMorning').checked;
-        let isEvening = document.getElementById('chkEvening').checked;
-
-        if(!tId || !d) { alert("يرجى اختيار التاريخ والمتربص"); return; }
-        if(!isMorning && !isEvening) { alert("يرجى تأشير فترة واحدة على الأقل (صباح أو مساء)"); return; }
-
-        let periods = [];
-        if(isMorning) periods.push("صباحية");
-        if(isEvening) periods.push("مسائية");
-
-        periods.forEach(p => {
-            // منع التكرار لنفس الشخص في نفس اليوم والفترة
-            db.logs = db.logs.filter(x => !(x.tId == tId && x.date == d && x.period == p));
-            db.logs.push({ tId: tId, date: d, period: p, status: 'غائب' });
-        });
-
-        save();
-        refreshAll();
-        
-        // إعادة ضبط المربعات
-        document.getElementById('chkMorning').checked = false;
-        document.getElementById('chkEvening').checked = false;
-        document.getElementById('chkFullDay').checked = false;
-    }
-
-    // --- عرض الجدول الموحد لكل الفترات ---
-    function renderTable() {
-        let d = document.getElementById('targetDate').value;
-        let tbody = document.getElementById('logsTableBody');
-        tbody.innerHTML = '';
-        
-        let dailyLogs = db.logs.filter(x => x.date === d);
-        
-        if(dailyLogs.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4">لا توجد غيابات مسجلة لهذا التاريخ</td></tr>`;
-            return;
-        }
-
-        dailyLogs.forEach(log => {
-            let t = db.trainees.find(x => x.id == log.tId);
-            if(t) {
-                let pLabel = log.period === 'صباحية' ? 'صباحية' : ' مسائية';
-                tbody.innerHTML += `<tr>
-                    <td><b>${t.name}</b></td>
-                    <td>${pLabel}</td>
-                    <td class="status-absent">غائب</td>
-                    <td><button class="del-btn-table" onclick="deleteLog(${log.tId}, '${log.date}', '${log.period}')">حذف</button></td>
-                </tr>`;
-            }
-        });
-    }
-
-    function deleteLog(tId, date, period) {
-        if(confirm("حذف هذا الغياب؟")) {
-            db.logs = db.logs.filter(x => !(x.tId == tId && x.date == date && x.period == period));
-            save(); refreshAll();
-        }
-    }
-
-    // --- تحديث الإحصائيات (الرسم البياني) ---
-    function updateChart() {
-        let d = document.getElementById('targetDate').value;
-        let logs = db.logs.filter(x => x.date === d);
-        let mCount = logs.filter(x => x.period === 'صباحية').length;
-        let eCount = logs.filter(x => x.period === 'مسائية').length;
-        
-        let ctx = document.getElementById('dailyChart').getContext('2d');
-        if(chartObj) chartObj.destroy();
-        chartObj = new Chart(ctx, {
-            type: 'pie',
-            data: { labels: ['غياب صباح', 'غياب مساء'], datasets: [{ data: [mCount, eCount], backgroundColor: ['#e67e22', '#9b59b6'] }] },
-            options: { plugins: { legend: { position: 'bottom' } } }
-        });
-    }
-
-    // --- التنبيهات (الاستدعاءات) ---
-    function renderAlerts() {
-        let ui = document.getElementById('alertUI'); ui.innerHTML = '';
-        let counts = {};
-        db.logs.forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
-        
-        for(let id in counts) {
-            if(counts[id] >= 3) {
-                let t = db.trainees.find(x => x.id == id);
-                if(t) {
-                    let msg = `*مركز التكوين المهني والتمهين الشهيد أحمد زبانة السوقر 01*\n\nتنبيه بغيابات ابنكم\nيؤسفنا أن نبلغ سيادتكم بغياب ابن(ت)كم المتربص(ة): *${t.name}*، ولهذا يرجى منكم التقرب لدى مصلحة الرقابة العامة في أقرب وقت ممكن.`;
-                    ui.innerHTML += `<div class="item-row card" style="display:flex; align-items:center; background:#fff5f5; padding:10px; border:1px solid #ffcccc">
-                        <span style="flex:1"><b>${t.name}</b> (${counts[id]} غيابات مسجلة)</span>
-                        <div style="display:flex; gap:5px;">
-                            <a class="wa-btn" href="https://wa.me/${t.phone}?text=${encodeURIComponent(msg)}" target="_blank">واتساب</a>
-                            <button class="word-btn" onclick="makeWord(${id})">وورد</button>
-                        </div>
-                    </div>`;
-                }
-            }
-        }
-    }
-
-    // --- الوظائف الأساسية المتبقية ---
+    // --- إدارة التخصصات (تعديل وحذف) ---
     function addSpec() {
         let n = document.getElementById('specNameIn').value.trim();
         if(n) { db.specs.push({ id: Date.now(), name: n }); save(); renderSpecs(); document.getElementById('specNameIn').value = ''; }
@@ -269,11 +150,31 @@
         let ui = document.getElementById('specUI'), filter = document.getElementById('specFilter');
         ui.innerHTML = ''; filter.innerHTML = '';
         db.specs.forEach(s => {
-            ui.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee">${s.name}</div>`;
+            ui.innerHTML += `<div class="item-list-row">
+                <span>${s.name}</span>
+                <div class="action-btns">
+                    <button class="btn-small-edit" onclick="editSpec(${s.id})">✎</button>
+                    <button class="btn-small-del" onclick="delSpec(${s.id})">✕</button>
+                </div>
+            </div>`;
             filter.innerHTML += `<option value="${s.id}">${s.name}</option>`;
         });
         renderTrainees();
     }
+    function editSpec(id) {
+        let s = db.specs.find(x => x.id == id);
+        let n = prompt("تعديل اسم التخصص:", s.name);
+        if(n) { s.name = n; save(); renderSpecs(); }
+    }
+    function delSpec(id) {
+        if(confirm("سيتم حذف التخصص وجميع المتربصين التابعين له! هل أنت متأكد؟")) {
+            db.specs = db.specs.filter(x => x.id != id);
+            db.trainees = db.trainees.filter(x => x.specId != id);
+            save(); renderSpecs();
+        }
+    }
+
+    // --- إدارة المتربصين (تعديل وحذف) ---
     function addTrainee() {
         let n = document.getElementById('traineeNameIn').value.trim(), p = document.getElementById('traineePhoneIn').value.trim(), s = document.getElementById('specFilter').value;
         if(n && s) { db.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); save(); renderTrainees(); }
@@ -282,46 +183,107 @@
         let sId = document.getElementById('specFilter').value, ui = document.getElementById('traineeUI'), sel = document.getElementById('traineeSelect');
         ui.innerHTML = ''; sel.innerHTML = '';
         db.trainees.filter(t => t.specId == sId).forEach(t => {
-            ui.innerHTML += `<div style="padding:5px; border-bottom:1px solid #eee">${t.name}</div>`;
+            ui.innerHTML += `<div class="item-list-row">
+                <span>${t.name}</span>
+                <div class="action-btns">
+                    <button class="btn-small-edit" onclick="editTrainee(${t.id})">✎</button>
+                    <button class="btn-small-del" onclick="delTrainee(${t.id})">✕</button>
+                </div>
+            </div>`;
             sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
         });
     }
-    function refreshAll() { renderTable(); updateChart(); renderAlerts(); }
-    function save() { localStorage.setItem('abs_zabbana_final_v2', JSON.stringify(db)); }
+    function editTrainee(id) {
+        let t = db.trainees.find(x => x.id == id);
+        let n = prompt("تعديل اسم المتربص:", t.name);
+        let p = prompt("تعديل رقم الهاتف:", t.phone);
+        if(n) { t.name = n; t.phone = p; save(); renderTrainees(); }
+    }
+    function delTrainee(id) {
+        if(confirm("حذف المتربص وسجل غياباته؟")) {
+            db.trainees = db.trainees.filter(x => x.id != id);
+            db.logs = db.logs.filter(x => x.tId != id);
+            save(); renderTrainees(); refreshAll();
+        }
+    }
 
-    // --- تصدير الملفات ---
-    function exportToExcel() {
+    // --- منطق الغيابات ---
+    function toggleFullDay(el) {
+        document.getElementById('chkMorning').checked = el.checked;
+        document.getElementById('chkEvening').checked = el.checked;
+    }
+
+    function recordAbsence() {
+        let tId = document.getElementById('traineeSelect').value, d = document.getElementById('targetDate').value;
+        let isM = document.getElementById('chkMorning').checked, isE = document.getElementById('chkEvening').checked;
+        if(!tId || !d || (!isM && !isE)) return alert("أكمل البيانات!");
+        
+        if(isM) { db.logs = db.logs.filter(x => !(x.tId==tId && x.date==d && x.period=='صباحية')); db.logs.push({tId:tId, date:d, period:'صباحية', status:'غائب'}); }
+        if(isE) { db.logs = db.logs.filter(x => !(x.tId==tId && x.date==d && x.period=='مسائية')); db.logs.push({tId:tId, date:d, period:'مسائية', status:'غائب'}); }
+        save(); refreshAll();
+    }
+
+    function renderTable() {
+        let d = document.getElementById('targetDate').value, tbody = document.getElementById('logsTableBody');
+        tbody.innerHTML = '';
+        db.logs.filter(x => x.date === d).forEach(log => {
+            let t = db.trainees.find(x => x.id == log.tId);
+            if(t) {
+                tbody.innerHTML += `<tr><td>${t.name}</td><td>${log.period}</td><td style="color:red">غائب</td>
+                <td><button class="btn-small-del" onclick="deleteLog(${log.tId},'${log.date}','${log.period}')">✕</button></td></tr>`;
+            }
+        });
+    }
+
+    function deleteLog(tId, date, period) {
+        db.logs = db.logs.filter(x => !(x.tId == tId && x.date == date && x.period == period));
+        save(); refreshAll();
+    }
+
+    // --- الإحصائيات (تعديل الألوان والحجم) ---
+    function updateChart() {
         let d = document.getElementById('targetDate').value;
-        let daily = db.logs.filter(x => x.date === d);
-        let data = daily.map(l => {
-            let t = db.trainees.find(x => x.id == l.tId);
-            return { "التاريخ": l.date, "الفترة": l.period, "المتربص": t?t.name:"", "الحالة": "غائب" };
+        let logs = db.logs.filter(x => x.date === d);
+        let m = logs.filter(x => x.period === 'صباحية').length;
+        let e = logs.filter(x => x.period === 'مسائية').length;
+        
+        let ctx = document.getElementById('dailyChart').getContext('2d');
+        if(chartObj) chartObj.destroy();
+        chartObj = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['غياب الصباح ☀️', 'غياب المساء 🌙'],
+                datasets: [{
+                    data: [m, e],
+                    backgroundColor: ['#FFFFFF', '#000000'], // أبيض للصباح، أسود للمساء
+                    borderColor: '#2980b9', // إطار أزرق للتمييز
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 14, family: 'Cairo' } } }
+                }
+            }
         });
-        let ws = XLSX.utils.json_to_sheet(data);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "غيابات اليوم");
-        XLSX.writeFile(wb, `غيابات_${d}.xlsx`);
     }
 
-    async function makeWord(id) {
-        const t = db.trainees.find(x => x.id == id);
-        const abs = db.logs.filter(x => x.tId == id).map(x => `${x.date} (${x.period})`);
-        const { Document, Packer, Paragraph, TextRun, AlignmentType } = window.docx;
-        const doc = new Document({
-            sections: [{
-                children: [
-                    new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 24 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "مركز التكوين و التمهين الشهيد أحمد زبانة السوقر1", size: 20 })] }),
-                    new Paragraph({ alignment: AlignmentType.CENTER, spacing: {before:400, after:400}, children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 36, underline: {} })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "اسم المتربص: " + t.name, bold: true, size: 28 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "عدد الغيابات: " + abs.length, size: 26 })] }),
-                    new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "التواريخ: " + abs.join(" / "), size: 22 })] }),
-                    new Paragraph({ alignment: AlignmentType.LEFT, spacing: {before:600}, children: [new TextRun({ text: "ختم الإدارة", bold: true, size: 24 })] })
-                ]
-            }]
-        });
-        Packer.toBlob(doc).then(blob => saveAs(blob, `استدعاء_${t.name}.docx`));
+    function renderAlerts() {
+        let ui = document.getElementById('alertUI'); ui.innerHTML = '';
+        let counts = {};
+        db.logs.forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
+        for(let id in counts) {
+            if(counts[id] >= 3) {
+                let t = db.trainees.find(x => x.id == id);
+                if(t) ui.innerHTML += `<div class="item-list-row" style="background:#fff5f5"><span><b>${t.name}</b> (${counts[id]} غيابات)</span></div>`;
+            }
+        }
     }
+
+    function refreshAll() { renderTable(); updateChart(); renderAlerts(); }
+    function save() { localStorage.setItem('abs_zabbana_v3', JSON.stringify(db)); }
 </script>
 </body>
 </html>
