@@ -419,7 +419,7 @@ container.innerHTML += `
     };
     input.click();
 }
-    function renderTable() {
+   function renderTable() {
     let d = document.getElementById('targetDate').value;
     let p = document.querySelector('input[name="period"]:checked').value;
     let tbody = document.getElementById('logsTableBody');
