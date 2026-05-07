@@ -148,4 +148,5 @@ ul li {
         font-size: 1.1rem;
     }
 }
-
+.btn-backup { background: #8e44ad; color: white; border: none; cursor: pointer; width: auto; padding: 10px 20px; font-weight: bold; margin-top: 10px; border-radius: 8px; }
+.search-box { border: 2px solid var(--primary); margin-bottom: 10px; background: #fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat right 10px center; padding-right: 35px; }
