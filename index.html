@@ -303,7 +303,11 @@
     let counts = {};
     
     // حساب غيابات كل متربص
-    db.logs.filter(x => x.status === 'غائب').forEach(x => counts[x.tId] = (counts[x.tId] || 0) + 1);
+   // حساب غيابات الفترات (صباحي ومسائي)
+db.logs.forEach(log => {
+    if (log.AM === 'غائب') counts[log.tId] = (counts[log.tId] || 0) + 1;
+    if (log.PM === 'غائب') counts[log.tId] = (counts[log.tId] || 0) + 1;
+});
     
     for(let id in counts) {
         if(counts[id] >= 3) {
