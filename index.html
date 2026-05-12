@@ -193,20 +193,54 @@ function renderSpecs() {
 
 // 2. تحديث عرض المتربصين لإضافة زر التعديل
 function renderTrainees() {
-    let sId = document.getElementById('specFilter').value, ui = document.getElementById('traineeUI'), sel = document.getElementById('traineeSelect');
-    ui.innerHTML = ''; sel.innerHTML = '';
+    let sId = document.getElementById('specFilter').value, 
+        ui = document.getElementById('traineeUI'), 
+        sel = document.getElementById('traineeSelect');
+    
+    ui.innerHTML = ''; 
+    sel.innerHTML = '';
+    
     db.trainees.filter(t => t.specId == sId).forEach(t => {
+        // إضافة الأزرار داخل حاوية flex لضمان التنسيق
         ui.innerHTML += `
             <div class="item-row">
                 <span>${t.name}</span>
                 <div style="display:flex; gap:5px;">
-                    <button class="btn-main" style="width:40px; background:var(--edit);" onclick="editTrainee(${t.id}, '${t.name}', '${t.phone}')">✎</button>
-                    <button class="btn-danger" style="width:40px" onclick="delTrainee(${t.id})">✕</button>
+                    <!-- زر التعديل الجديد -->
+                    <button class="btn-main" style="width:40px; background:var(--edit); margin:0;" onclick="editTrainee(${t.id}, '${t.name}', '${t.phone}')">✎</button>
+                    <!-- زر الحذف -->
+                    <button class="btn-danger" style="width:40px; margin:0;" onclick="delTrainee(${t.id})">✕</button>
                 </div>
             </div>`;
         sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
     });
 }
+function editTrainee(id, oldName, oldPhone) {
+    let newName = prompt("تعديل اسم المتربص:", oldName);
+    if (newName === null) return; // إلغاء إذا ضغط المستخدم على Cancel
+    
+    let newPhone = prompt("تعديل رقم هاتف ولي الأمر:", oldPhone);
+    if (newPhone === null) return;
+
+    if (newName.trim() !== "") {
+        let trainee = db.trainees.find(x => x.id == id);
+        if (trainee) {
+            trainee.name = newName.trim();
+            trainee.phone = newPhone.trim();
+            save(); // حفظ في localStorage
+            renderTrainees(); // تحديث القائمة فوراً
+            refreshAll(); // تحديث الإحصائيات والرسائل إذا لزم الأمر
+            alert("تم تحديث بيانات المتربص بنجاح");
+        }
+    } else {
+        alert("لا يمكن ترك الاسم فارغاً");
+    }
+}
+
+    
+
+
+    
 
 // 3. دوال منطق التعديل الجديدة
 function editSpec(id, oldName) {
