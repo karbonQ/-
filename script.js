@@ -69,19 +69,29 @@ function addTrainee() {
     document.getElementById('traineePhone').value = '';
     save(); updateTraineeList();
 }
-function editTraineeBtn.addEventListener("click", ()=>{
-    const spec = specialtySelect.value;
-    if(!spec){ alert("اختر التخصص أولاً"); return; }
-    const oldName = traineeSelect.value;
-    if(!oldName){ alert("اختر المتربص للتعديل"); return; }
-    const newName = nameInput.value.trim();
-    if(!newName){ alert("أدخل الاسم الجديد"); return; }
-    if(trainees[spec].includes(newName)){ alert("المتربص موجود بالفعل"); return; }
-    const index = trainees[spec].indexOf(oldName);
-    trainees[spec][index] = newName;
-    nameInput.value = "";
-    loadTrainees(spec);
-});
+function editTrainee(id, oldName, oldPhone) {
+    let newName = prompt("تعديل اسم المتربص:", oldName);
+    if (newName === null) return; // إلغاء إذا ضغط المستخدم على Cancel
+    
+    let newPhone = prompt("تعديل رقم هاتف ولي الأمر:", oldPhone);
+    if (newPhone === null) return;
+
+    if (newName.trim() !== "") {
+        let trainee = db.trainees.find(x => x.id == id);
+        if (trainee) {
+            trainee.name = newName.trim();
+            trainee.phone = newPhone.trim();
+            save(); // حفظ في localStorage
+            renderTrainees(); // تحديث القائمة فوراً
+            refreshAll(); // تحديث الإحصائيات والرسائل إذا لزم الأمر
+            alert("تم تحديث بيانات المتربص بنجاح");
+        }
+    } else {
+        alert("لا يمكن ترك الاسم فارغاً");
+    }
+}
+
+
 }
 function deleteTraineeBtn.addEventListener("click", ()=>{
     const spec = specialtySelect.value;
