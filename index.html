@@ -164,7 +164,7 @@
             document.getElementById('currentProfName').innerText = u.name;
             document.getElementById('targetDate').valueAsDate = new Date();
             document.getElementById('reportMonth').value = new Date().toISOString().slice(0, 7);
-            renderSpecs(); refreshAll();
+            (); refreshAll();
         } else { alert("خطأ في البيانات!"); }
     }
 
@@ -173,31 +173,73 @@
     // --- إدارة التخصصات والمتربصين ---
     function addSpec() {
         let n = document.getElementById('specNameIn').value.trim();
-        if(n) { db.specs.push({ id: Date.now(), name: n }); save(); renderSpecs(); document.getElementById('specNameIn').value = ''; }
+        if(n) { db.specs.push({ id: Date.now(), name: n }); save(); (); document.getElementById('specNameIn').value = ''; }
     }
-    function renderSpecs() {
-        let ui = document.getElementById('specUI'), filter = document.getElementById('specFilter');
-        ui.innerHTML = ''; filter.innerHTML = '';
-        db.specs.forEach(s => {
-            ui.innerHTML += `<div class="item-row"><span>${s.name}</span><button class="btn-danger" style="width:40px" onclick="delSpec(${s.id})">✕</button></div>`;
-            filter.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-        });
-        renderTrainees();
+function renderSpecs() {
+    let ui = document.getElementById('specUI'), filter = document.getElementById('specFilter');
+    ui.innerHTML = ''; filter.innerHTML = '';
+    db.specs.forEach(s => {
+        ui.innerHTML += `<div class="item-row">
+            <span>${s.name}</span>
+            <div>
+                <button class="btn-main" style="width:auto; padding:2px 8px; background:var(--edit)" onclick="editSpec(${s.id})">تعديل</button>
+                <button class="btn-danger" style="width:40px" onclick="delSpec(${s.id})">✕</button>
+            </div>
+        </div>`;
+        filter.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+    });
+    renderTrainees();
+}
+
+function editSpec(id) {
+    let spec = db.specs.find(x => x.id == id);
+    let newName = prompt("تعديل اسم التخصص:", spec.name);
+    if (newName && newName.trim() !== "") {
+        spec.name = newName.trim();
+        save();
+        renderSpecs();
     }
+}
+
+
+    
     function delSpec(id) { if(confirm("حذف التخصص؟")) { db.specs = db.specs.filter(x => x.id != id); save(); renderSpecs(); } }
 
     function addTrainee() {
         let n = document.getElementById('traineeNameIn').value.trim(), p = document.getElementById('traineePhoneIn').value.trim(), s = document.getElementById('specFilter').value;
         if(n && s) { db.trainees.push({ id: Date.now(), name: n, phone: p, specId: s }); save(); renderTrainees(); }
     }
-    function renderTrainees() {
-        let sId = document.getElementById('specFilter').value, ui = document.getElementById('traineeUI'), sel = document.getElementById('traineeSelect');
-        ui.innerHTML = ''; sel.innerHTML = '';
-        db.trainees.filter(t => t.specId == sId).forEach(t => {
-            ui.innerHTML += `<div class="item-row"><span>${t.name}</span><button class="btn-danger" style="width:40px" onclick="delTrainee(${t.id})">✕</button></div>`;
-            sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
-        });
+function renderTrainees() {
+    let sId = document.getElementById('specFilter').value, ui = document.getElementById('traineeUI'), sel = document.getElementById('traineeSelect');
+    ui.innerHTML = ''; sel.innerHTML = '';
+    db.trainees.filter(t => t.specId == sId).forEach(t => {
+        ui.innerHTML += `<div class="item-row">
+            <span>${t.name} ${t.phone ? '('+t.phone+')' : ''}</span>
+            <div>
+                <button class="btn-main" style="width:auto; padding:2px 8px; background:var(--edit)" onclick="editTrainee(${t.id})">تعديل</button>
+                <button class="btn-danger" style="width:40px" onclick="delTrainee(${t.id})">✕</button>
+            </div>
+        </div>`;
+        sel.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+    });
+}
+
+function editTrainee(id) {
+    let t = db.trainees.find(x => x.id == id);
+    let newName = prompt("تعديل اسم المتربص:", t.name);
+    let newPhone = prompt("تعديل رقم هاتف ولي الأمر:", t.phone);
+    
+    if (newName && newName.trim() !== "") {
+        t.name = newName.trim();
+        t.phone = newPhone ? newPhone.trim() : "";
+        save();
+        renderTrainees();
+        refreshAll(); // لتحديث الأسماء في قائمة الاستدعاءات أيضاً
     }
+}
+
+
+    
     function delTrainee(id) { if(confirm("حذف المتربص؟")) { db.trainees = db.trainees.filter(x => x.id != id); save(); renderTrainees(); } }
 
     // --- تسجيل الغيابات (فترتين) ---
