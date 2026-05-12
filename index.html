@@ -108,7 +108,7 @@
                     </div>
                 </div>
                <!-- تحديد عرض أقصى 300px وتوسيط الرسم -->
-<div id="chartArea" style="margin-top:15px; max-width: 350px; margin-left: auto; margin-right: auto;">
+<div id="chartArea" style="margin-top:15px; max-width: 320px; margin: 0 auto;">
     <canvas id="dailyChart"></canvas>
 </div>
             </div>
@@ -249,8 +249,8 @@
 
     function refreshAll() { updateChart(); renderAlerts(); }
 
-    function updateChart() {
-    // جلب آخر 5 أيام تم تسجيل بيانات فيها لعرضها على المنحنى
+   function updateChart() {
+    // جلب آخر 5 أيام مسجلة للمقارنة بينها
     let allDates = [...new Set(db.logs.map(l => l.date))].sort().slice(-5);
     if(allDates.length === 0) allDates = [document.getElementById('targetDate').value];
 
@@ -272,43 +272,39 @@
     if(chartObj) chartObj.destroy();
 
     chartObj = new Chart(ctx, {
-        type: 'line', // تغيير النوع إلى منحنى بياني
+        type: 'bar', // هذا هو نوع Histogramme (أعمدة)
         data: {
             labels: allDates,
             datasets: [
                 {
                     label: 'حضور',
                     data: presentData,
-                    borderColor: '#27ae60',
-                    backgroundColor: 'rgba(39, 174, 96, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4, // جعل المنحنى انسيابياً
-                    pointRadius: 3 // حجم نقاط التقاطع
+                    backgroundColor: '#27ae60', // لون أخضر ثابت للأعمدة
+                    borderRadius: 5, // جعل زوايا الأعمدة دائرية قليلاً لشكل عصري
+                    barThickness: 15 // التحكم في عرض العمود ليبقى الرسم صغيراً
                 },
                 {
                     label: 'غياب',
                     data: absentData,
-                    borderColor: '#c0392b',
-                    backgroundColor: 'rgba(192, 57, 43, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    pointRadius: 3
+                    backgroundColor: '#c0392b', // لون أحمر ثابت
+                    borderRadius: 5,
+                    barThickness: 15
                 }
             ]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true, // الحفاظ على التناسب ليبقى صغيراً
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
-                    display: true,
-                    labels: { font: { size: 10, family: 'Cairo' } } // تصغير حجم خط الأسطورة
+                    position: 'top',
+                    labels: { font: { size: 10, family: 'Cairo' } }
                 }
             },
             scales: {
                 y: { 
-                    beginAtZero: true, 
-                    ticks: { font: { size: 9 } } 
+                    beginAtZero: true,
+                    ticks: { stepSize: 1, font: { size: 9 } } 
                 },
                 x: { 
                     ticks: { font: { size: 9 } } 
