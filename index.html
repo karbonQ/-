@@ -238,9 +238,7 @@ function editTrainee(id) {
     }
 }
 
-
-    
-    function delTrainee(id) { if(confirm("حذف المتربص؟")) { db.trainees = db.trainees.filter(x => x.id != id); save(); renderTrainees(); } }
+   function delTrainee(id) { if(confirm("حذف المتربص؟")) { db.trainees = db.trainees.filter(x => x.id != id); save(); renderTrainees(); } }
 
     // --- تسجيل الغيابات (فترتين) ---
     function record(period, status) {
