@@ -347,13 +347,13 @@
                 new Paragraph({ alignment: AlignmentType.CENTER, bidirectional: true, spacing: { before: 400, after: 400 }, children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 40, underline: {}, rightToLeft: true })] }),
                 
                 // السطر المطلوب (تم تثبيته على اليمين تماماً)
-                new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, spacing: { after: 150 }, children: [new TextRun({ text: "\u200Fيؤسفنا أن نعلمكم بالغيابات التالية للمتربص(ة): " + t.name, bold: true, size: 30, rightToLeft: true })] }),
+                new Paragraph({ alignment: AlignmentType.left, bidirectional: true, spacing: { after: 150 }, children: [new TextRun({ text: "\u200Fيؤسفنا أن نعلمكم بالغيابات التالية للمتربص(ة): " + t.name, bold: true, size: 30, rightToLeft: true })] }),
                 
                 // أسطر التواريخ (تم تثبيتها على اليمين ومنع تداخل الأرقام)
-                ...absenceDates.map(d => new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, spacing: { after: 100 }, children: [new TextRun({ text: "\u200F• " + d, size: 24, rightToLeft: true })] })),
+                ...absenceDates.map(d => new Paragraph({ alignment: AlignmentType.left, bidirectional: true, spacing: { after: 100 }, children: [new TextRun({ text: "\u200F• " + d, size: 24, rightToLeft: true })] })),
                 
                 new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, spacing: { before: 500 }, children: [new TextRun({ text: "\u200Fلهذا يرجى منكم إتخاذ الإجراءات القانونية اللازمة.", bold: true, size: 26, rightToLeft: true })] }),
-                new Paragraph({ alignment: AlignmentType.LEFT, bidirectional: true, spacing: { before: 500 }, children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 26, rightToLeft: true })] })
+                new Paragraph({ alignment: AlignmentType.right, bidirectional: true, spacing: { before: 500 }, children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 26, rightToLeft: true })] })
             ]
         }]
     });
