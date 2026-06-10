@@ -351,10 +351,10 @@
                 children: [
                     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "الجمهورية الجزائرية الديمقراطية الشعبية", bold: true, size: 28, rightToLeft: true })] }),
                     new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "مركز التكوين والتمهين الشهيد أحمد زبانة - السوقر 01", size: 24, rightToLeft: true })] }),
-                    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 400, after: 400 }, children: [new TextRun({ text: "إشعار بوضعية غيابات", bold: true, size: 40, underline: {}, rightToLeft: true })] }),
+                    new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 400, after: 400 }, children: [new TextRun({ text: "إشعار بغياب غير نظامي", bold: true, size: 40, underline: {}, rightToLeft: true })] }),
                     new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "إلى ولي أمر المتربص(ة): " + t.name, bold: true, size: 30, rightToLeft: true })] }),
                     ...absenceDates.map(d => new Paragraph({ alignment: AlignmentType.RIGHT, bidirectional: true, children: [new TextRun({ text: "• " + d, size: 24, rightToLeft: true })] })),
-                    new Paragraph({ alignment: AlignmentType.LEFT, spacing: { before: 500 }, children: [new TextRun({ text: "ختم مصلحة الرقابة العامة", bold: true, size: 26, rightToLeft: true })] })
+                    new Paragraph({ alignment: AlignmentType.LEFT, spacing: { before: 500 }, children: [new TextRun({ text: "إمضاء الأستاذ", bold: true, size: 26, rightToLeft: true })] })
                 ]
             }]
         });
