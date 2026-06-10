@@ -42,12 +42,12 @@
 
     <div id="loginPanel" class="card" style="max-width: 450px; margin: 50px auto; border-top: 5px solid var(--primary); padding: 30px;">
         <div id="loginView">
-            <h2 style="margin-bottom: 25px;">🔑 دخول </h2>
+            <h2 style="margin-bottom: 25px;"> دخول </h2>
             <label>اسم المستخدم:</label>
-            <input type="text" id="userName" placeholder="أدخل اسمك أو admin">
+            <input type="text" id="userName" placeholder="أدخل اسمك">
             <label>كلمة السر:</label>
             <input type="password" id="userPass" placeholder="أدخل كلمة السر">
-            <button class="btn-main" onclick="handleLogin()" style="margin-top: 15px; height: 50px;">دخول النظام</button>
+            <button class="btn-main" onclick="handleLogin()" style="margin-top: 15px; height: 50px;">دخول </button>
             <div style="margin-top: 20px; font-size: 0.9rem; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
                 <a href="#" onclick="showRegister()" style="color: var(--primary); text-decoration: none; font-weight: bold;">📝 تسجيل أستاذ جديد</a> | 
                 <a href="#" onclick="forgotPass()" style="color: #999; text-decoration: none;">نسيت كلمة السر؟</a>
@@ -56,8 +56,8 @@
 
         <div id="registerView" style="display: none;">
             <h2 style="margin-bottom: 25px; color: var(--success);">📝 حساب جديد</h2>
-            <input type="text" id="regName" placeholder="اسم الأستاذ الكامل">
-            <input type="password" id="regPass" placeholder="كلمة سر جديدة">
+            <input type="text" id="regName" placeholder="لقب و إسم الأستاذ ">
+            <input type="password" id="regPass" placeholder="كلمة السر ">
             <input type="password" id="regPassConfirm" placeholder="تأكيد كلمة السر">
             <button class="btn-save" onclick="handleRegister()">تأكيد التسجيل</button>
             <button onclick="showLogin()" style="background:none; border:none; color:var(--danger); cursor:pointer; margin-top:15px; width:100%; font-weight:bold;">❌ إلغاء</button>
